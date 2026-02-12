@@ -1,0 +1,43 @@
+<div class="container section">
+      <div class="user-layout">
+        <aside class="user-sidebar">
+          <h3>Your Account</h3>
+          <ul>
+            <li><a routerLink="/user/profile" routerLinkActive="active">Profile</a></li>
+            <li><a routerLink="/user/orders" routerLinkActive="active">Order History</a></li>
+          </ul>
+        </aside>
+
+        <main class="user-content">
+          <h1>Order History</h1>
+          
+          <div class="orders-list">
+            <div class="order-card fade-in" *ngFor="let order of orders">
+              <div class="order-header">
+                <div>
+                  <span class="order-id">Order #{{ order._id.slice(-8) }}</span>
+                  <span class="order-date">{{ order.createdAt | date:'mediumDate' }}</span>
+                </div>
+                <span class="status-badge" [attr.data-status]="order.status">{{ order.status }}</span>
+              </div>
+              <div class="order-body">
+                <div class="order-items">
+                  <div class="item" *ngFor="let item of order.items">
+                    {{ item.quantity }}x {{ item.product.name }}
+                  </div>
+                </div>
+                <div class="order-meta">
+                  <div class="total-amount">{{ order.totalAmount | currency }}</div>
+                  <button class="btn-refund" *ngIf="order.status === 'delivered'" [routerLink]="['/user/refund', order._id]">Request Refund</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="empty-state" *ngIf="orders.length === 0 && !loading">
+              <p>You haven't placed any orders yet.</p>
+              <button routerLink="/products" class="btn-primary">Start Shopping</button>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>

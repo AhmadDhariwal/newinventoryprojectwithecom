@@ -19,6 +19,7 @@ const activitylogroutes = require("./src/routes/activitylog.routes");
 const organizationroutes = require("./src/routes/organization.routes");
 const forecastingroutes = require("./src/routes/forecasting.routes");
 const notificationroutes = require("./src/routes/notification.routes");
+const ecommerceroutes = require("./src/routes/ecommerce.routes");
 const cors = require('cors');
 const userroute = require('./src/routes/user');
 const { verifytoken, restrictto } = require('./src/middleware/auth.middleware');
@@ -60,6 +61,7 @@ app.use(cookieParser());
 // Public routes
 app.use('/user', userroute);
 app.use('/api/organizations', organizationroutes);
+app.use('/api/ecommerce', ecommerceroutes);
 
 // Protected routes - require authentication, organization context, and maintenance check
 app.use('/items', verifytoken, ensureOrganizationContext, enforceSecurityPolicies, checkMaintenanceMode, restrictto(["admin", "user"]), route);

@@ -1,0 +1,130 @@
+ <div class="container section">
+      <h1>Checkout</h1>
+
+      <div class="checkout-layout" *ngIf="!orderSuccess; else successView">
+        <div class="checkout-steps">
+          <div class="stepper">
+            <div class="step" [class.active]="step === 1" [class.done]="step > 1">1. Shipping</div>
+            <div class="step" [class.active]="step === 2" [class.done]="step > 2">2. Payment</div>
+            <div class="step" [class.active]="step === 3">3. Review</div>
+          </div>
+
+          <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()">
+            <!-- Step 1: Shipping -->
+            <div class="step-content" *ngIf="step === 1">
+              <h2>Shipping Address</h2>
+              <div class="form-grid">
+                <div class="form-group full">
+                  <label>Street Address</label>
+                  <input type="text" formControlName="street" placeholder="123 Main St">
+                </div>
+                <div class="form-group">
+                  <label>City</label>
+                  <input type="text" formControlName="city">
+                </div>
+                <div class="form-group">
+                  <label>State / Province</label>
+                  <input type="text" formControlName="state">
+                </div>
+                <div class="form-group">
+                  <label>Zip / Postal Code</label>
+                  <input type="text" formControlName="zipCode">
+                </div>
+                <div class="form-group">
+                  <label>Country</label>
+                  <input type="text" formControlName="country">
+                </div>
+              </div>
+              <div class="actions">
+                <button type="button" class="btn-primary" [disabled]="isStep1Invalid()" (click)="nextStep()">Continue to Payment</button>
+              </div>
+            </div>
+
+            <!-- Step 2: Payment -->
+            <div class="step-content" *ngIf="step === 2">
+              <h2>Payment Method</h2>
+              <div class="payment-options">
+                <label class="payment-card">
+                  <input type="radio" formControlName="paymentMethod" value="cash_on_delivery">
+                  <div class="card-content">
+                    <span class="icon">💵</span>
+                    <span>Cash on Delivery</span>
+                  </div>
+                </label>
+                <label class="payment-card disabled">
+                  <input type="radio" formControlName="paymentMethod" value="credit_card" [disabled]="true">
+                  <div class="card-content">
+                    <span class="icon">💳</span>
+                    <span>Credit Card (Coming Soon)</span>
+                  </div>
+                </label>
+              </div>
+              <div class="actions">
+                <button type="button" class="btn-outline" (click)="prevStep()">Back</button>
+                <button type="button" class="btn-primary" (click)="nextStep()">Review Order</button>
+              </div>
+            </div>
+
+            <!-- Step 3: Review -->
+            <div class="step-content" *ngIf="step === 3">
+              <h2>Review Your Order</h2>
+              <div class="review-details">
+                <div class="review-box">
+                  <h4>Shipping To:</h4>
+                  <p>{{ f['street'].value }}</p>
+                  <p>{{ f['city'].value }}, {{ f['state'].value }} {{ f['zipCode'].value }}</p>
+                  <p>{{ f['country'].value }}</p>
+                </div>
+                <div class="review-box">
+                  <h4>Payment Method:</h4>
+                  <p>{{ f['paymentMethod'].value === 'cash_on_delivery' ? 'Cash on Delivery' : f['paymentMethod'].value }}</p>
+                </div>
+              </div>
+
+              <div class="review-items">
+                <h4>Items:</h4>
+                <div class="item-summary" *ngFor="let item of cartItems">
+                   <span>{{ item.quantity }}x {{ item.product.name }}</span>
+                   <span>{{ (item.product.price * item.quantity) | currency }}</span>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button type="button" class="btn-outline" (click)="prevStep()">Back to Payment</button>
+                <button type="submit" class="btn-primary" [disabled]="submitting">
+                  {{ submitting ? 'Placing Order...' : 'Place Order' }}
+                </button>
+              </div>
+              <p class="error-msg" *ngIf="error">{{ error }}</p>
+            </div>
+          </form>
+        </div>
+
+        <aside class="order-summary">
+          <h3>Summary</h3>
+          <div class="summary-items">
+             <div class="summary-row" *ngFor="let item of cartItems">
+                <span>{{ item.product.name }} ({{ item.quantity }})</span>
+                <span>{{ (item.product.price * item.quantity) | currency }}</span>
+             </div>
+          </div>
+          <div class="summary-row total">
+            <span>Total</span>
+            <span>{{ cartService.getTotalAmount() | currency }}</span>
+          </div>
+        </aside>
+      </div>
+
+      <ng-template #successView>
+        <div class="success-state fade-in">
+          <div class="success-icon">✅</div>
+          <h2>Thank you for your order!</h2>
+          <p>Your order #{{ lastOrderId }} has been placed successfully.</p>
+          <p>Multi-tenant organizationId: {{ organizationId }}</p>
+          <div class="actions">
+            <button routerLink="/user/orders" class="btn-primary">View My Orders</button>
+            <button routerLink="/" class="btn-outline">Return Home</button>
+          </div>
+        </div>
+      </ng-template>
+    </div>

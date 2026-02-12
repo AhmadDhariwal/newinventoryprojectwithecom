@@ -1,0 +1,72 @@
+.catalog-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3rem;
+    }
+    .catalog-header h1 { font-size: 2.5rem; color: var(--primary-color); }
+    .filters { display: flex; gap: 1rem; }
+    .search-input {
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      width: 300px;
+    }
+    .sort-select {
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+    }
+    .catalog-layout {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 3rem;
+    }
+    .sidebar h3 { font-size: 1.1rem; margin-bottom: 1.5rem; border-bottom: 2px solid var(--secondary-color); display: inline-block; }
+    .category-list { list-style: none; padding: 0; margin-bottom: 3rem; }
+    .category-list li {
+      padding: 0.5rem 0;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: var(--transition-smooth);
+    }
+    .category-list li:hover, .category-list li.active { color: var(--primary-color); font-weight: 600; padding-left: 5px; }
+    
+    .price-inputs { display: grid; gap: 0.5rem; }
+    .price-inputs input { padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; }
+    .price-inputs button {
+      background: var(--primary-color);
+      color: white;
+      padding: 0.5rem;
+      border-radius: 4px;
+      margin-top: 0.5rem;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+    .product-skeleton { height: 350px; border-radius: 8px; }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 6rem 0;
+      background: var(--white);
+      border-radius: 8px;
+    }
+    .empty-icon { font-size: 4rem; margin-bottom: 1rem; }
+    .btn-clear {
+      margin-top: 1.5rem;
+      color: var(--primary-color);
+      text-decoration: underline;
+      font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+      .catalog-layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .catalog-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      .search-input { width: 100%; }
+    }

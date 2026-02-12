@@ -1,0 +1,6 @@
+  .refund-card { max-width: 600px; margin: 0 auto; background: white; padding: 3rem; border-radius: 8px; box-shadow: var(--shadow-md); text-align: center; }
+    .refund-info { background: #fff3e0; padding: 1.5rem; border-radius: 4px; margin: 2rem 0; color: #ef6c00; font-size: 0.9rem; }
+    .btn-primary { background: #dc3545; color: white; padding: 1rem 2rem; border-radius: 4px; font-weight: 700; width: 100%; }
+    .success-msg { color: #2e7d32; margin-top: 1.5rem; font-weight: 600; }
+    .error-msg { color: #dc3545; margin-top: 1.5rem; font-weight: 600; }
+    .back-link { display: block; margin-top: 2rem; color: var(--text-muted); }

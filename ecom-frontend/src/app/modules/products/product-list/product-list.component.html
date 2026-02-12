@@ -1,0 +1,63 @@
+<div class="container section">
+      <div class="catalog-header">
+        <h1>Product Catalog</h1>
+        <div class="filters">
+          <input 
+            type="text" 
+            [(ngModel)]="searchQuery" 
+            (input)="onSearch()" 
+            placeholder="Search products..." 
+            class="search-input"
+          >
+          <select [(ngModel)]="sortBy" (change)="onSort()" class="sort-select">
+            <option value="newest">Newest First</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="catalog-layout">
+        <aside class="sidebar">
+          <h3>Categories</h3>
+          <ul class="category-list">
+            <li [class.active]="!selectedCategory" (click)="selectCategory('')">All Products</li>
+            <!-- Categories would ideally be fetched from API -->
+            <li *ngFor="let cat of categories" [class.active]="selectedCategory === cat._id" (click)="selectCategory(cat._id)">
+              {{ cat.name }}
+            </li>
+          </ul>
+
+          <div class="price-filter">
+            <h3>Price Range</h3>
+            <div class="price-inputs">
+              <input type="number" [(ngModel)]="minPrice" placeholder="Min">
+              <input type="number" [(ngModel)]="maxPrice" placeholder="Max">
+              <button (click)="applyFilters()">Apply</button>
+            </div>
+          </div>
+        </aside>
+
+        <main class="products-section">
+          <div class="products-grid" *ngIf="!loading; else skeletonGrid">
+            <app-product-card 
+              *ngFor="let product of products" 
+              [product]="product"
+            ></app-product-card>
+          </div>
+
+          <ng-template #skeletonGrid>
+            <div class="products-grid">
+              <div *ngFor="let i of [1,2,3,4,5,6]" class="skeleton product-skeleton"></div>
+            </div>
+          </ng-template>
+
+          <div class="empty-state" *ngIf="!loading && products.length === 0">
+            <div class="empty-icon">📂</div>
+            <h3>No products found</h3>
+            <p>Try adjusting your filters or search query.</p>
+            <button (click)="clearFilters()" class="btn-clear">Clear All Filters</button>
+          </div>
+        </main>
+      </div>
+    </div>

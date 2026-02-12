@@ -80,8 +80,53 @@ async function user(req, res, next) {
   }
 }
 
+// Verify customer token for E-Commerce
+async function verifyCustomerToken(req, res, next) {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({
+      success: false,
+      message: "Authentication token missing"
+    });
+  }
+
+  const token = authHeader.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: "Error! Token was not provided."
+    });
+  }
+
+  try {
+    const decoded = jwt.verify(token, "Hello");
+
+    // Verify this is a customer token
+    if (decoded.role !== 'customer') {
+      return res.status(403).json({
+        success: false,
+        message: "Invalid token type"
+      });
+    }
+
+    // Attach customer info to request
+    req.customer = {
+      customerId: decoded.customerId,
+      email: decoded.email,
+      organizationId: decoded.organizationId,
+      role: decoded.role
+    };
+
+    next();
+  } catch (err) {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+}
+
 module.exports = {
   verifytoken,
   restrictto,
   user,
+  verifyCustomerToken,
 }

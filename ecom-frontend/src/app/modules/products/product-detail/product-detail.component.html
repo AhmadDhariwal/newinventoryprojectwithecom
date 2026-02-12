@@ -1,0 +1,57 @@
+ <div class="container section" *ngIf="product; else loader">
+      <nav class="breadcrumb">
+        <a routerLink="/">Home</a> / 
+        <a routerLink="/products">Products</a> / 
+        <span>{{ product.name }}</span>
+      </nav>
+
+      <div class="product-grid">
+        <div class="gallery">
+          <div class="main-image">
+            <img src="https://via.placeholder.com/600x600?text={{ product.name }}" [alt]="product.name">
+          </div>
+          <div class="thumbnails">
+            <div *ngFor="let i of [1,2,3]" class="thumb">
+               <img src="https://via.placeholder.com/100x100?text=View+{{ i }}">
+            </div>
+          </div>
+        </div>
+
+        <div class="details">
+          <span class="category">{{ product.category.name }}</span>
+          <h1>{{ product.name }}</h1>
+          <p class="sku">SKU: {{ product.sku }}</p>
+          
+          <div class="price-box">
+            <span class="price">{{ product.price | currency }}</span>
+            <span class="stock-status" [class.out]="!product.inStock">
+              {{ product.inStock ? 'In Stock (' + product.stockAvailable + ' available)' : 'Out of Stock' }}
+            </span>
+          </div>
+
+          <div class="description">
+            <h3>Description</h3>
+            <p>{{ product.description }}</p>
+          </div>
+
+          <div class="actions" *ngIf="product.inStock">
+            <div class="quantity">
+              <button (click)="changeQty(-1)">-</button>
+              <span>{{ quantity }}</span>
+              <button (click)="changeQty(1)">+</button>
+            </div>
+            <button class="btn-buy" (click)="addToCart()">Add to Cart</button>
+          </div>
+          
+          <div class="multi-tenant-info">
+             <small>This product is managed via the Inventory System.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #loader>
+      <div class="container section text-center">
+        <div class="skeleton main-image" style="height: 500px; max-width: 600px; margin: 0 auto;"></div>
+      </div>
+    </ng-template>

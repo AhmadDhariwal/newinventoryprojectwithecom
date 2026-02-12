@@ -1,0 +1,40 @@
+ <div class="home">
+      <!-- Hero Section -->
+      <section class="hero section">
+        <div class="container hero-content fade-in">
+          <h1>Modern Inventory, <br><span>Seamless Shopping.</span></h1>
+          <p>Experience the next generation of multi-tenant e-commerce with real-time stock integration.</p>
+          <div class="hero-actions">
+            <a routerLink="/products" class="btn-primary">Shop Now</a>
+            <a routerLink="/auth/register" class="btn-secondary">Join Us</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Featured Products -->
+      <section class="featured section">
+        <div class="container">
+          <div class="section-header">
+            <h2>Featured Products</h2>
+            <a routerLink="/products" class="view-all">View All Products &rarr;</a>
+          </div>
+
+          <div class="products-grid" *ngIf="!loading; else skeletonGrid">
+            <app-product-card 
+              *ngFor="let product of featuredProducts" 
+              [product]="product"
+            ></app-product-card>
+          </div>
+
+          <ng-template #skeletonGrid>
+            <div class="products-grid">
+              <div *ngFor="let i of [1,2,3,4]" class="skeleton product-skeleton"></div>
+            </div>
+          </ng-template>
+
+          <div class="empty-state" *ngIf="!loading && featuredProducts.length === 0">
+            <p>No products featured yet.</p>
+          </div>
+        </div>
+      </section>
+    </div>

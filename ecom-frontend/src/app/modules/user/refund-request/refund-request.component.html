@@ -1,0 +1,19 @@
+<div class="container section">
+       <div class="refund-card fade-in">
+          <h1>Request Refund</h1>
+          <p>Order #{{ orderId }}</p>
+          
+          <div class="refund-info">
+             <p>This will initiate a refund request. Once approved, the items will be returned to inventory stock automatically.</p>
+          </div>
+
+          <button class="btn-primary" (click)="submitRefund()" [disabled]="submitting">
+             {{ submitting ? 'Submitting...' : 'Confirm Refund Request' }}
+          </button>
+          
+          <p class="success-msg" *ngIf="success">Refund processed successfully! Stock has been updated.</p>
+          <p class="error-msg" *ngIf="error">{{ error }}</p>
+
+          <a routerLink="/user/orders" class="back-link">&larr; Back to Orders</a>
+       </div>
+    </div>
