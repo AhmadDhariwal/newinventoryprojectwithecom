@@ -15,6 +15,8 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
 })
 export class HomeComponent implements OnInit {
   featuredProducts: Product[] = [];
+  saleProducts: Product[] = [];
+  newArrivals: Product[] = [];
   categories: Category[] = [];
   loading = true;
 
@@ -25,6 +27,8 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.loadFeaturedProducts();
+    this.loadSaleProducts();
+    this.loadNewArrivals();
     this.loadCategories();
   }
 
@@ -39,10 +43,28 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  loadSaleProducts() {
+    this.productService.getProducts({ onlySale: true, limit: 4 }).subscribe({
+      next: (res) => {
+        this.saleProducts = res.data.slice(0, 4);
+      },
+      error: () => this.saleProducts = []
+    });
+  }
+
+  loadNewArrivals() {
+    this.productService.getProducts({ sort: 'newest', limit: 4 }).subscribe({
+      next: (res) => {
+        this.newArrivals = res.data.slice(0, 4);
+      },
+      error: () => this.newArrivals = []
+    });
+  }
+
   loadCategories() {
     this.categoryService.getCategories().subscribe({
       next: (res) => {
-        this.categories = res.data.slice(0, 4);
+        this.categories = res.data.filter(c => !c.parentId).slice(0, 4);
       },
       error: () => {
         this.categories = [];
@@ -50,3 +72,4 @@ export class HomeComponent implements OnInit {
     });
   }
 }
+

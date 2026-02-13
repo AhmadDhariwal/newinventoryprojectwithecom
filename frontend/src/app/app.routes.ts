@@ -86,8 +86,15 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./notifications/notification-activity/notification-activity.component').then(m => m.NotificationActivityComponent),
         canActivate: [AuthGuard]
+      },
+      {
+        path: 'orders',
+        loadChildren: () =>
+          import('./orders/orders.module').then(m => m.OrdersModule),
+        canActivate: [AuthGuard]
       }
     ]
+
   },
 
   // Fallback

@@ -16,4 +16,12 @@ export class CustomerService {
   updateProfile(data: Partial<Customer>): Observable<{ success: boolean, data: Customer }> {
     return this.apiService.put<{ success: boolean, data: Customer }>('/profile', data);
   }
+
+  submitContact(data: any): Observable<{ success: boolean, message: string }> {
+    return this.apiService.post<{ success: boolean, message: string }>('/contact', data);
+  }
+
+  submitComplaint(data: any): Observable<{ success: boolean, message: string }> {
+    return this.apiService.post<{ success: boolean, message: string }>('/complaint', data);
+  }
 }

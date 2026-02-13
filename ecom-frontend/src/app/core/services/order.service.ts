@@ -24,4 +24,9 @@ export class OrderService {
   requestRefund(refundData: RefundRequest): Observable<{ success: boolean, data: any }> {
     return this.apiService.post<{ success: boolean, data: any }>('/refunds', refundData);
   }
+
+  validateCoupon(code: string, organizationId: string): Observable<{ success: boolean, data: any }> {
+    return this.apiService.post<{ success: boolean, data: any }>('/validate-coupon', { code, organizationId });
+  }
 }
+

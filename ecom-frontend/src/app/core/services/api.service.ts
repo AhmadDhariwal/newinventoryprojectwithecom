@@ -13,7 +13,7 @@ export class ApiService {
   constructor(private http: HttpClient) {}
 
   private getCommonParams(): HttpParams {
-    return new HttpParams().set('organizationId', environment.organizationId);
+    return new HttpParams();
   }
 
   get<T>(path: string, params: any = {}): Observable<T> {

@@ -36,7 +36,7 @@ export class ProductService {
     return this.http.get<Product>(`${this.baseUrl}/${id}`);
   }
 
-  createProduct(product: Partial<Product>): Observable<Product> {
+  createProduct(product: Partial<Product> | FormData): Observable<Product> {
     return this.http.post<Product>(this.baseUrl, product).pipe(
       tap((result: any) => {
         if (result && result.name) {
@@ -46,7 +46,7 @@ export class ProductService {
     );
   }
 
-  updateProduct(id: string, product: Partial<Product>): Observable<Product> {
+  updateProduct(id: string, product: Partial<Product> | FormData): Observable<Product> {
     return this.http.put<Product>(`${this.baseUrl}/${id}`, product).pipe(
       tap((result: any) => {
         if (result && result.name) {

@@ -9,8 +9,9 @@
   <div class="container section-sm">
     <div class="shop-controls">
       <div class="results-info">
-        <span *ngIf="!loading">{{ products.length }} Products</span>
+        <span *ngIf="!loading">Showing {{ products.length }} of {{ totalProducts }} Products</span>
       </div>
+
       <div class="shop-filters">
         <input 
           type="text" 
@@ -30,6 +31,17 @@
     <div class="shop-layout">
       <aside class="sidebar">
         <div class="filter-section">
+          <h3 class="filter-title">Special Offers</h3>
+          <div class="sale-filter">
+            <label class="switch">
+              <input type="checkbox" [checked]="onlySale" (change)="toggleSaleFilter()">
+              <span class="slider round"></span>
+            </label>
+            <span class="filter-label">On Sale Only</span>
+          </div>
+        </div>
+
+        <div class="filter-section">
           <h3 class="filter-title">Categories</h3>
           <ul class="filter-list">
             <li 
@@ -38,15 +50,30 @@
             >
               All Products
             </li>
-            <li 
-              *ngFor="let cat of categories" 
-              [class.active]="selectedCategory === cat._id" 
-              (click)="selectCategory(cat._id)"
-            >
-              {{ cat.name }}
-            </li>
+            
+            <ng-container *ngTemplateOutlet="categoryTemplate; context: { $implicit: categoryTree }"></ng-container>
+            
+            <ng-template #categoryTemplate let-tree>
+              <li *ngFor="let cat of tree">
+                <div class="category-item-wrapper" [class.active]="selectedCategory === cat._id">
+                  <span (click)="selectCategory(cat._id)" class="category-link">{{ cat.name }}</span>
+                  <button 
+                    *ngIf="cat.children && cat.children.length > 0" 
+                    (click)="toggleCategory(cat._id, $event)"
+                    class="toggle-btn"
+                  >
+                    <i class="bi" [class.bi-plus]="!isExpanded(cat._id)" [class.bi-dash]="isExpanded(cat._id)"></i>
+                  </button>
+                </div>
+                
+                <ul class="subcategory-list" *ngIf="cat.children && cat.children.length > 0" [class.expanded]="isExpanded(cat._id)">
+                  <ng-container *ngTemplateOutlet="categoryTemplate; context: { $implicit: cat.children }"></ng-container>
+                </ul>
+              </li>
+            </ng-template>
           </ul>
         </div>
+
 
         <div class="filter-section">
           <h3 class="filter-title">Price Range</h3>
@@ -83,16 +110,44 @@
           </div>
         </ng-template>
 
+        <!-- Pagination -->
+        <div class="pagination" *ngIf="!loading && totalPages > 1">
+          <button 
+            [disabled]="currentPage === 1" 
+            (click)="onPageChange(currentPage - 1)"
+            class="pagination-btn"
+          >
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          
+          <div class="page-numbers">
+            <button 
+              *ngFor="let p of [].constructor(totalPages); let i = index"
+              (click)="onPageChange(i + 1)"
+              [class.active]="currentPage === i + 1"
+              class="page-num"
+            >
+              {{ i + 1 }}
+            </button>
+          </div>
+
+          <button 
+            [disabled]="currentPage === totalPages" 
+            (click)="onPageChange(currentPage + 1)"
+            class="pagination-btn"
+          >
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+
         <div class="empty-state" *ngIf="!loading && products.length === 0">
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-            <circle cx="11" cy="11" r="8"/>
-            <path d="m21 21-4.35-4.35"/>
-          </svg>
+          <i class="bi bi-search" style="font-size: 48px; display: block; margin-bottom: 20px;"></i>
           <h3>No products found</h3>
           <p>Try adjusting your filters or search query</p>
           <button (click)="clearFilters()" class="btn btn-outline">Clear Filters</button>
         </div>
       </main>
+
     </div>
   </div>
 </div>

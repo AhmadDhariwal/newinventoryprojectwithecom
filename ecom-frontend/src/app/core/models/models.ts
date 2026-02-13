@@ -4,6 +4,9 @@ export interface Product {
   sku: string;
   description: string;
   price: number;
+  discountPrice?: number;
+  discountPercentage?: number;
+
   category: {
     _id: string;
     name: string;
@@ -11,6 +14,7 @@ export interface Product {
   status: 'active' | 'inactive';
   stockAvailable: number;
   inStock: boolean;
+  images?: string[];
   stockByWarehouse?: {
     warehouse: {
       _id: string;

@@ -39,7 +39,27 @@
                 required
                 placeholder="e.g., Industrial Hardware"
               />
+
             </div>
+
+            <div class="form-group">
+              <label>Parent Category (Optional)</label>
+              <select 
+                class="form-control" 
+                [(ngModel)]="newCategoryParentId" 
+                name="parentId"
+              >
+                <option value="">None (Top Level)</option>
+                <option 
+                  *ngFor="let cat of categories" 
+                  [value]="cat._id"
+                  [disabled]="isEditing && cat._id === editCategoryId"
+                >
+                  {{ cat.name }}
+                </option>
+              </select>
+            </div>
+
 
             <div class="form-group">
               <label>Detailed Description</label>
@@ -107,7 +127,12 @@
                 <tr *ngFor="let cat of categories">
                   <td>
                     <div class="category-name">{{ cat.name }}</div>
+                    <div *ngIf="cat.parentId" class="text-muted small">
+                      <i class="fas fa-level-up-alt fa-rotate-90"></i>
+                      {{ getCategoryName(cat.parentId) }}
+                    </div>
                   </td>
+
 
                   <td>
                     <div class="category-desc">

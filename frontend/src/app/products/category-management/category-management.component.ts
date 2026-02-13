@@ -14,7 +14,9 @@ export class CategoryManagementComponent implements OnInit {
   categories: any[] = [];
   newCategoryName = '';
   newCategoryDescription = '';
+  newCategoryParentId = '';
   isLoading = false;
+
   error = '';
   success = '';
   isEditing = false;
@@ -50,8 +52,10 @@ export class CategoryManagementComponent implements OnInit {
 
     const categoryData = {
       name: this.newCategoryName,
-      description: this.newCategoryDescription
+      description: this.newCategoryDescription,
+      parentId: this.newCategoryParentId || null
     };
+
 
     if (this.isEditing) {
       this.productService.updateCategory(this.editCategoryId, categoryData).subscribe({
@@ -91,6 +95,7 @@ export class CategoryManagementComponent implements OnInit {
     this.editCategoryId = cat._id;
     this.newCategoryName = cat.name;
     this.newCategoryDescription = cat.description;
+    this.newCategoryParentId = cat.parentId || '';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -103,8 +108,15 @@ export class CategoryManagementComponent implements OnInit {
     this.editCategoryId = '';
     this.newCategoryName = '';
     this.newCategoryDescription = '';
+    this.newCategoryParentId = '';
     this.error = '';
   }
+
+  getCategoryName(id: string): string {
+    const cat = this.categories.find(c => c._id === id);
+    return cat ? cat.name : 'N/A';
+  }
+
 
   deleteCategory(id: string): void {
     if (!confirm('Are you sure you want to delete this category?')) return;

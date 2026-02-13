@@ -1,0 +1,71 @@
+<div class="complaint-page">
+  <div class="page-header">
+    <div class="container">
+      <h1 class="page-title">Submit a Complaint</h1>
+      <p class="page-subtitle">We're sorry something went wrong. Let's fix it.</p>
+    </div>
+  </div>
+
+  <div class="container section">
+    <div class="container-narrow">
+      <div *ngIf="successMessage" class="alert alert-success">
+        {{ successMessage }}
+      </div>
+      <div *ngIf="errorMessage" class="alert alert-error">
+        {{ errorMessage }}
+      </div>
+
+      <div class="form-card">
+        <form [formGroup]="complaintForm" (ngSubmit)="onSubmit()">
+          <div class="form-group">
+            <label class="form-label">Order ID / Reference</label>
+            <input
+              type="text"
+              formControlName="orderId"
+              class="form-control"
+              [class.is-invalid]="submitted && f['orderId'].errors"
+              placeholder="e.g. 64b2f..."
+              [readOnly]="!!orderId"
+            >
+            <div *ngIf="submitted && f['orderId'].errors" class="error-feedback">
+              <small *ngIf="f['orderId'].errors['required']">Order ID is required</small>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Complaint Category</label>
+            <select formControlName="category" class="form-control" [class.is-invalid]="submitted && f['category'].errors">
+              <option value="product_quality">Product Quality</option>
+              <option value="delivery">Delivery Issues</option>
+              <option value="wrong_item">Wrong Item Received</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea
+              formControlName="description"
+              class="form-control"
+              [class.is-invalid]="submitted && f['description'].errors"
+              rows="8"
+              placeholder="Please provide as much detail as possible..."
+            ></textarea>
+            <div *ngIf="submitted && f['description'].errors" class="error-feedback">
+              <small *ngIf="f['description'].errors['required']">Description is required</small>
+              <small *ngIf="f['description'].errors['minlength']">Please provide at least 20 characters</small>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" [disabled]="loading">
+               <span *ngIf="loading" class="spinner"></span>
+               {{ loading ? 'Submitting...' : 'Submit Complaint' }}
+            </button>
+            <a routerLink="/user/orders" class="btn btn-outline">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

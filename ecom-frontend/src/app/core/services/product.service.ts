@@ -9,9 +9,11 @@ import { Product } from '../models/models';
 export class ProductService {
   constructor(private apiService: ApiService) {}
 
-  getProducts(filters: any = {}): Observable<{ success: boolean, data: Product[] }> {
-    return this.apiService.get<{ success: boolean, data: Product[] }>('/products', filters);
+  getProducts(filters: any = {}): Observable<{ success: boolean, data: Product[], pagination: any }> {
+    return this.apiService.get<{ success: boolean, data: Product[], pagination: any }>('/products', filters);
   }
+  
+
 
   getProductById(id: string): Observable<{ success: boolean, data: Product }> {
     return this.apiService.get<{ success: boolean, data: Product }>(`/products/${id}`);

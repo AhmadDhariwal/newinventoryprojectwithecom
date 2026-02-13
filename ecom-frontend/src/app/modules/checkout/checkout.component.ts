@@ -5,6 +5,9 @@ import { Router, RouterModule } from '@angular/router';
 import { CartService } from '../../core/services/cart.service';
 import { OrderService } from '../../core/services/order.service';
 import { AuthService } from '../../core/services/auth.service';
+import { environment } from '../../../environments/environment';
+
+
 
 @Component({
   selector: 'app-checkout',
@@ -20,8 +23,18 @@ export class CheckoutComponent implements OnInit {
   submitting = false;
   orderSuccess = false;
   lastOrderId = '';
-  error = '';
   organizationId = '';
+  isGuest = false;
+  error = '';
+  
+  // Coupon local state
+
+
+  couponCode = '';
+  appliedCoupon: any = null;
+  couponError = '';
+  couponLoading = false;
+  discountAmount = 0;
 
   constructor(
     private fb: FormBuilder,
@@ -36,9 +49,50 @@ export class CheckoutComponent implements OnInit {
       state: ['', Validators.required],
       zipCode: ['', Validators.required],
       country: ['', Validators.required],
-      paymentMethod: ['cash_on_delivery', Validators.required]
+      paymentMethod: ['cash_on_delivery', Validators.required],
+      
+      // Guest fields
+      guestName: [''],
+      guestEmail: [''],
+      guestPhone: ['']
     });
   }
+
+
+  applyCoupon() {
+    if (!this.couponCode) return;
+    this.couponLoading = true;
+    this.couponError = '';
+    
+    this.orderService.validateCoupon(this.couponCode, this.organizationId).subscribe({
+      next: (res) => {
+        this.appliedCoupon = res.data;
+        this.calculateDiscount();
+        this.couponLoading = false;
+      },
+      error: (err) => {
+        this.couponError = err.error?.message || 'Invalid coupon code';
+        this.appliedCoupon = null;
+        this.discountAmount = 0;
+        this.couponLoading = false;
+      }
+    });
+  }
+
+  private calculateDiscount() {
+    if (!this.appliedCoupon) return;
+    const total = this.cartService.getTotalAmount();
+    if (this.appliedCoupon.discountType === 'percentage') {
+      this.discountAmount = (total * this.appliedCoupon.discountValue) / 100;
+    } else {
+      this.discountAmount = this.appliedCoupon.discountValue;
+    }
+  }
+
+  getFinalTotal() {
+    return Math.max(0, this.cartService.getTotalAmount() - this.discountAmount);
+  }
+
 
   ngOnInit() {
     this.cartService.cartItems$.subscribe(items => {
@@ -60,14 +114,31 @@ export class CheckoutComponent implements OnInit {
          zipCode: (user as any).shippingAddress?.zipCode || '',
          country: (user as any).shippingAddress?.country || ''
       });
+    } else {
+      this.isGuest = true;
+      this.organizationId = environment.organizationId;
+      
+      // Add validators for guest fields
+      this.f['guestName'].setValidators([Validators.required]);
+      this.f['guestEmail'].setValidators([Validators.required, Validators.email]);
+      this.f['guestPhone'].setValidators([Validators.required]);
+      this.checkoutForm.updateValueAndValidity();
     }
   }
+
 
   get f() { return this.checkoutForm.controls; }
 
   isStep1Invalid() {
-    return this.f['street'].invalid || this.f['city'].invalid || this.f['state'].invalid || this.f['zipCode'].invalid || this.f['country'].invalid;
+    const basicInvalid = this.f['street'].invalid || this.f['city'].invalid || this.f['state'].invalid || this.f['zipCode'].invalid || this.f['country'].invalid;
+    
+    if (this.isGuest) {
+       const guestInvalid = !this.f['guestName'].value || !this.f['guestEmail'].value || this.f['guestEmail'].invalid;
+       return basicInvalid || guestInvalid;
+    }
+    return basicInvalid;
   }
+
 
   nextStep() { this.step++; }
   prevStep() { this.step--; }
@@ -76,6 +147,7 @@ export class CheckoutComponent implements OnInit {
     if (this.checkoutForm.invalid) return;
 
     this.submitting = true;
+    this.couponError = '';
     this.error = '';
 
     const orderData = {
@@ -98,8 +170,20 @@ export class CheckoutComponent implements OnInit {
         zipCode: this.f['zipCode'].value,
         country: this.f['country'].value
       },
-      paymentMethod: this.f['paymentMethod'].value
+      paymentMethod: this.f['paymentMethod'].value,
+      couponCode: this.appliedCoupon ? this.appliedCoupon.code : null,
+
+      
+      // Include guest details if guest
+      guestDetails: this.isGuest ? {
+        name: this.f['guestName'].value,
+        email: this.f['guestEmail'].value,
+        phone: this.f['guestPhone'].value
+      } : null,
+      organizationId: this.organizationId
     };
+
+
 
     this.orderService.createOrder(orderData).subscribe({
       next: (res) => {
@@ -109,9 +193,10 @@ export class CheckoutComponent implements OnInit {
         this.submitting = false;
       },
       error: (err) => {
-        this.error = err.message;
+        this.error = err.message || 'An error occurred while placing the order.';
         this.submitting = false;
       }
     });
   }
 }
+

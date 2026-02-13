@@ -17,7 +17,7 @@ export const routes: Routes = [
   {
     path: 'checkout',
     loadChildren: () => import('./modules/checkout/checkout.module').then(m => m.CheckoutModule),
-    canActivate: [authGuard]
+  //  canActivate: [authGuard]
   },
   {
     path: 'auth',
@@ -57,7 +57,13 @@ export const routes: Routes = [
     pathMatch: 'full'
   },
   {
+    path: 'complaint',
+    loadComponent: () => import('./modules/complaint/complaint.component').then(m => m.ComplaintComponent),
+    //canActivate: [authGuard]
+  },
+  {
     path: '**',
     redirectTo: ''
   }
 ];
+

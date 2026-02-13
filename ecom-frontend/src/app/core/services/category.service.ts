@@ -6,7 +6,10 @@ export interface Category {
   _id: string;
   name: string;
   description?: string;
+  parentId?: string;
+  children?: Category[];
 }
+
 
 @Injectable({
   providedIn: 'root'

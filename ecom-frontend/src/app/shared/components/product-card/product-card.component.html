@@ -2,7 +2,7 @@
   <div class="product-image-wrapper" [routerLink]="['/products', product._id]">
     <img 
       class="product-image" 
-      src="https://via.placeholder.com/400x500?text={{ product.name }}" 
+      [src]="getProductImage()" 
       [alt]="product.name"
     >
     <div class="product-overlay" *ngIf="product.inStock">
@@ -15,10 +15,23 @@
       </button>
     </div>
     <div class="product-badge" *ngIf="!product.inStock">Sold Out</div>
+    <div class="product-badge sale-badge" *ngIf="product.inStock && product.discountPercentage">
+      -{{ product.discountPercentage }}%
+    </div>
   </div>
   <div class="product-info">
-    <span class="product-category">{{ product.category.name }}</span>
+    <div class="product-meta">
+      <span class="product-category">{{ product.category.name }}</span>
+    </div>
     <h3 class="product-name" [routerLink]="['/products', product._id]">{{ product.name }}</h3>
-    <div class="product-price">{{ product.price | currency }}</div>
+    <div class="product-price-wrapper">
+      <span class="product-price" [class.discounted]="product.discountPrice">
+        {{ (product.discountPrice || product.price) | currency }}
+      </span>
+      <span class="product-old-price" *ngIf="product.discountPrice">
+        {{ product.price | currency }}
+      </span>
+    </div>
   </div>
+
 </div>

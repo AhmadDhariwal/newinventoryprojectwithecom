@@ -2,12 +2,13 @@
   <!-- Hero Section -->
   <section class="hero">
     <div class="container">
-      <div class="hero-content">
-        <p class="hero-subtitle">Timeless Elegance</p>
-        <h1 class="hero-title">Discover Your Style</h1>
-        <p class="hero-description">Curated collections of premium products for the discerning customer</p>
+      <div class="hero-content" data-aos="fade-up">
+        <p class="hero-subtitle">Premium Collections</p>
+        <h1 class="hero-title">Experience <br>Refined Elegance</h1>
+        <p class="hero-description">Discover curated essentials for a modern lifestyle. Quality craftsmanship meets contemporary design.</p>
         <div class="hero-actions">
-          <a routerLink="/products" class="btn btn-primary">Explore Collection</a>
+          <a routerLink="/products" class="btn btn-primary">Shop Collection</a>
+          <a routerLink="/contact" class="btn btn-outline-white">Get In Touch</a>
         </div>
       </div>
     </div>
@@ -18,8 +19,8 @@
     <div class="container">
       <div class="section-header">
         <div class="section-title-wrapper">
-          <span class="section-subtitle">Handpicked Selection</span>
-          <h2 class="section-title">Featured Products</h2>
+          <span class="section-subtitle">Our Favorites</span>
+          <h2 class="section-title">Featured Selection</h2>
         </div>
         <a routerLink="/products" class="link-underline">View All</a>
       </div>
@@ -36,9 +37,25 @@
           <div *ngFor="let i of [1,2,3,4]" class="skeleton product-skeleton"></div>
         </div>
       </ng-template>
+    </div>
+  </section>
 
-      <div class="empty-state" *ngIf="!loading && featuredProducts.length === 0">
-        <p>No products available at the moment.</p>
+  <!-- New Arrivals -->
+  <section class="section arrivals-section bg-secondary">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-title-wrapper">
+          <span class="section-subtitle">Just In</span>
+          <h2 class="section-title">New Arrivals</h2>
+        </div>
+        <a routerLink="/products" [queryParams]="{sort: 'newest'}" class="link-underline">Explore</a>
+      </div>
+
+      <div class="products-grid" *ngIf="!loading; else skeletonGrid">
+        <app-product-card
+          *ngFor="let product of newArrivals"
+          [product]="product"
+        ></app-product-card>
       </div>
     </div>
   </section>
@@ -47,65 +64,113 @@
   <section class="section categories-section">
     <div class="container">
       <div class="section-header text-center">
-        <span class="section-subtitle">Browse By</span>
-        <h2 class="section-title">Categories</h2>
+        <span class="section-subtitle">Discover Your Style</span>
+        <h2 class="section-title">Shop by Category</h2>
       </div>
       <div class="categories-grid">
         <div class="category-card" *ngFor="let cat of categories">
           <div class="category-image">
-            <img title="Homepage picture" src="https://via.placeholder.com/400x500?text={{cat.name}}" [alt]="cat.name + ' category'" [title]="cat.name">
+            <img title="Image" [src]="'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=500&q=80'" [alt]="cat.name" [title]="cat.name">
+            <div class="category-overlay">
+               <h3 class="category-name">{{ cat.name }}</h3>
+               <a [routerLink]="['/products']" [queryParams]="{category: cat._id}" class="btn btn-white btn-sm">Browse</a>
+            </div>
           </div>
-          <h3 class="category-name">{{ cat.name }}</h3>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Features Section -->
-  <section class="section features-section">
+  <!-- Exclusive Offers (Sale) -->
+  <section class="section sale-section bg-dark text-white" *ngIf="saleProducts.length > 0">
     <div class="container">
-      <div class="features-grid">
-        <div class="feature-item">
-          <div class="feature-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-              <circle cx="12" cy="10" r="3"/>
-            </svg>
-          </div>
-          <h3>Free Shipping</h3>
-          <p>On orders over $100</p>
+      <div class="section-header">
+        <div class="section-title-wrapper">
+          <span class="section-subtitle text-secondary">Limited Time</span>
+          <h2 class="section-title text-white">Exclusive Offers</h2>
         </div>
-        <div class="feature-item">
-          <div class="feature-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <circle cx="12" cy="12" r="10"/>
-              <polyline points="12 6 12 12 16 14"/>
-            </svg>
+        <a routerLink="/products" [queryParams]="{onlySale: true}" class="link-underline text-white">Shop Sale</a>
+      </div>
+
+      <div class="products-grid">
+        <app-product-card
+          *ngFor="let product of saleProducts"
+          [product]="product"
+        ></app-product-card>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Why Choose Us -->
+  <section class="section info-section">
+    <div class="container">
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-icon">
+             <i class="bi bi-truck"></i>
           </div>
-          <h3>24/7 Support</h3>
-          <p>Dedicated customer service</p>
+          <h3>Global Delivery</h3>
+          <p>Carefully packaged and delivered to your doorstep, wherever you are.</p>
         </div>
-        <div class="feature-item">
-          <div class="feature-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-              <polyline points="9 22 9 12 15 12 15 22"/>
-            </svg>
+        <div class="info-item">
+          <div class="info-icon">
+             <i class="bi bi-shield-check"></i>
           </div>
-          <h3>Secure Payment</h3>
-          <p>100% secure transactions</p>
+          <h3>Secure Payments</h3>
+          <p>Your security is our priority. Encrypted transactions for peace of mind.</p>
         </div>
-        <div class="feature-item">
-          <div class="feature-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <polyline points="23 4 23 10 17 10"/>
-              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
-            </svg>
+        <div class="info-item">
+          <div class="info-icon">
+             <i class="bi bi-arrow-repeat"></i>
           </div>
           <h3>Easy Returns</h3>
-          <p>30-day return policy</p>
+          <p>Not satisfied? Enjoy a hassle-free 30-day return policy.</p>
         </div>
       </div>
     </div>
   </section>
+
+  <!-- Testimonials -->
+  <section class="section testimonials-section">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="section-subtitle">Customer Voices</span>
+        <h2 class="section-title">What They Say</h2>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <div class="quote-icon">"</div>
+          <p class="testimonial-text">"The quality of the products is unmatched. Every piece I've bought feels premium and durable."</p>
+          <div class="testimonial-author">
+             <strong>Sarah Jenkins</strong>
+             <span>Verified Customer</span>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="quote-icon">"</div>
+          <p class="testimonial-text">"Outstanding customer service. They helped me with my exchange and made it so easy."</p>
+          <div class="testimonial-author">
+             <strong>Michael Chen</strong>
+             <span>Style Enthusiast</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter Section -->
+  <section class="newsletter-section">
+    <div class="container">
+      <div class="newsletter-content">
+        <h2 class="newsletter-title">Join the Inner Circle</h2>
+        <p class="newsletter-description">Subscribe to receive updates, access to exclusive deals, and more.</p>
+        <form class="newsletter-form">
+          <input type="email" placeholder="Enter your email address" required>
+          <button type="submit" class="btn btn-primary">Subscribe</button>
+        </form>
+      </div>
+    </div>
+  </section>
 </div>
+

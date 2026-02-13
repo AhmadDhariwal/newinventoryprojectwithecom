@@ -1,0 +1,75 @@
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h3>E-commerce Orders</h3>
+    <div class="d-flex gap-2">
+      <input type="text" class="form-control" placeholder="Search Order ID..." [(ngModel)]="searchQuery" (input)="onFilterChange()">
+      <select class="form-select" [(ngModel)]="statusFilter" (change)="onFilterChange()">
+        <option value="">All Statuses</option>
+        <option value="pending">Pending</option>
+        <option value="processing">Processing</option>
+        <option value="shipped">Shipped</option>
+        <option value="delivered">Delivered</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Date</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Payment</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let order of orders">
+            <td>{{ order._id | slice:0:8 }}...</td>
+            <td>
+              <span *ngIf="order.customerId?.name">{{ order.customerId.name }}</span>
+              <span *ngIf="!order.customerId?.name" class="text-muted">Guest</span>
+            </td>
+            <td>{{ order.createdAt | date:'short' }}</td>
+            <td>{{ order.totalAmount | currency }}</td>
+            <td>
+              <span class="badge" [ngClass]="{
+                'bg-warning': order.status === 'pending',
+                'bg-info': order.status === 'processing',
+                'bg-primary': order.status === 'shipped',
+                'bg-success': order.status === 'delivered',
+                'bg-danger': order.status === 'cancelled'
+              }">{{ order.status | titlecase }}</span>
+            </td>
+            <td>
+              <span class="badge" [ngClass]="{
+                'bg-success': order.paymentStatus === 'completed',
+                'bg-warning': order.paymentStatus === 'pending',
+                'bg-danger': order.paymentStatus === 'failed'
+              }">{{ order.paymentStatus | titlecase }}</span>
+            </td>
+            <td>
+              <a [routerLink]="['/orders', order._id]" class="btn btn-sm btn-outline-primary">View</a>
+            </td>
+          </tr>
+          <tr *ngIf="orders.length === 0 && !loading">
+            <td colspan="7" class="text-center py-4">No orders found</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Simple Pagination (Add better component if available) -->
+    <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="total > limit">
+      <div>Showing {{ (page - 1) * limit + 1 }} to {{ page * limit > total ? total : page * limit }} of {{ total }}</div>
+      <div>
+        <button class="btn btn-sm btn-secondary me-2" [disabled]="page === 1" (click)="onPageChange(page - 1)">Prev</button>
+        <button class="btn btn-sm btn-secondary" [disabled]="page * limit >= total" (click)="onPageChange(page + 1)">Next</button>
+      </div>
+    </div>
+  </div>
+</div>

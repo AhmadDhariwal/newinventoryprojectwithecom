@@ -1,0 +1,22 @@
+<div class="promo-overlay" *ngIf="isVisible" (click)="close()">
+  <div class="promo-content" [@fadeSlideIn] (click)="$event.stopPropagation()">
+    <button class="close-btn" (click)="close()">&times;</button>
+    
+    <div class="promo-image">
+      <img src="https://images.unsplash.com/photo-1549041004-7a32d1845620?w=600&q=80" alt="Special Offer">
+      <div class="promo-badge">Limited Time</div>
+    </div>
+
+    <div class="promo-text">
+      <h2>Join the Elegance Club</h2>
+      <p>Sign up today and get an exclusive <strong>15% OFF</strong> on your first order. Use code: <span class="promo-code">WELCOME15</span></p>
+      
+      <div class="promo-actions">
+        <button class="btn-primary" (click)="goToSignup()">Sign Up & Save</button>
+        <button class="btn-link" (click)="close()">Maybe Later</button>
+      </div>
+      
+      <p class="promo-note">* One-time use per customer. Valid for all categories.</p>
+    </div>
+  </div>
+</div>

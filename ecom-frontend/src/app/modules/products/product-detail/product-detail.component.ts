@@ -15,6 +15,7 @@ import { Product } from '../../../core/models/models';
 export class ProductDetailComponent implements OnInit {
   product?: Product;
   quantity = 1;
+  selectedImageIndex = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -29,6 +30,13 @@ export class ProductDetailComponent implements OnInit {
         this.product = res.data;
       });
     }
+  }
+
+  getMainImage(): string {
+    if (this.product?.images && this.product.images.length > 0) {
+      return `http://localhost:3000${this.product.images[this.selectedImageIndex]}`;
+    }
+    return `https://via.placeholder.com/700x875?text=${encodeURIComponent(this.product?.name || 'Product')}`;
   }
 
   changeQty(amount: number) {

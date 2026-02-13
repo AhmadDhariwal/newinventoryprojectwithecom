@@ -28,6 +28,19 @@ const productschema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  discountPrice: {
+    type: Number,
+    default: null
+  },
+  discountPercentage: {
+    type: Number,
+    default: null
+  },
+
+  images: {
+    type: [String],
+    default: []
+  },
   status: {
     type: String,
     enum: ["active", "inactive"],

@@ -15,7 +15,7 @@
       </div>
 
       <div class="nav-actions">
-        <button class="icon-btn" title="Search">
+        <button class="icon-btn search-btn" (click)="toggleSearch()" title="Search">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="8"/>
             <path d="m21 21-4.35-4.35"/>
@@ -50,6 +50,19 @@
           </span>
         </a>
       </div>
+    </div>
+  </div>
+  
+  <div class="search-overlay" *ngIf="showSearch" (click)="toggleSearch()">
+    <div class="search-container" (click)="$event.stopPropagation()">
+      <input 
+        type="text" 
+        class="search-input"
+        [(ngModel)]="searchQuery"
+        (keyup.enter)="performSearch()"
+        placeholder="Search products..."
+        autofocus>
+      <button class="search-close" (click)="toggleSearch()">&times;</button>
     </div>
   </div>
 </nav>

@@ -124,9 +124,42 @@ async function verifyCustomerToken(req, res, next) {
   }
 }
 
+
+// Optional customer token for E-Commerce (allows guests)
+async function optionalCustomerAuth(req, res, next) {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return next();
+  }
+
+  const token = authHeader.split(" ")[1];
+  if (!token) {
+    return next();
+  }
+
+  try {
+    const decoded = jwt.verify(token, "Hello");
+    if (decoded.role === 'customer') {
+      req.customer = {
+        customerId: decoded.customerId,
+        email: decoded.email,
+        organizationId: decoded.organizationId,
+        role: decoded.role
+      };
+    }
+    next();
+  } catch (err) {
+    // If token is invalid, just proceed as guest
+    next();
+  }
+}
+
 module.exports = {
+
   verifytoken,
   restrictto,
   user,
   verifyCustomerToken,
+  optionalCustomerAuth,
 }

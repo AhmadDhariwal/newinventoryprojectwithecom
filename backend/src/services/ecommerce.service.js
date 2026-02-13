@@ -6,6 +6,12 @@ const Product = require('../models/product');
 const StockMovement = require('../models/stockmovement');
 const StockLevel = require('../models/stocklevel');
 const Warehouse = require('../models/warehouse');
+const Contact = require('../models/contact');
+const Complaint = require('../models/complaint');
+const Notification = require('../models/notification');
+const Coupon = require('../models/coupon');
+const notificationService = require('./notification.service');
+
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -83,17 +89,24 @@ const loginCustomer = async (email, password, organizationId) => {
 };
 
 // Get Public Products (for browsing without authentication)
-const getPublicProducts = async (organizationId, filters = {}) => {
-    if (!organizationId) throw new Error('Organization ID is required');
-
+const getPublicProducts = async (filters = {}) => {
     const query = {
-        organizationId,
-        status: 'active' // Only show active products
+        status: 'active'
     };
 
-    // Apply filters
     if (filters.category) {
-        query.category = filters.category;
+        const Category = require('../models/category');
+        const getSubcategoryIds = async (parentId) => {
+            const subs = await Category.find({ parentId, status: 'active' }).select('_id');
+            let ids = subs.map(s => s._id);
+            for (const sub of subs) {
+                const nestedIds = await getSubcategoryIds(sub._id);
+                ids = ids.concat(nestedIds);
+            }
+            return ids;
+        };
+        const subIds = await getSubcategoryIds(filters.category);
+        query.category = { $in: [filters.category, ...subIds] };
     }
 
     if (filters.search) {
@@ -104,23 +117,26 @@ const getPublicProducts = async (organizationId, filters = {}) => {
         ];
     }
 
+    if (filters.onlySale === 'true' || filters.onlySale === true) {
+        query.discountPrice = { $ne: null };
+    }
+
     if (filters.minPrice || filters.maxPrice) {
         query.price = {};
         if (filters.minPrice) query.price.$gte = parseFloat(filters.minPrice);
         if (filters.maxPrice) query.price.$lte = parseFloat(filters.maxPrice);
     }
 
+
     const products = await Product.find(query)
         .populate('category', 'name')
-        .select('name sku description price category status')
+        .select('name sku description price discountPrice discountPercentage category status images')
         .sort({ createdAt: -1 })
         .lean();
 
-    // Get stock levels for each product
     const productsWithStock = await Promise.all(products.map(async (product) => {
         const stockLevels = await StockLevel.find({
-            product: product._id,
-            organizationId
+            product: product._id
         }).lean();
 
         const totalStock = stockLevels.reduce((sum, level) => sum + (level.quantity || 0), 0);
@@ -136,26 +152,21 @@ const getPublicProducts = async (organizationId, filters = {}) => {
 };
 
 // Get Single Product Details
-const getProductDetails = async (productId, organizationId) => {
-    if (!organizationId) throw new Error('Organization ID is required');
-
+const getProductDetails = async (productId) => {
     const product = await Product.findOne({
         _id: productId,
-        organizationId,
         status: 'active'
     })
         .populate('category', 'name')
-        .select('name sku description price category status')
+        .select('name sku description price discountPrice discountPercentage category status images')
         .lean();
 
     if (!product) {
         throw new Error('Product not found');
     }
 
-    // Get stock levels
     const stockLevels = await StockLevel.find({
-        product: productId,
-        organizationId
+        product: productId
     })
         .populate('warehouse', 'name')
         .lean();
@@ -173,24 +184,83 @@ const getProductDetails = async (productId, organizationId) => {
     };
 };
 
+// Validate Coupon
+const validateCoupon = async (code, customerId, organizationId) => {
+    if (!code) throw new Error('Coupon code is required');
+    if (!organizationId) throw new Error('Organization ID is required');
+
+    const coupon = await Coupon.findOne({
+        code: code.toUpperCase(),
+        organizationId,
+        isActive: true
+    });
+
+    if (!coupon) {
+        throw new Error('Invalid or expired coupon code');
+    }
+
+    if (!coupon.isValid(customerId)) {
+        throw new Error('This coupon is no longer valid for you');
+    }
+
+    return coupon;
+};
+
 // Create Order (Transaction Safe)
+
 const createOrder = async (customerId, orderData, organizationId) => {
-    const session = await mongoose.startSession();
-    session.startTransaction();
+    // Transaction removed for standalone MongoDB support
+    // const session = await mongoose.startSession();
+    // session.startTransaction();
 
     try {
-        const { items, shippingAddress, billingAddress, paymentMethod } = orderData;
+        const { items, shippingAddress, billingAddress, paymentMethod, couponCode, guestDetails } = orderData;
+
+        // Handle Guest Checkout
+        if (!customerId) {
+            if (!guestDetails || !guestDetails.email || !guestDetails.name) {
+                throw new Error('Customer details are required for guest checkout');
+            }
+
+            // Check if customer exists by email
+            let guestCustomer = await Customer.findOne({
+                email: guestDetails.email.toLowerCase(),
+                organizationId
+            });
+
+            if (!guestCustomer) {
+                // Create new guest customer
+                guestCustomer = await Customer.create({
+                    name: guestDetails.name,
+                    email: guestDetails.email,
+                    phone: guestDetails.phone || '',
+                    organizationId,
+                    isGuest: true,
+                    password: undefined // Explicitly undefined to ensure it's not set
+                });
+                // guestCustomer = guestCustomer[0]; // Not an array when not using session
+            }
+            customerId = guestCustomer._id;
+        }
 
         if (!customerId) throw new Error('Customer ID is required');
         if (!organizationId) throw new Error('Organization ID is required');
         if (!items || items.length === 0) throw new Error('Order must contain at least one item');
 
+
         let totalAmount = 0;
 
         // Get default warehouse for the organization
-        const defaultWarehouse = await Warehouse.findOne({ organizationId }).session(session).sort({ createdAt: 1 });
+        let defaultWarehouse = await Warehouse.findOne({ organizationId, isActive: true }).sort({ createdAt: 1 });
         if (!defaultWarehouse) {
-            throw new Error('No warehouse found for this organization');
+            // Auto-create a default warehouse if none exists
+            defaultWarehouse = await Warehouse.create({
+                name: 'Default Warehouse',
+                address: 'Auto-generated default warehouse',
+                organizationId,
+                createdBy: customerId,
+                isActive: true
+            });
         }
 
         // Validate items and check stock
@@ -198,25 +268,39 @@ const createOrder = async (customerId, orderData, organizationId) => {
         for (let item of items) {
             const product = await Product.findOne({
                 _id: item.product,
-                organizationId,
                 status: 'active'
-            }).session(session);
+            });
 
             if (!product) {
                 throw new Error(`Product not found: ${item.product}`);
+            }
+
+            // Verify product belongs to the organization
+            if (product.organizationId.toString() !== organizationId.toString()) {
+                throw new Error(`Product ${item.product} does not belong to this organization`);
             }
 
             // Use warehouse from item or default warehouse
             const warehouseId = item.warehouse || defaultWarehouse._id;
 
             // Check stock availability
-            const stockLevel = await StockLevel.findOne({
+            let stockLevel = await StockLevel.findOne({
                 product: item.product,
-                warehouse: warehouseId,
-                organizationId
-            }).session(session);
+                warehouse: warehouseId
+            });
 
-            const availableStock = stockLevel ? stockLevel.quantity : 0;
+            // If no stock level exists, create one with 0 quantity
+            if (!stockLevel) {
+                stockLevel = await StockLevel.create({
+                    product: item.product,
+                    warehouse: warehouseId,
+                    organizationId,
+                    quantity: 0,
+                    minStock: 5
+                });
+            }
+
+            const availableStock = stockLevel.quantity || 0;
 
             if (availableStock < item.quantity) {
                 throw new Error(`Insufficient stock for ${product.name}. Available: ${availableStock}, Required: ${item.quantity}`);
@@ -235,11 +319,13 @@ const createOrder = async (customerId, orderData, organizationId) => {
             });
 
             // Deduct stock
-            stockLevel.quantity -= item.quantity;
-            await stockLevel.save({ session });
+            if (stockLevel) {
+                stockLevel.quantity -= item.quantity;
+                await stockLevel.save();
+            }
 
             // Create outbound stock movement
-            await StockMovement.create([{
+            await StockMovement.create({
                 product: item.product,
                 warehouse: warehouseId,
                 type: 'OUT',
@@ -247,37 +333,106 @@ const createOrder = async (customerId, orderData, organizationId) => {
                 reason: 'E-COMMERCE_ORDER',
                 user: customerId, // Using customerId as user reference
                 organizationId
-            }], { session });
+            });
         }
 
         // Create order
-        const orderArr = await Order.create([{
+        let discountAmount = 0;
+        let originalAmount = totalAmount;
+
+        if (couponCode) {
+            const coupon = await Coupon.findOne({
+                code: couponCode.toUpperCase(),
+                organizationId,
+                isActive: true
+            });
+
+            if (coupon && coupon.isValid(customerId)) {
+                if (coupon.discountType === 'percentage') {
+                    discountAmount = (totalAmount * coupon.discountValue) / 100;
+                } else {
+                    discountAmount = coupon.discountValue;
+                }
+                totalAmount = Math.max(0, totalAmount - discountAmount);
+
+                // Update coupon usage
+                coupon.usedCount += 1;
+                coupon.usedBy.push(customerId);
+                await coupon.save();
+            }
+        }
+
+        const order = await Order.create({
             customerId,
             items: validatedItems,
             totalAmount,
+            discountAmount,
+            originalAmount,
+            couponCode: couponCode ? couponCode.toUpperCase() : null,
             shippingAddress,
             billingAddress,
+
             paymentMethod: paymentMethod || 'cash_on_delivery',
             status: 'pending',
             paymentStatus: 'pending',
             organizationId
-        }], { session });
+        });
 
-        const order = orderArr[0];
+        // Loop populate separately if needed or just return ID and frontend fetches details
+        // await order.populate('customerId', 'name email');
+        // await order.populate('items.product', 'name sku price');
 
-        await session.commitTransaction();
-        session.endSession();
+        // Send notifications to Admin and Manager
+        try {
+            const customer = await Customer.findById(customerId);
+            await notificationService.notifyOrganizationRole(
+                organizationId,
+                'admin',
+                'ORDER_STATUS',
+                'New E-commerce Order',
+                `A new order (#${order._id}) has been placed by ${customer.name}.`,
+                { orderId: order._id }
+            );
+            await notificationService.notifyOrganizationRole(
+                organizationId,
+                'manager',
+                'ORDER_STATUS',
+                'New E-commerce Order',
+                `A new order (#${order._id}) has been placed by ${customer.name}.`,
+                { orderId: order._id }
+            );
 
-        await order.populate('customerId', 'name email');
-        await order.populate('items.product', 'name sku price');
+            // Check for low stock on affected products
+            for (let item of validatedItems) {
+                const stockLevel = await StockLevel.findOne({
+                    product: item.product,
+                    warehouse: item.warehouse,
+                    organizationId
+                });
+                if (stockLevel && stockLevel.quantity <= (stockLevel.minStock || 5)) {
+                    await notificationService.notifyOrganizationRole(
+                        organizationId,
+                        'admin',
+                        'LOW_STOCK',
+                        'Low Stock Alert',
+                        `Product ${item.product} is low on stock in warehouse ${item.warehouse}. Current quantity: ${stockLevel.quantity}`,
+                        { productId: item.product, warehouseId: item.warehouse }
+                    );
+                }
+            }
+        } catch (notifError) {
+            console.error('Failed to send order notifications:', notifError);
+            // Don't fail the order if notification fails
+        }
 
         return order;
     } catch (error) {
-        await session.abortTransaction();
-        session.endSession();
+        // await session.abortTransaction();
+        // session.endSession();
         throw error;
     }
 };
+
 
 // Get Customer Orders
 const getCustomerOrders = async (customerId, organizationId) => {
@@ -320,8 +475,9 @@ const getOrderDetails = async (orderId, customerId, organizationId) => {
 
 // Process Refund (Transaction Safe)
 const processRefund = async (customerId, refundData, organizationId) => {
-    const session = await mongoose.startSession();
-    session.startTransaction();
+    // Transaction removed for standalone MongoDB support
+    // const session = await mongoose.startSession();
+    // session.startTransaction();
 
     try {
         const { orderId, items, reason } = refundData;
@@ -335,7 +491,7 @@ const processRefund = async (customerId, refundData, organizationId) => {
             _id: orderId,
             customerId,
             organizationId
-        }).session(session);
+        });
 
         if (!order) {
             throw new Error('Order not found');
@@ -377,15 +533,15 @@ const processRefund = async (customerId, refundData, organizationId) => {
                 product: refundItem.product,
                 warehouse: orderItem.warehouse,
                 organizationId
-            }).session(session);
+            });
 
             if (stockLevel) {
                 stockLevel.quantity += refundItem.quantity;
-                await stockLevel.save({ session });
+                await stockLevel.save();
             }
 
             // Create inbound stock movement
-            await StockMovement.create([{
+            await StockMovement.create({
                 product: refundItem.product,
                 warehouse: orderItem.warehouse,
                 type: 'IN',
@@ -394,11 +550,11 @@ const processRefund = async (customerId, refundData, organizationId) => {
                 user: customerId,
                 referenceId: orderId,
                 organizationId
-            }], { session });
+            });
         }
 
         // Create refund record
-        const refundArr = await Refund.create([{
+        const refund = await Refund.create({
             orderId,
             customerId,
             items: refundItems,
@@ -406,30 +562,29 @@ const processRefund = async (customerId, refundData, organizationId) => {
             reason,
             status: 'pending',
             organizationId
-        }], { session });
-
-        const refund = refundArr[0];
+        });
 
         // Update order payment status if full refund
         if (totalRefundAmount >= order.totalAmount) {
             order.paymentStatus = 'refunded';
-            await order.save({ session });
+            await order.save();
         }
 
-        await session.commitTransaction();
-        session.endSession();
+        // await session.commitTransaction();
+        // session.endSession();
 
-        await refund.populate('orderId');
-        await refund.populate('customerId', 'name email');
-        await refund.populate('items.product', 'name sku');
+        // await refund.populate('orderId');
+        // await refund.populate('customerId', 'name email');
+        // await refund.populate('items.product', 'name sku');
 
         return refund;
     } catch (error) {
-        await session.abortTransaction();
-        session.endSession();
+        // await session.abortTransaction();
+        // session.endSession();
         throw error;
     }
 };
+
 
 // Get Customer Profile
 const getCustomerProfile = async (customerId, organizationId) => {
@@ -472,26 +627,55 @@ const updateCustomerProfile = async (customerId, updateData, organizationId) => 
 };
 
 // Get Categories
-const getCategories = async (organizationId) => {
-    if (!organizationId) throw new Error('Organization ID is required');
-
+const getCategories = async () => {
     const Category = require('../models/category');
-    
+
     const categories = await Category.find({
-        organizationId,
         status: 'active'
     })
-        .select('name description')
+        .select('name description parentId')
         .sort({ name: 1 })
         .lean();
 
     return categories;
 };
 
+// Save Contact Message
+const saveContactMessage = async (data, organizationId) => {
+    if (!organizationId) throw new Error('Organization ID is required');
+
+    const contact = await Contact.create({
+        ...data,
+        organizationId
+    });
+
+    return contact;
+};
+
+// Submit Complaint
+const submitComplaint = async (customerId, data, organizationId) => {
+    if (!customerId) throw new Error('Customer ID is required');
+    if (!organizationId) throw new Error('Organization ID is required');
+
+    // Verify order exists
+    const order = await Order.findOne({ _id: data.orderId, customerId, organizationId });
+    if (!order) throw new Error('Order not found');
+
+    const complaint = await Complaint.create({
+        ...data,
+        customerId,
+        organizationId
+    });
+
+    return complaint;
+};
+
 module.exports = {
     registerCustomer,
     loginCustomer,
+    validateCoupon,
     getPublicProducts,
+
     getProductDetails,
     getCategories,
     createOrder,
@@ -499,5 +683,7 @@ module.exports = {
     getOrderDetails,
     processRefund,
     getCustomerProfile,
-    updateCustomerProfile
+    updateCustomerProfile,
+    saveContactMessage,
+    submitComplaint
 };

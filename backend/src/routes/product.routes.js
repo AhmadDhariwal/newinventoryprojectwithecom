@@ -4,6 +4,9 @@ const product = require("../models/product");
 const Category = require("../models/category");
 const User = require("../models/user");
 const { verifytoken, restrictto } = require("../middleware/auth.middleware");
+const upload = require("../middleware/upload.middleware");
+const path = require('path');
+const fs = require('fs');
 
 // GET all products - Role-based filtering
 router.get("/", verifytoken, async (req, res) => {
@@ -69,10 +72,13 @@ router.get("/:id", verifytoken, async (req, res) => {
 });
 
 // CREATE product - Allow admin, manager, and user
-router.post("/", verifytoken, restrictto(['admin', 'manager', 'user']), async (req, res) => {
+router.post("/", verifytoken, restrictto(['admin', 'manager', 'user']), upload.array('images', 5), async (req, res) => {
   try {
+    const images = req.files ? req.files.map(file => `/uploads/products/${file.filename}`) : [];
+    
     const productData = {
       ...req.body,
+      images,
       organizationId: req.organizationId,
       createdBy: req.userid
     };
@@ -93,11 +99,20 @@ router.post("/", verifytoken, restrictto(['admin', 'manager', 'user']), async (r
 });
 
 // UPDATE product - Allow admin, manager, and user
-router.put("/:id", verifytoken, restrictto(['admin', 'manager', 'user']), async (req, res) => {
+router.put("/:id", verifytoken, restrictto(['admin', 'manager', 'user']), upload.array('images', 5), async (req, res) => {
   try {
+    const updateData = { ...req.body };
+    
+    if (req.files && req.files.length > 0) {
+      const newImages = req.files.map(file => `/uploads/products/${file.filename}`);
+      updateData.images = req.body.existingImages ? 
+        [...JSON.parse(req.body.existingImages), ...newImages] : 
+        newImages;
+    }
+    
     const updatedProduct = await product.findOneAndUpdate(
       { _id: req.params.id, organizationId: req.organizationId },
-      req.body,
+      updateData,
       { new: true, runValidators: true }
     ).populate('category', 'name');
 

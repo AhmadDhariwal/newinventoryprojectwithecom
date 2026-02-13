@@ -13,10 +13,7 @@
         <p>Have a question or need assistance? Our team is here to help.</p>
 
         <div class="info-item">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-            <circle cx="12" cy="10" r="3"/>
-          </svg>
+          <i class="bi bi-geo-alt"></i>
           <div>
             <h4>Address</h4>
             <p>123 Elegance Street, Fashion District<br>New York, NY 10001</p>
@@ -24,9 +21,7 @@
         </div>
 
         <div class="info-item">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-          </svg>
+          <i class="bi bi-telephone"></i>
           <div>
             <h4>Phone</h4>
             <p>+1 (555) 123-4567</p>
@@ -34,10 +29,7 @@
         </div>
 
         <div class="info-item">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-            <polyline points="22,6 12,13 2,6"/>
-          </svg>
+          <i class="bi bi-envelope"></i>
           <div>
             <h4>Email</h4>
             <p>contact&#64;elegance.com</p>
@@ -45,57 +37,82 @@
         </div>
       </div>
 
-      <form class="contact-form" (ngSubmit)="onSubmit()">
-        <div class="form-group">
-          <label class="form-label">Name</label>
-          <input
-            type="text"
-            title="Form Data"
-            [(ngModel)]="formData.name"
-            name="name"
-            class="form-control"
-            required
-          >
+      <div class="form-container">
+        <div *ngIf="successMessage" class="alert alert-success mt-1">
+          {{ successMessage }}
+        </div>
+        <div *ngIf="errorMessage" class="alert alert-error mt-1">
+          {{ errorMessage }}
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Email</label>
-          <input
-          title="Form Data"
-            type="email"
-            [(ngModel)]="formData.email"
-            name="email"
-            class="form-control"
-            required
-          >
-        </div>
+        <form class="contact-form" [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+          <div class="form-group">
+            <label class="form-label">Name</label>
+            <input
+              type="text"
+              formControlName="name"
+              class="form-control"
+              [class.is-invalid]="submitted && f['name'].errors"
+              placeholder="Your full name"
+            >
+            <div *ngIf="submitted && f['name'].errors" class="error-feedback">
+              <small *ngIf="f['name'].errors['required']">Name is required</small>
+              <small *ngIf="f['name'].errors['minlength']">Name must be at least 2 characters</small>
+            </div>
+          </div>
 
-        <div class="form-group">
-          <label class="form-label">Subject</label>
-          <input
-            title="Form Data"
-            type="text"
-            [(ngModel)]="formData.subject"
-            name="subject"
-            class="form-control"
-            required
-          >
-        </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input
+              type="email"
+              formControlName="email"
+              class="form-control"
+              [class.is-invalid]="submitted && f['email'].errors"
+              placeholder="Your email address"
+            >
+            <div *ngIf="submitted && f['email'].errors" class="error-feedback">
+              <small *ngIf="f['email'].errors['required']">Email is required</small>
+              <small *ngIf="f['email'].errors['email']">Please enter a valid email</small>
+            </div>
+          </div>
 
-        <div class="form-group">
-          <label class="form-label">Message</label>
-          <textarea
-          title="Form Data"
-            [(ngModel)]="formData.message"
-            name="message"
-            class="form-control"
-            rows="6"
-            required
-          ></textarea>
-        </div>
+          <div class="form-group">
+            <label class="form-label">Subject</label>
+            <input
+              type="text"
+              formControlName="subject"
+              class="form-control"
+              [class.is-invalid]="submitted && f['subject'].errors"
+              placeholder="What is this regarding?"
+            >
+            <div *ngIf="submitted && f['subject'].errors" class="error-feedback">
+              <small *ngIf="f['subject'].errors['required']">Subject is required</small>
+              <small *ngIf="f['subject'].errors['minlength']">Subject must be at least 5 characters</small>
+            </div>
+          </div>
 
-        <button type="submit" class="btn btn-primary">Send Message</button>
-      </form>
+          <div class="form-group">
+            <label class="form-label">Message</label>
+            <textarea
+              formControlName="message"
+              class="form-control"
+              [class.is-invalid]="submitted && f['message'].errors"
+              rows="6"
+              placeholder="Write your message here..."
+            ></textarea>
+            <div *ngIf="submitted && f['message'].errors" class="error-feedback">
+              <small *ngIf="f['message'].errors['required']">Message is required</small>
+              <small *ngIf="f['message'].errors['minlength']">Message must be at least 10 characters</small>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" [disabled]="loading">
+             <span *ngIf="loading" class="spinner"></span>
+             {{ loading ? 'Sending...' : 'Send Message' }}
+          </button>
+        </form>
+      </div>
     </div>
   </div>
 </div>
+

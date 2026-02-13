@@ -21,8 +21,12 @@ export class ProductFormComponent implements OnInit {
   isEditMode = false;
   productId: string | null = null;
   originalFormValue: any = null;
+  selectedFiles: File[] = [];
+  imagePreviews: string[] = [];
+  existingImages: string[] = [];
+  private isSyncing = false;
 
-  // Modal state
+
   showUpdateModal = false;
   showNoChangesModal = false;
 
@@ -39,9 +43,13 @@ export class ProductFormComponent implements OnInit {
       category: ['', Validators.required],
       cost: [0, [Validators.required, Validators.min(0)]],
       price: [0, [Validators.required, Validators.min(0)]],
+      discountPrice: [null, [Validators.min(0)]],
+      discountPercentage: [null, [Validators.min(0), Validators.max(100)]],
       status: ['active', Validators.required]
     });
+    this.setupDiscountSync();
   }
+
 
   ngOnInit(): void {
     this.loadCategories();
@@ -69,8 +77,12 @@ export class ProductFormComponent implements OnInit {
           category: product.category?._id,
           cost: product.cost,
           price: product.price,
+          discountPrice: product.discountPrice,
+          discountPercentage: product.discountPercentage,
           status: product.status || 'active'
+
         });
+        this.existingImages = product.images || [];
         this.originalFormValue = this.productForm.value;
         this.isLoading = false;
       },
@@ -113,7 +125,19 @@ export class ProductFormComponent implements OnInit {
 
   saveProduct(): void {
     this.isSubmitting = true;
-    const formData = this.productForm.value;
+    const formData = new FormData();
+    
+    Object.keys(this.productForm.value).forEach(key => {
+      formData.append(key, this.productForm.value[key]);
+    });
+
+    this.selectedFiles.forEach(file => {
+      formData.append('images', file);
+    });
+
+    if (this.isEditMode && this.existingImages.length > 0) {
+      formData.append('existingImages', JSON.stringify(this.existingImages));
+    }
 
     const operation = this.isEditMode 
       ? this.productService.updateProduct(this.productId!, formData)
@@ -172,4 +196,54 @@ export class ProductFormComponent implements OnInit {
   trackByCategory(index: number, category: any): string {
     return category._id;
   }
+
+  onFileSelected(event: any): void {
+    const files = event.target.files;
+    if (files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        this.selectedFiles.push(file);
+        
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          this.imagePreviews.push(e.target.result);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  }
+
+  removeImage(index: number): void {
+    this.selectedFiles.splice(index, 1);
+    this.imagePreviews.splice(index, 1);
+  }
+
+  removeExistingImage(index: number): void {
+    this.existingImages.splice(index, 1);
+  }
+
+  private setupDiscountSync(): void {
+    const priceCtrl = this.productForm.get('price');
+    const discountPriceCtrl = this.productForm.get('discountPrice');
+    const discountPercentCtrl = this.productForm.get('discountPercentage');
+
+    discountPriceCtrl?.valueChanges.subscribe(val => {
+      if (val !== null && priceCtrl?.value && !this.isSyncing) {
+        this.isSyncing = true;
+        const percentage = Math.round((1 - (val / priceCtrl.value)) * 100);
+        discountPercentCtrl?.setValue(percentage, { emitEvent: false });
+        this.isSyncing = false;
+      }
+    });
+
+    discountPercentCtrl?.valueChanges.subscribe(val => {
+      if (val !== null && priceCtrl?.value && !this.isSyncing) {
+        this.isSyncing = true;
+        const price = Math.round((priceCtrl.value * (1 - (val / 100))) * 100) / 100;
+        discountPriceCtrl?.setValue(price, { emitEvent: false });
+        this.isSyncing = false;
+      }
+    });
+  }
 }
+

@@ -57,15 +57,6 @@ const login = async (req, res) => {
 // Get Public Products
 const getProducts = async (req, res) => {
     try {
-        const { organizationId } = req.query;
-
-        if (!organizationId) {
-            return res.status(400).json({
-                success: false,
-                message: 'Organization ID is required'
-            });
-        }
-
         const filters = {
             category: req.query.category,
             search: req.query.search,
@@ -73,7 +64,7 @@ const getProducts = async (req, res) => {
             maxPrice: req.query.maxPrice
         };
 
-        const products = await ecommerceService.getPublicProducts(organizationId, filters);
+        const products = await ecommerceService.getPublicProducts(filters);
 
         res.json({
             success: true,
@@ -91,16 +82,7 @@ const getProducts = async (req, res) => {
 const getProductById = async (req, res) => {
     try {
         const { id } = req.params;
-        const { organizationId } = req.query;
-
-        if (!organizationId) {
-            return res.status(400).json({
-                success: false,
-                message: 'Organization ID is required'
-            });
-        }
-
-        const product = await ecommerceService.getProductDetails(id, organizationId);
+        const product = await ecommerceService.getProductDetails(id);
 
         res.json({
             success: true,
@@ -117,16 +99,7 @@ const getProductById = async (req, res) => {
 // Get Categories
 const getCategories = async (req, res) => {
     try {
-        const { organizationId } = req.query;
-
-        if (!organizationId) {
-            return res.status(400).json({
-                success: false,
-                message: 'Organization ID is required'
-            });
-        }
-
-        const categories = await ecommerceService.getCategories(organizationId);
+        const categories = await ecommerceService.getCategories();
 
         res.json({
             success: true,
@@ -143,8 +116,13 @@ const getCategories = async (req, res) => {
 // Create Order
 const createOrder = async (req, res) => {
     try {
-        const customerId = req.customer.customerId;
-        const organizationId = req.customer.organizationId;
+        const customerId = req.customer?.customerId;
+        // If logged in, use orgId from token. If guest, expect it in body.
+        const organizationId = req.customer?.organizationId || req.body.organizationId;
+
+        if (!organizationId) {
+            return res.status(400).json({ success: false, message: 'Organization ID is required' });
+        }
 
         const order = await ecommerceService.createOrder(customerId, req.body, organizationId);
 
@@ -160,6 +138,7 @@ const createOrder = async (req, res) => {
         });
     }
 };
+
 
 // Get Customer Orders
 const getOrders = async (req, res) => {
@@ -243,18 +222,82 @@ const getProfile = async (req, res) => {
     }
 };
 
+// Submit Contact Message
+const submitContact = async (req, res) => {
+    try {
+        const { organizationId } = req.body;
+        if (!organizationId) {
+            return res.status(400).json({ success: false, message: 'Organization ID is required' });
+        }
+
+        const contact = await ecommerceService.saveContactMessage(req.body, organizationId);
+        res.status(201).json({
+            success: true,
+            message: 'Message sent successfully',
+            data: contact
+        });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+// Submit Complaint
+const submitComplaint = async (req, res) => {
+    try {
+        const customerId = req.customer.customerId;
+        const organizationId = req.customer.organizationId;
+
+        const complaint = await ecommerceService.submitComplaint(customerId, req.body, organizationId);
+        res.status(201).json({
+            success: true,
+            message: 'Complaint submitted successfully',
+            data: complaint
+        });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+// Validate Coupon
+const checkCoupon = async (req, res) => {
+    try {
+        const { code, organizationId } = req.body;
+        const customerId = req.customer?.customerId;
+
+        if (!organizationId) {
+            return res.status(400).json({ success: false, message: 'Organization ID is required' });
+        }
+
+        const coupon = await ecommerceService.validateCoupon(code, customerId, organizationId);
+        res.json({
+            success: true,
+            data: {
+                code: coupon.code,
+                discountType: coupon.discountType,
+                discountValue: coupon.discountValue
+            }
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
 // Update Customer Profile
+
 const updateProfile = async (req, res) => {
     try {
         const customerId = req.customer.customerId;
         const organizationId = req.customer.organizationId;
 
-        const profile = await ecommerceService.updateCustomerProfile(customerId, req.body, organizationId);
+        const updatedProfile = await ecommerceService.updateCustomerProfile(customerId, req.body, organizationId);
 
         res.json({
             success: true,
             message: 'Profile updated successfully',
-            data: profile
+            data: updatedProfile
         });
     } catch (error) {
         res.status(400).json({
@@ -265,6 +308,7 @@ const updateProfile = async (req, res) => {
 };
 
 module.exports = {
+
     register,
     login,
     getProducts,
@@ -275,5 +319,9 @@ module.exports = {
     getOrderById,
     requestRefund,
     getProfile,
-    updateProfile
+    updateProfile,
+    submitContact,
+    submitComplaint,
+    checkCoupon
 };
+

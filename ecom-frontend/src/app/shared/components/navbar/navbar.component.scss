@@ -110,6 +110,73 @@
   justify-content: center;
 }
 
+.logo-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  background: var(--secondary-color);
+  color: var(--white);
+  padding: 2px 8px;
+  border-radius: 3px;
+  margin-left: 4px;
+}
+
+.search-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 2000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 100px;
+}
+
+.search-container {
+  width: 90%;
+  max-width: 600px;
+  position: relative;
+}
+
+.search-input {
+  width: 100%;
+  padding: 20px 60px 20px 24px;
+  font-size: 18px;
+  border: none;
+  border-radius: 8px;
+  background: var(--white);
+  box-shadow: var(--shadow-lg);
+}
+
+.search-input:focus {
+  outline: none;
+}
+
+.search-close {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  color: var(--text-dark);
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-smooth);
+}
+
+.search-close:hover {
+  background: var(--primary-color);
+  color: var(--white);
+}
+
 @media (max-width: 768px) {
   .nav-center {
     display: none;

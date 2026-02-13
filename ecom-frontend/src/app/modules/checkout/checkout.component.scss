@@ -1,44 +1,207 @@
-.checkout-layout { display: grid; grid-template-columns: 1fr 350px; gap: 4rem; margin-top: 2rem; }
-    
-    .stepper { display: flex; gap: 2rem; margin-bottom: 3rem; }
-    .step { padding-bottom: 0.5rem; border-bottom: 3px solid #eee; color: #999; font-weight: 600; flex: 1; text-align: center; }
-    .step.active { color: var(--primary-color); border-color: var(--secondary-color); }
-    .step.done { color: #28a745; border-color: #28a745; }
+.checkout-layout {
+   display: grid;
+   grid-template-columns: 1fr 350px;
+   gap: 4rem;
+   margin-top: 2rem;
+}
 
-    .step-content h2 { margin-bottom: 2rem; font-size: 1.5rem; color: var(--primary-color); }
-    
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-    .form-group.full { grid-column: span 2; }
-    .form-group label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600; }
-    .form-group input { width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 4px; }
-    
-    .payment-options { display: grid; gap: 1rem; }
-    .payment-card { border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 8px; cursor: pointer; display: block; }
-    .payment-card input { margin-right: 1rem; }
-    .payment-card.disabled { opacity: 0.5; cursor: not-allowed; background: #f8f9fa; }
-    .card-content { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; }
+.stepper {
+   display: flex;
+   gap: 2rem;
+   margin-bottom: 3rem;
+}
 
-    .review-details { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
-    .review-box { background: #f8f9fa; padding: 1.5rem; border-radius: 8px; }
-    .review-box h4 { margin-bottom: 0.5rem; color: var(--text-muted); }
-    .review-items { margin-bottom: 2rem; }
-    .item-summary { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #eee; }
+.step {
+   padding-bottom: 0.5rem;
+   border-bottom: 3px solid #eee;
+   color: #999;
+   font-weight: 600;
+   flex: 1;
+   text-align: center;
+}
 
-    .actions { display: flex; gap: 1rem; margin-top: 3rem; }
-    .btn-primary { background: var(--primary-color); color: white; padding: 0.75rem 2rem; border-radius: 4px; font-weight: 700; }
-    .btn-outline { border: 1px solid var(--primary-color); color: var(--primary-color); padding: 0.75rem 2rem; border-radius: 4px; font-weight: 600; }
-    
-    .order-summary { background: #f8f9fa; padding: 2rem; border-radius: 8px; height: fit-content; }
-    .summary-items { margin-bottom: 2rem; }
-    .summary-row { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 0.75rem; }
-    .summary-row.total { font-size: 1.25rem; font-weight: 800; border-top: 2px solid #ddd; padding-top: 1rem; }
+.step.active {
+   color: var(--primary-color);
+   border-color: var(--secondary-color);
+}
 
-    .success-state { text-align: center; padding: 6rem 0; }
-    .success-icon { font-size: 5rem; margin-bottom: 1rem; }
-    .error-msg { color: #dc3545; margin-top: 1rem; font-weight: 600; }
+.step.done {
+   color: #28a745;
+   border-color: #28a745;
+}
 
-    @media (max-width: 900px) {
-       .checkout-layout { grid-template-columns: 1fr; }
-       .form-grid { grid-template-columns: 1fr; }
-       .form-group.full { grid-column: span 1; }
-    }
+.step-content h2 {
+   margin-bottom: 2rem;
+   font-size: 1.5rem;
+   color: var(--primary-color);
+}
+
+.form-grid {
+   display: grid;
+   grid-template-columns: 1fr 1fr;
+   gap: 1.5rem;
+}
+
+.form-group.full {
+   grid-column: span 2;
+}
+
+.form-group label {
+   display: block;
+   margin-bottom: 0.5rem;
+   font-size: 0.9rem;
+   font-weight: 600;
+}
+
+.form-group input {
+   width: 100%;
+   padding: 0.75rem;
+   border: 1px solid var(--border-color);
+   border-radius: 4px;
+}
+
+.payment-options {
+   display: grid;
+   gap: 1rem;
+}
+
+.payment-card {
+   border: 1px solid var(--border-color);
+   padding: 1.5rem;
+   border-radius: 8px;
+   cursor: pointer;
+   display: block;
+}
+
+.payment-card input {
+   margin-right: 1rem;
+}
+
+.payment-card.disabled {
+   opacity: 0.5;
+   cursor: not-allowed;
+   background: #f8f9fa;
+}
+
+.card-content {
+   display: inline-flex;
+   align-items: center;
+   gap: 10px;
+   font-weight: 600;
+}
+
+.review-details {
+   display: grid;
+   grid-template-columns: 1fr 1fr;
+   gap: 2rem;
+   margin-bottom: 2rem;
+}
+
+.review-box {
+   background: #f8f9fa;
+   padding: 1.5rem;
+   border-radius: 8px;
+}
+
+.review-box h4 {
+   margin-bottom: 0.5rem;
+   color: var(--text-muted);
+}
+
+.review-items {
+   margin-bottom: 2rem;
+}
+
+.item-summary {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   padding: 0.75rem 0;
+   border-bottom: 1px solid #eee;
+
+   img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-right: 12px;
+   }
+}
+
+
+.actions {
+   display: flex;
+   gap: 1rem;
+   margin-top: 3rem;
+}
+
+.btn-primary {
+   background: var(--primary-color);
+   color: white;
+   padding: 0.75rem 2rem;
+   border-radius: 4px;
+   font-weight: 700;
+}
+
+.btn-outline {
+   border: 1px solid var(--primary-color);
+   color: var(--primary-color);
+   padding: 0.75rem 2rem;
+   border-radius: 4px;
+   font-weight: 600;
+}
+
+.order-summary {
+   background: #f8f9fa;
+   padding: 2rem;
+   border-radius: 8px;
+   height: fit-content;
+}
+
+.summary-items {
+   margin-bottom: 2rem;
+}
+
+.summary-row {
+   display: flex;
+   justify-content: space-between;
+   font-size: 0.9rem;
+   margin-bottom: 0.75rem;
+}
+
+.summary-row.total {
+   font-size: 1.25rem;
+   font-weight: 800;
+   border-top: 2px solid #ddd;
+   padding-top: 1rem;
+}
+
+.success-state {
+   text-align: center;
+   padding: 6rem 0;
+}
+
+.success-icon {
+   font-size: 5rem;
+   margin-bottom: 1rem;
+}
+
+.error-msg {
+   color: #dc3545;
+   margin-top: 1rem;
+   font-weight: 600;
+}
+
+@media (max-width: 900px) {
+   .checkout-layout {
+      grid-template-columns: 1fr;
+   }
+
+   .form-grid {
+      grid-template-columns: 1fr;
+   }
+
+   .form-group.full {
+      grid-column: span 1;
+   }
+}

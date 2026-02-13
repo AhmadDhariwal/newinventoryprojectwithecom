@@ -5,9 +5,13 @@ export interface Product {
   name: string;
   sku: string;
   description?: string;
-  category?: Category; // you can define a Category model later if needed
+  category?: Category;
   cost: number;
   price: number;
+  discountPrice?: number;
+  discountPercentage?: number;
+
+  images?: string[];
   status: 'active' | 'inactive';
   createdAt?: string;
   updatedAt?: string;

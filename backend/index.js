@@ -20,7 +20,9 @@ const organizationroutes = require("./src/routes/organization.routes");
 const forecastingroutes = require("./src/routes/forecasting.routes");
 const notificationroutes = require("./src/routes/notification.routes");
 const ecommerceroutes = require("./src/routes/ecommerce.routes");
+const adminorderroutes = require("./src/routes/admin-order.routes");
 const cors = require('cors');
+
 const userroute = require('./src/routes/user');
 const { verifytoken, restrictto } = require('./src/middleware/auth.middleware');
 const { ensureOrganizationContext } = require('./src/middleware/organization.middleware');
@@ -58,6 +60,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+// Serve static files (uploaded images)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Public routes
 app.use('/user', userroute);
 app.use('/api/organizations', organizationroutes);
@@ -79,6 +84,8 @@ app.use("/api/settings", verifytoken, ensureOrganizationContext, enforceSecurity
 app.use("/api/activitylog", verifytoken, ensureOrganizationContext, enforceSecurityPolicies, checkMaintenanceMode, activitylogroutes);
 app.use("/api/forecasting", verifytoken, ensureOrganizationContext, enforceSecurityPolicies, checkMaintenanceMode, forecastingroutes);
 app.use("/api/notifications", verifytoken, ensureOrganizationContext, enforceSecurityPolicies, notificationroutes);
+app.use("/api/admin/orders", verifytoken, ensureOrganizationContext, enforceSecurityPolicies, checkMaintenanceMode, adminorderroutes);
+
 
 
 // app.get('/', (req, res) => {

@@ -13,12 +13,17 @@ const customerSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
+        required: false, // Optional for guest checkout
+    },
+    isGuest: {
+        type: Boolean,
+        default: false
     },
     phone: {
         type: String,
         default: ''
     },
+
     shippingAddress: {
         street: { type: String, default: '' },
         city: { type: String, default: '' },

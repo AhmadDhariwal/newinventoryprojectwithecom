@@ -7,6 +7,8 @@
        Activity Logs
     </a>
     <a routerLink="/products" routerLinkActive="active" (click)="close.emit()">Products</a>
+    <a *ngIf="hasRole(['admin', 'manager'])" routerLink="/orders" routerLinkActive="active" (click)="close.emit()">E-com Orders</a>
+
     
     <!-- Admin & Manager Only -->
     <a *ngIf="hasRole(['admin', 'manager'])" routerLink="/products/warehouses" routerLinkActive="active" (click)="close.emit()">Warehouses</a>
