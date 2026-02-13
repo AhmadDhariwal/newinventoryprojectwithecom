@@ -1,68 +1,114 @@
-<div class="container section">
-      <h1>Your Shopping Cart</h1>
+<div class="cart-page">
+  <div class="page-header">
+    <div class="container">
+      <h1 class="page-title">Shopping Cart</h1>
+    </div>
+  </div>
 
-      <div class="cart-layout" *ngIf="(cartService.cartItems$ | async)?.length; else emptyCart">
-        <div class="cart-items">
-          <div class="cart-header">
-            <span>Product</span>
-            <span>Price</span>
-            <span>Quantity</span>
-            <span>Total</span>
-            <span></span>
+  <div class="container section-sm">
+    <div class="cart-layout" *ngIf="(cartService.cartItems$ | async)?.length; else emptyCart">
+      <div class="cart-main">
+        <div class="cart-table">
+          <div class="cart-table-header">
+            <div class="col-product">Product</div>
+            <div class="col-price">Price</div>
+            <div class="col-quantity">Quantity</div>
+            <div class="col-total">Total</div>
+            <div class="col-remove"></div>
           </div>
 
-          <div class="cart-item fade-in" *ngFor="let item of cartService.cartItems$ | async">
-            <div class="product-info">
-              <img src="https://via.placeholder.com/80x80?text={{ item.product.name }}" [alt]="item.product.name">
-              <div>
-                <h3>{{ item.product.name }}</h3>
-                <small>SKU: {{ item.product.sku }}</small>
+          <div class="cart-item" *ngFor="let item of cartService.cartItems$ | async">
+            <div class="col-product">
+              <div class="product-cell">
+                <img 
+                  [src]="'https://via.placeholder.com/120x150?text=' + item.product.name" 
+                  [alt]="item.product.name"
+                  class="product-image"
+                >
+                <div class="product-details">
+                  <h3 class="product-name">{{ item.product.name }}</h3>
+                  <p class="product-sku">SKU: {{ item.product.sku }}</p>
+                </div>
               </div>
             </div>
             
-            <div class="price">
+            <div class="col-price">
               {{ item.product.price | currency }}
             </div>
 
-            <div class="quantity">
-              <button (click)="updateQty(item, -1)">-</button>
-              <span>{{ item.quantity }}</span>
-              <button (click)="updateQty(item, 1)">+</button>
+            <div class="col-quantity">
+              <div class="quantity-control">
+                <button (click)="updateQty(item, -1)" [disabled]="item.quantity <= 1">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                  </svg>
+                </button>
+                <span class="quantity-value">{{ item.quantity }}</span>
+                <button (click)="updateQty(item, 1)">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                  </svg>
+                </button>
+              </div>
             </div>
 
-            <div class="item-total">
+            <div class="col-total">
               {{ (item.product.price * item.quantity) | currency }}
             </div>
 
-            <button class="btn-remove" (click)="removeItem(item.product._id)">×</button>
+            <div class="col-remove">
+              <button class="btn-remove" (click)="removeItem(item.product._id)" aria-label="Remove item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
 
-        <aside class="cart-summary">
-          <h3>Order Summary</h3>
+        <div class="cart-actions">
+          <a routerLink="/products" class="btn btn-outline">Continue Shopping</a>
+        </div>
+      </div>
+
+      <aside class="cart-sidebar">
+        <div class="order-summary">
+          <h3 class="summary-title">Order Summary</h3>
+          
           <div class="summary-row">
             <span>Subtotal</span>
             <span>{{ cartService.getTotalAmount() | currency }}</span>
           </div>
           <div class="summary-row">
             <span>Shipping</span>
-            <span>$0.00</span>
+            <span>Calculated at checkout</span>
           </div>
-          <div class="summary-row total">
+          <div class="summary-divider"></div>
+          <div class="summary-row summary-total">
             <span>Total</span>
             <span>{{ cartService.getTotalAmount() | currency }}</span>
           </div>
-          <button class="btn-checkout" routerLink="/checkout">Proceed to Checkout</button>
-          <a routerLink="/products" class="continue-shopping">&larr; Continue Shopping</a>
-        </aside>
-      </div>
-
-      <ng-template #emptyCart>
-        <div class="empty-state">
-          <div class="empty-icon">🛒</div>
-          <h2>Your cart is empty</h2>
-          <p>Start adding some products to your cart!</p>
-          <button routerLink="/products" class="btn-primary">Browse Products</button>
+          
+          <button class="btn btn-primary btn-block" routerLink="/checkout">
+            Proceed to Checkout
+          </button>
         </div>
-      </ng-template>
+      </aside>
     </div>
+
+    <ng-template #emptyCart>
+      <div class="empty-cart">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <circle cx="9" cy="21" r="1"/>
+          <circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+        <h2>Your cart is empty</h2>
+        <p>Discover our curated collection of premium products</p>
+        <a routerLink="/products" class="btn btn-primary">Start Shopping</a>
+      </div>
+    </ng-template>
+  </div>
+</div>

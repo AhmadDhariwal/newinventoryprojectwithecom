@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../../core/services/product.service';
+import { CategoryService, Category } from '../../../core/services/category.service';
 import { Product } from '../../../core/models/models';
 import { ProductCardComponent } from '../../../shared/components/product-card/product-card.component';
 
@@ -14,7 +15,7 @@ import { ProductCardComponent } from '../../../shared/components/product-card/pr
 })
 export class ProductListComponent implements OnInit {
   products: Product[] = [];
-  categories: any[] = []; // Full implementation would fetch these
+  categories: Category[] = [];
   loading = true;
 
   searchQuery = '';
@@ -23,10 +24,14 @@ export class ProductListComponent implements OnInit {
   minPrice?: number;
   maxPrice?: number;
 
-  constructor(private productService: ProductService) {}
+  constructor(
+    private productService: ProductService,
+    private categoryService: CategoryService
+  ) {}
 
   ngOnInit() {
     this.loadProducts();
+    this.loadCategories();
   }
 
   loadProducts() {
@@ -44,6 +49,17 @@ export class ProductListComponent implements OnInit {
         this.loading = false;
       },
       error: () => this.loading = false
+    });
+  }
+
+  loadCategories() {
+    this.categoryService.getCategories().subscribe({
+      next: (res) => {
+        this.categories = res.data;
+      },
+      error: () => {
+        this.categories = [];
+      }
     });
   }
 

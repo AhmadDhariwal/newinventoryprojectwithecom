@@ -8,6 +8,7 @@ router.post('/auth/register', ecommerceController.register);
 router.post('/auth/login', ecommerceController.login);
 router.get('/products', ecommerceController.getProducts);
 router.get('/products/:id', ecommerceController.getProductById);
+router.get('/categories', ecommerceController.getCategories);
 
 // Protected routes (customer authentication required)
 router.post('/orders', verifyCustomerToken, ecommerceController.createOrder);

@@ -1,57 +1,89 @@
- <div class="container section" *ngIf="product; else loader">
-      <nav class="breadcrumb">
-        <a routerLink="/">Home</a> / 
-        <a routerLink="/products">Products</a> / 
-        <span>{{ product.name }}</span>
-      </nav>
+<div class="product-detail" *ngIf="product; else loader">
+  <div class="container section-sm">
+    <nav class="breadcrumb">
+      <a routerLink="/">Home</a>
+      <span class="separator">/</span>
+      <a routerLink="/products">Shop</a>
+      <span class="separator">/</span>
+      <span>{{ product.name }}</span>
+    </nav>
 
-      <div class="product-grid">
-        <div class="gallery">
-          <div class="main-image">
-            <img src="https://via.placeholder.com/600x600?text={{ product.name }}" [alt]="product.name">
+    <div class="product-layout">
+      <div class="product-gallery">
+        <div class="main-image">
+          <img 
+            [src]="'https://via.placeholder.com/700x875?text=' + product.name" 
+            [alt]="product.name"
+          >
+        </div>
+        <div class="thumbnail-list">
+          <div class="thumbnail active" *ngFor="let i of [1,2,3,4]">
+            <img [src]="'https://via.placeholder.com/150x187?text=View+' + i">
           </div>
-          <div class="thumbnails">
-            <div *ngFor="let i of [1,2,3]" class="thumb">
-               <img src="https://via.placeholder.com/100x100?text=View+{{ i }}">
-            </div>
+        </div>
+      </div>
+
+      <div class="product-details">
+        <span class="product-category">{{ product.category.name }}</span>
+        <h1 class="product-title">{{ product.name }}</h1>
+        <div class="product-sku">SKU: {{ product.sku }}</div>
+        
+        <div class="product-price-section">
+          <div class="product-price">{{ product.price | currency }}</div>
+          <div class="stock-status" [class.out-of-stock]="!product.inStock">
+            {{ product.inStock ? 'In Stock' : 'Out of Stock' }}
+            <span *ngIf="product.inStock" class="stock-qty">({{ product.stockAvailable }} available)</span>
           </div>
         </div>
 
-        <div class="details">
-          <span class="category">{{ product.category.name }}</span>
-          <h1>{{ product.name }}</h1>
-          <p class="sku">SKU: {{ product.sku }}</p>
-          
-          <div class="price-box">
-            <span class="price">{{ product.price | currency }}</span>
-            <span class="stock-status" [class.out]="!product.inStock">
-              {{ product.inStock ? 'In Stock (' + product.stockAvailable + ' available)' : 'Out of Stock' }}
+        <div class="product-description">
+          <p>{{ product.description }}</p>
+        </div>
+
+        <div class="product-actions" *ngIf="product.inStock">
+          <div class="quantity-selector">
+            <button (click)="changeQty(-1)" [disabled]="quantity <= 1">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+            </button>
+            <span class="quantity-value">{{ quantity }}</span>
+            <button (click)="changeQty(1)" [disabled]="quantity >= product.stockAvailable">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+            </button>
+          </div>
+          <button class="btn btn-primary btn-add-cart" (click)="addToCart()">
+            Add to Cart
+          </button>
+        </div>
+
+        <div class="product-meta">
+          <div class="meta-item">
+            <span class="meta-label">Category:</span>
+            <span class="meta-value">{{ product.category.name }}</span>
+          </div>
+          <div class="meta-item" *ngIf="product.stockByWarehouse && product.stockByWarehouse.length">
+            <span class="meta-label">Available at:</span>
+            <span class="meta-value">
+              <span *ngFor="let stock of product.stockByWarehouse; let last = last">
+                {{ stock.warehouse.name }}<span *ngIf="!last">, </span>
+              </span>
             </span>
-          </div>
-
-          <div class="description">
-            <h3>Description</h3>
-            <p>{{ product.description }}</p>
-          </div>
-
-          <div class="actions" *ngIf="product.inStock">
-            <div class="quantity">
-              <button (click)="changeQty(-1)">-</button>
-              <span>{{ quantity }}</span>
-              <button (click)="changeQty(1)">+</button>
-            </div>
-            <button class="btn-buy" (click)="addToCart()">Add to Cart</button>
-          </div>
-          
-          <div class="multi-tenant-info">
-             <small>This product is managed via the Inventory System.</small>
           </div>
         </div>
       </div>
     </div>
+  </div>
+</div>
 
-    <ng-template #loader>
-      <div class="container section text-center">
-        <div class="skeleton main-image" style="height: 500px; max-width: 600px; margin: 0 auto;"></div>
-      </div>
-    </ng-template>
+<ng-template #loader>
+  <div class="container section">
+    <div class="skeleton-loader">
+      <div class="skeleton" style="height: 600px; max-width: 600px;"></div>
+      <div class="skeleton" style="height: 600px; flex: 1;"></div>
+    </div>
+  </div>
+</ng-template>

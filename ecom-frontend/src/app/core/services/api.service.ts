@@ -30,6 +30,10 @@ export class ApiService {
 
   post<T>(path: string, body: any): Observable<T> {
     const params = this.getCommonParams();
+    // For auth endpoints, add organizationId to body
+    if (path.includes('/auth/')) {
+      body = { ...body, organizationId: environment.organizationId };
+    }
     return this.http.post<T>(`${this.apiUrl}${path}`, body, { params })
       .pipe(catchError(this.handleError));
   }

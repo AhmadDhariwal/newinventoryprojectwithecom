@@ -114,6 +114,32 @@ const getProductById = async (req, res) => {
     }
 };
 
+// Get Categories
+const getCategories = async (req, res) => {
+    try {
+        const { organizationId } = req.query;
+
+        if (!organizationId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Organization ID is required'
+            });
+        }
+
+        const categories = await ecommerceService.getCategories(organizationId);
+
+        res.json({
+            success: true,
+            data: categories
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
 // Create Order
 const createOrder = async (req, res) => {
     try {
@@ -243,6 +269,7 @@ module.exports = {
     login,
     getProducts,
     getProductById,
+    getCategories,
     createOrder,
     getOrders,
     getOrderById,

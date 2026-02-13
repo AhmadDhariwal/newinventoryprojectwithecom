@@ -24,6 +24,14 @@ export const routes: Routes = [
     loadChildren: () => import('./modules/auth/auth.module').then(m => m.AuthModule)
   },
   {
+    path: 'about',
+    loadComponent: () => import('./modules/about/about.component').then(m => m.AboutComponent)
+  },
+  {
+    path: 'contact',
+    loadComponent: () => import('./modules/contact/contact.component').then(m => m.ContactComponent)
+  },
+  {
     path: 'login',
     redirectTo: 'auth/login',
     pathMatch: 'full'

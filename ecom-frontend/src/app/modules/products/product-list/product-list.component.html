@@ -1,63 +1,98 @@
-<div class="container section">
-      <div class="catalog-header">
-        <h1>Product Catalog</h1>
-        <div class="filters">
-          <input 
-            type="text" 
-            [(ngModel)]="searchQuery" 
-            (input)="onSearch()" 
-            placeholder="Search products..." 
-            class="search-input"
-          >
-          <select [(ngModel)]="sortBy" (change)="onSort()" class="sort-select">
-            <option value="newest">Newest First</option>
-            <option value="price-low">Price: Low to High</option>
-            <option value="price-high">Price: High to Low</option>
-          </select>
-        </div>
-      </div>
+<div class="shop-page">
+  <div class="page-header">
+    <div class="container">
+      <h1 class="page-title">Shop</h1>
+      <p class="page-subtitle">Discover our curated collection</p>
+    </div>
+  </div>
 
-      <div class="catalog-layout">
-        <aside class="sidebar">
-          <h3>Categories</h3>
-          <ul class="category-list">
-            <li [class.active]="!selectedCategory" (click)="selectCategory('')">All Products</li>
-            <!-- Categories would ideally be fetched from API -->
-            <li *ngFor="let cat of categories" [class.active]="selectedCategory === cat._id" (click)="selectCategory(cat._id)">
+  <div class="container section-sm">
+    <div class="shop-controls">
+      <div class="results-info">
+        <span *ngIf="!loading">{{ products.length }} Products</span>
+      </div>
+      <div class="shop-filters">
+        <input 
+          type="text" 
+          [(ngModel)]="searchQuery" 
+          (input)="onSearch()" 
+          placeholder="Search products..." 
+          class="search-input"
+        >
+        <select [(ngModel)]="sortBy" (change)="onSort()" class="sort-select">
+          <option value="newest">Newest</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="shop-layout">
+      <aside class="sidebar">
+        <div class="filter-section">
+          <h3 class="filter-title">Categories</h3>
+          <ul class="filter-list">
+            <li 
+              [class.active]="!selectedCategory" 
+              (click)="selectCategory('')"
+            >
+              All Products
+            </li>
+            <li 
+              *ngFor="let cat of categories" 
+              [class.active]="selectedCategory === cat._id" 
+              (click)="selectCategory(cat._id)"
+            >
               {{ cat.name }}
             </li>
           </ul>
+        </div>
 
+        <div class="filter-section">
+          <h3 class="filter-title">Price Range</h3>
           <div class="price-filter">
-            <h3>Price Range</h3>
-            <div class="price-inputs">
-              <input type="number" [(ngModel)]="minPrice" placeholder="Min">
-              <input type="number" [(ngModel)]="maxPrice" placeholder="Max">
-              <button (click)="applyFilters()">Apply</button>
-            </div>
+            <input 
+              type="number" 
+              [(ngModel)]="minPrice" 
+              placeholder="Min" 
+              class="price-input"
+            >
+            <span class="price-separator">-</span>
+            <input 
+              type="number" 
+              [(ngModel)]="maxPrice" 
+              placeholder="Max" 
+              class="price-input"
+            >
           </div>
-        </aside>
+          <button (click)="applyFilters()" class="btn btn-outline btn-sm">Apply</button>
+        </div>
+      </aside>
 
-        <main class="products-section">
-          <div class="products-grid" *ngIf="!loading; else skeletonGrid">
-            <app-product-card 
-              *ngFor="let product of products" 
-              [product]="product"
-            ></app-product-card>
+      <main class="products-area">
+        <div class="products-grid" *ngIf="!loading; else skeletonGrid">
+          <app-product-card 
+            *ngFor="let product of products" 
+            [product]="product"
+          ></app-product-card>
+        </div>
+
+        <ng-template #skeletonGrid>
+          <div class="products-grid">
+            <div *ngFor="let i of [1,2,3,4,5,6,7,8]" class="skeleton product-skeleton"></div>
           </div>
+        </ng-template>
 
-          <ng-template #skeletonGrid>
-            <div class="products-grid">
-              <div *ngFor="let i of [1,2,3,4,5,6]" class="skeleton product-skeleton"></div>
-            </div>
-          </ng-template>
-
-          <div class="empty-state" *ngIf="!loading && products.length === 0">
-            <div class="empty-icon">📂</div>
-            <h3>No products found</h3>
-            <p>Try adjusting your filters or search query.</p>
-            <button (click)="clearFilters()" class="btn-clear">Clear All Filters</button>
-          </div>
-        </main>
-      </div>
+        <div class="empty-state" *ngIf="!loading && products.length === 0">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+          <h3>No products found</h3>
+          <p>Try adjusting your filters or search query</p>
+          <button (click)="clearFilters()" class="btn btn-outline">Clear Filters</button>
+        </div>
+      </main>
     </div>
+  </div>
+</div>

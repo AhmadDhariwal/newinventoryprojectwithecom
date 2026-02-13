@@ -1,40 +1,111 @@
- <div class="home">
-      <!-- Hero Section -->
-      <section class="hero section">
-        <div class="container hero-content fade-in">
-          <h1>Modern Inventory, <br><span>Seamless Shopping.</span></h1>
-          <p>Experience the next generation of multi-tenant e-commerce with real-time stock integration.</p>
-          <div class="hero-actions">
-            <a routerLink="/products" class="btn-primary">Shop Now</a>
-            <a routerLink="/auth/register" class="btn-secondary">Join Us</a>
-          </div>
+<div class="home">
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <p class="hero-subtitle">Timeless Elegance</p>
+        <h1 class="hero-title">Discover Your Style</h1>
+        <p class="hero-description">Curated collections of premium products for the discerning customer</p>
+        <div class="hero-actions">
+          <a routerLink="/products" class="btn btn-primary">Explore Collection</a>
         </div>
-      </section>
-
-      <!-- Featured Products -->
-      <section class="featured section">
-        <div class="container">
-          <div class="section-header">
-            <h2>Featured Products</h2>
-            <a routerLink="/products" class="view-all">View All Products &rarr;</a>
-          </div>
-
-          <div class="products-grid" *ngIf="!loading; else skeletonGrid">
-            <app-product-card 
-              *ngFor="let product of featuredProducts" 
-              [product]="product"
-            ></app-product-card>
-          </div>
-
-          <ng-template #skeletonGrid>
-            <div class="products-grid">
-              <div *ngFor="let i of [1,2,3,4]" class="skeleton product-skeleton"></div>
-            </div>
-          </ng-template>
-
-          <div class="empty-state" *ngIf="!loading && featuredProducts.length === 0">
-            <p>No products featured yet.</p>
-          </div>
-        </div>
-      </section>
+      </div>
     </div>
+  </section>
+
+  <!-- Featured Products -->
+  <section class="section featured-section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-title-wrapper">
+          <span class="section-subtitle">Handpicked Selection</span>
+          <h2 class="section-title">Featured Products</h2>
+        </div>
+        <a routerLink="/products" class="link-underline">View All</a>
+      </div>
+
+      <div class="products-grid" *ngIf="!loading; else skeletonGrid">
+        <app-product-card
+          *ngFor="let product of featuredProducts"
+          [product]="product"
+        ></app-product-card>
+      </div>
+
+      <ng-template #skeletonGrid>
+        <div class="products-grid">
+          <div *ngFor="let i of [1,2,3,4]" class="skeleton product-skeleton"></div>
+        </div>
+      </ng-template>
+
+      <div class="empty-state" *ngIf="!loading && featuredProducts.length === 0">
+        <p>No products available at the moment.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories Section -->
+  <section class="section categories-section">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="section-subtitle">Browse By</span>
+        <h2 class="section-title">Categories</h2>
+      </div>
+      <div class="categories-grid">
+        <div class="category-card" *ngFor="let cat of categories">
+          <div class="category-image">
+            <img title="Homepage picture" src="https://via.placeholder.com/400x500?text={{cat.name}}" [alt]="cat.name + ' category'" [title]="cat.name">
+          </div>
+          <h3 class="category-name">{{ cat.name }}</h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="section features-section">
+    <div class="container">
+      <div class="features-grid">
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+          </div>
+          <h3>Free Shipping</h3>
+          <p>On orders over $100</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <h3>24/7 Support</h3>
+          <p>Dedicated customer service</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </div>
+          <h3>Secure Payment</h3>
+          <p>100% secure transactions</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <polyline points="23 4 23 10 17 10"/>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+            </svg>
+          </div>
+          <h3>Easy Returns</h3>
+          <p>30-day return policy</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

@@ -21,12 +21,14 @@ export class AuthService {
     return this.apiService.post<any>('/auth/register', data);
   }
 
-  login(credentials: any): Observable<AuthResponse> {
-    return this.apiService.post<AuthResponse>('/auth/login', credentials).pipe(
+  login(credentials: any): Observable<any> {
+    return this.apiService.post<any>('/auth/login', credentials).pipe(
       tap(response => {
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('customer', JSON.stringify(response.customer));
-        this.currentUserSubject.next(response.customer);
+        if (response.success && response.data) {
+          localStorage.setItem('token', response.data.token);
+          localStorage.setItem('customer', JSON.stringify(response.data.customer));
+          this.currentUserSubject.next(response.data.customer);
+        }
       })
     );
   }

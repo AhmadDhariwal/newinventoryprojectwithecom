@@ -1,15 +1,77 @@
+.auth-page {
+  min-height: calc(100vh - 200px);
+  display: flex;
+  align-items: center;
+  background: var(--bg-secondary);
+}
 
-    .auth-container { display: flex; justify-content: center; align-items: center; min-height: 80vh; padding: 2rem; }
-    .auth-card { background: white; padding: 3rem; border-radius: 12px; box-shadow: var(--shadow-md); width: 100%; max-width: 450px; }
-    .auth-card h1 { font-size: 2rem; color: var(--primary-color); margin-bottom: 0.5rem; }
-    .auth-card p { margin-bottom: 2rem; color: var(--text-muted); }
+.auth-container {
+  width: 100%;
+  padding: 60px 24px;
+}
 
-    .form-group { margin-bottom: 1.5rem; }
-    .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
-    .form-group input { width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 4px; }
-    
-    .btn-primary { width: 100%; background: var(--primary-color); color: white; padding: 0.75rem; border-radius: 4px; font-weight: 700; margin: 1rem 0; }
-    .error-msg { color: #dc3545; font-size: 0.9rem; text-align: center; margin-top: 1rem; }
-    .switch-auth { text-align: center; margin-top: 2rem; font-size: 0.9rem; }
-    .switch-auth a { color: var(--primary-color); font-weight: 700; text-decoration: underline; }
+.auth-card {
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--white);
+  padding: 60px;
+  box-shadow: var(--shadow-md);
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.auth-title {
+  font-size: 36px;
+  margin-bottom: 12px;
+}
+
+.auth-subtitle {
+  font-size: 16px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.auth-form {
   
+}
+
+.error-msg {
+  color: var(--error-color);
+  font-size: 14px;
+  text-align: center;
+  margin: 16px 0;
+  padding: 12px;
+  background: rgba(211, 47, 47, 0.1);
+  border-radius: 4px;
+}
+
+.btn-block {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 32px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.auth-switch a {
+  color: var(--primary-color);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+@media (max-width: 576px) {
+  .auth-card {
+    padding: 40px 24px;
+  }
+  
+  .auth-title {
+    font-size: 28px;
+  }
+}

@@ -471,11 +471,29 @@ const updateCustomerProfile = async (customerId, updateData, organizationId) => 
     return customer;
 };
 
+// Get Categories
+const getCategories = async (organizationId) => {
+    if (!organizationId) throw new Error('Organization ID is required');
+
+    const Category = require('../models/category');
+    
+    const categories = await Category.find({
+        organizationId,
+        status: 'active'
+    })
+        .select('name description')
+        .sort({ name: 1 })
+        .lean();
+
+    return categories;
+};
+
 module.exports = {
     registerCustomer,
     loginCustomer,
     getPublicProducts,
     getProductDetails,
+    getCategories,
     createOrder,
     getCustomerOrders,
     getOrderDetails,

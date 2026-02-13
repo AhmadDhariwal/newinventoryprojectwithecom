@@ -1,1 +1,24 @@
-<p>product-card works!</p>
+<div class="product-card">
+  <div class="product-image-wrapper" [routerLink]="['/products', product._id]">
+    <img 
+      class="product-image" 
+      src="https://via.placeholder.com/400x500?text={{ product.name }}" 
+      [alt]="product.name"
+    >
+    <div class="product-overlay" *ngIf="product.inStock">
+      <button 
+        (click)="addToCart($event)" 
+        class="btn-quick-add"
+        aria-label="Add to cart"
+      >
+        Add to Cart
+      </button>
+    </div>
+    <div class="product-badge" *ngIf="!product.inStock">Sold Out</div>
+  </div>
+  <div class="product-info">
+    <span class="product-category">{{ product.category.name }}</span>
+    <h3 class="product-name" [routerLink]="['/products', product._id]">{{ product.name }}</h3>
+    <div class="product-price">{{ product.price | currency }}</div>
+  </div>
+</div>
