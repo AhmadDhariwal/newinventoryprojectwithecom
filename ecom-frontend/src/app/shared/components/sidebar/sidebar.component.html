@@ -1,0 +1,75 @@
+<div class="sidebar-overlay" [class.active]="isOpen" (click)="closeSidebar()">
+  <div class="sidebar-drawer" [class.active]="isOpen" (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="sidebar-header">
+      <div class="logo-text">Elegance</div>
+      <button title="Close Sidebar" class="icon-btn close-btn" (click)="closeSidebar()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- User Profile Summary -->
+    <div class="user-summary" *ngIf="authService.currentUser$ | async as user; else guestUser">
+      <div class="user-avatar">
+        {{ user.name.charAt(0) }}
+      </div>
+      <div class="user-info">
+        <span class="greeting">Hello,</span>
+        <span class="username">{{ user.name}}</span>
+      </div>
+    </div>
+    <ng-template #guestUser>
+      <div class="guest-summary">
+        <p>Welcome to Elegance</p>
+        <a routerLink="/auth/login" (click)="closeSidebar()" class="btn btn-outline-sm">Login / Register</a>
+      </div>
+    </ng-template>
+
+    <!-- Navigation Links -->
+    <nav class="sidebar-nav">
+      <a routerLink="/" (click)="closeSidebar()" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+        <span>Home</span>
+        <i class="bi bi-chevron-right"></i>
+      </a>
+      <a routerLink="/products" (click)="closeSidebar()" routerLinkActive="active">
+        <span>Collection</span>
+        <i class="bi bi-chevron-right"></i>
+      </a>
+      <a routerLink="/about" (click)="closeSidebar()" routerLinkActive="active">
+        <span>Our Story</span>
+        <i class="bi bi-chevron-right"></i>
+      </a>
+      <a routerLink="/contact" (click)="closeSidebar()" routerLinkActive="active">
+        <span>Contact</span>
+        <i class="bi bi-chevron-right"></i>
+      </a>
+      <!-- New Links -->
+      <a routerLink="/complaint" (click)="closeSidebar()" routerLinkActive="active">
+        <span>Complaint</span>
+        <i class="bi bi-chevron-right"></i>
+      </a>
+      <a routerLink="/products" [queryParams]="{onlySale: true}" (click)="closeSidebar()" routerLinkActive="active" class="highlight">
+        <span>Sale</span>
+        <i class="bi bi-chevron-right"></i>
+      </a>
+    </nav>
+
+    <!-- Quick Actions (Bottom) -->
+    <div class="quick-actions">
+      <a routerLink="/user/wishlist" (click)="closeSidebar()" class="action-item">
+        <i class="bi bi-heart"></i>
+        <span>Wishlist</span>
+      </a>
+      <a routerLink="/user/orders" (click)="closeSidebar()" class="action-item">
+        <i class="bi bi-bag"></i>
+        <span>Orders</span>
+      </a>
+      <a routerLink="/contact" (click)="closeSidebar()" class="action-item">
+        <i class="bi bi-question-circle"></i>
+        <span>Help</span>
+      </a>
+    </div>
+
+  </div>
+</div>
