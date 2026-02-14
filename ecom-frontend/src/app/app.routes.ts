@@ -62,6 +62,14 @@ export const routes: Routes = [
     //canActivate: [authGuard]
   },
   {
+    path: 'shipping-returns',
+    loadComponent: () => import('./shared/components/shipping-returns/shipping-returns.component').then(m => m.ShippingReturnsComponent)
+  },
+  {
+    path: 'faq',
+    loadComponent: () => import('./shared/components/faq/faq.component').then(m => m.FaqComponent)
+  },
+  {
     path: '**',
     redirectTo: ''
   }

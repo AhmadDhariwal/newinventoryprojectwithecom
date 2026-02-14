@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterLink, RouterModule } from '@angular/router';
 import { ProductService } from '../../core/services/product.service';
 import { CategoryService, Category } from '../../core/services/category.service';
 import { Product } from '../../core/models/models';
@@ -9,7 +9,7 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, ProductCardComponent],
+  imports: [CommonModule, RouterModule, ProductCardComponent,RouterLink],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })

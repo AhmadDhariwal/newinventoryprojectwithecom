@@ -1,1 +1,8 @@
-<p>empty-state works!</p>
+<div class="empty-state-container text-center fade-in">
+  <div class="icon-wrapper">
+    <i class="bi" [ngClass]="icon"></i>
+  </div>
+  <h2 class="title">{{ title }}</h2>
+  <p class="message">{{ message }}</p>
+  <a [routerLink]="buttonLink" class="btn btn-primary btn-ripple">{{ buttonText }}</a>
+</div>

@@ -33,9 +33,16 @@
               </div>
             </div>
 
-            <div class="empty-state" *ngIf="orders.length === 0 && !loading">
-              <p>You haven't placed any orders yet.</p>
-              <button routerLink="/products" class="btn-primary">Start Shopping</button>
+
+
+            <div class="empty-state-wrapper" *ngIf="orders.length === 0 && !loading">
+              <app-empty-state
+                title="No orders yet"
+                message="You haven't placed any orders yet. Start exploring our collection."
+                icon="bi-box-seam"
+                buttonText="Start Shopping"
+                buttonLink="/products">
+              </app-empty-state>
             </div>
           </div>
         </main>
