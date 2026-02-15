@@ -47,7 +47,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let item of order.items">
+                  <tr *ngFor="let item of order.items || []">
                     <td>
                       <div class="d-flex align-items-center">
                         <div class="product-thumb">

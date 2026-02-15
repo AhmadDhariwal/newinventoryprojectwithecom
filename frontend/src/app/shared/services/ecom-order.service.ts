@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 export interface Order {
   _id: string;
   customerId: any;
-  items: any[];
+  items?: any[];
   totalAmount: number;
   originalAmount?: number;
   discountAmount?: number;

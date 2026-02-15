@@ -20,7 +20,7 @@ import Chart from 'chart.js/auto';
 export class StockTrendComponent implements OnChanges, AfterViewInit {
 
   @Input() trend: any[] = [];
-  @ViewChild('chartCanvas', { static: true }) canvas!: ElementRef;
+  @ViewChild('chartCanvas', { static: false }) canvas!: ElementRef;
 
   chart!: Chart;
   private chartInitialized = false;
