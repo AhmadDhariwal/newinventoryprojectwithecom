@@ -1,0 +1,59 @@
+<div class="chatbot-container" [class.open]="isOpen" [class.minimized]="isMinimized">
+  
+  <!-- Toggle Button (Closed State) -->
+  <button *ngIf="!isOpen" class="chat-toggle-btn" (click)="toggleChat()">
+    <i class="fas fa-comment-dots"></i>
+    <span class="tooltip">Need Help?</span>
+  </button>
+
+  <!-- Chat Window -->
+  <div class="chat-window" *ngIf="isOpen">
+    <!-- Header -->
+    <div class="chat-header" (click)="minimizeChat()">
+      <div class="header-content">
+        <i class="fas fa-robot"></i>
+        <span>Assistant</span>
+      </div>
+      <div class="header-actions">
+        <button (click)="minimizeChat()" title="Minimize">
+          <i class="fas" [class.fa-minus]="!isMinimized" [class.fa-expand]="isMinimized"></i>
+        </button>
+        <button (click)="toggleChat()" title="Close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Body (Messages) -->
+    <div class="chat-body" #scrollContainer [hidden]="isMinimized">
+      <div *ngFor="let msg of messages$ | async" class="message" [class.user]="msg.sender === 'user'" [class.bot]="msg.sender === 'bot'">
+        <div class="message-content">
+          {{ msg.text }}
+        </div>
+        <div class="message-time">
+          {{ msg.timestamp | date:'shortTime' }}
+        </div>
+      </div>
+      
+      <div *ngIf="isLoading" class="message bot loading">
+        <div class="typing-indicator">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer (Input) -->
+    <div class="chat-footer" [hidden]="isMinimized">
+      <input 
+        type="text" 
+        [(ngModel)]="userInput" 
+        (keyup.enter)="sendMessage()"
+        placeholder="Type a message..."
+        [disabled]="isLoading"
+      />
+      <button (click)="sendMessage()" [disabled]="!userInput.trim() || isLoading">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+  </div>
+</div>

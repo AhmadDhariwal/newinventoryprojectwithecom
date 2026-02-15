@@ -1,0 +1,50 @@
+<div class="chatbot-container" [class.open]="isOpen" [class.minimized]="isMinimized">
+  
+    <button *ngIf="!isOpen" class="chat-toggle-btn" (click)="toggleChat()">
+      <i class="fas fa-comment-dots"></i>
+      <div class="notification-badge">1</div>
+    </button>
+  
+    <div class="chat-window" *ngIf="isOpen">
+      <div class="chat-header" (click)="minimizeChat()">
+        <div class="header-content">
+          <div class="avatar">🤖</div>
+          <div class="info">
+            <span class="name">Store Assistant</span>
+            <span class="status">Online</span>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button (click)="minimizeChat()">
+            <i class="fas" [class.fa-minus]="!isMinimized" [class.fa-expand]="isMinimized"></i>
+          </button>
+          <button (click)="toggleChat()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+  
+      <div class="chat-body" #scrollContainer [hidden]="isMinimized">
+        <div *ngFor="let msg of messages$ | async" class="message" [class.user]="msg.sender === 'user'" [class.bot]="msg.sender === 'bot'">
+          <div class="message-content">
+            {{ msg.text }}
+          </div>
+          <div class="message-time">
+            {{ msg.timestamp | date:'shortTime' }}
+          </div>
+        </div>
+      </div>
+  
+      <div class="chat-footer" [hidden]="isMinimized">
+        <input 
+          type="text" 
+          [(ngModel)]="userInput" 
+          (keyup.enter)="sendMessage()"
+          placeholder="Ask about orders, products..."
+        />
+        <button (click)="sendMessage()" [disabled]="!userInput.trim()">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+  </div>

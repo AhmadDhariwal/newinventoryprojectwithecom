@@ -21,7 +21,7 @@
   </div>
   <div class="product-info">
     <div class="product-meta">
-      <span class="product-category">{{ product.category.name }}</span>
+      <span class="product-category">{{ product.category?.name }}</span>
     </div>
     <h3 class="product-name" [routerLink]="['/products', product._id]">{{ product.name }}</h3>
     <div class="product-price-wrapper">

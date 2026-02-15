@@ -1,18 +1,23 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { KpiCardComponent } from './components/kpi-card/kpi-card.component';
+import { ChatbotWidgetComponent } from './components/chatbot-widget/chatbot-widget.component';
+import { FormsModule } from '@angular/forms';
 
 
 
 @NgModule({
-  declarations: [
-  ],
   imports: [
     CommonModule,
-    KpiCardComponent
+    KpiCardComponent,
+    FormsModule
+  ],
+  declarations: [
+    ChatbotWidgetComponent
   ],
   exports: [
-    KpiCardComponent
+    KpiCardComponent,
+    ChatbotWidgetComponent
   ]
 })
 export class SharedModule { }

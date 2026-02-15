@@ -21,6 +21,7 @@ const forecastingroutes = require("./src/routes/forecasting.routes");
 const notificationroutes = require("./src/routes/notification.routes");
 const ecommerceroutes = require("./src/routes/ecommerce.routes");
 const adminorderroutes = require("./src/routes/admin-order.routes");
+const chatbotroutes = require("./src/routes/chatbot.routes");
 const cors = require('cors');
 
 const userroute = require('./src/routes/user');
@@ -85,6 +86,7 @@ app.use("/api/activitylog", verifytoken, ensureOrganizationContext, enforceSecur
 app.use("/api/forecasting", verifytoken, ensureOrganizationContext, enforceSecurityPolicies, checkMaintenanceMode, forecastingroutes);
 app.use("/api/notifications", verifytoken, ensureOrganizationContext, enforceSecurityPolicies, notificationroutes);
 app.use("/api/admin", verifytoken, ensureOrganizationContext, enforceSecurityPolicies, checkMaintenanceMode, adminorderroutes);
+app.use("/api/chat", chatbotroutes);
 
 
 
