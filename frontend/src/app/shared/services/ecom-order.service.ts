@@ -8,13 +8,14 @@ export interface Order {
   customerId: any;
   items: any[];
   totalAmount: number;
+  originalAmount?: number;
+  discountAmount?: number;
   status: string;
   paymentStatus: string;
   createdAt: string;
   organizationId: string;
   shippingAddress: any;
   billingAddress: any;
-  // Add other fields as needed
 }
 
 @Injectable({

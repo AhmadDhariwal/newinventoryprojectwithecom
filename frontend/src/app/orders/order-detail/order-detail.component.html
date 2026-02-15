@@ -1,127 +1,188 @@
-<div class="row" *ngIf="order && !loading">
-  <div class="col-md-8">
-    <div class="card mb-4">
-      <div class="card-header">
-        <h4>Order #{{ order._id }}</h4>
-        <small class="text-muted">{{ order.createdAt | date:'medium' }}</small>
-      </div>
-      <div class="card-body">
-        <h5>Items</h5>
-        <div class="table-responsive">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Product</th>
-                <th>Price</th>
-                <th>Qty</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let item of order.items">
-                <td>
-                  <div class="d-flex align-items-center">
-                    <img *ngIf="item.product?.images?.length" [src]="item.product.images[0]" alt="Product" style="width: 40px; height: 40px; object-fit: cover; margin-right: 10px;">
-                    <div>{{ item.product?.name || 'Unknown Product' }}</div>
-                  </div>
-                </td>
-                <td>{{ item.price | currency }}</td>
-                <td>{{ item.quantity }}</td>
-                <td>{{ (item.price * item.quantity) | currency }}</td>
-              </tr>
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                <td><strong>{{ order.totalAmount | currency }}</strong></td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <h5>Shipping & Billing</h5>
-      </div>
-      <div class="card-body">
-        <div class="row">
-          <div class="col-md-6">
-            <h6>Shipping Address</h6>
-            <p>
-              {{ order.shippingAddress.street }}<br>
-              {{ order.shippingAddress.city }}, {{ order.shippingAddress.state }} {{ order.shippingAddress.zipCode }}<br>
-              {{ order.shippingAddress.country }}
-            </p>
-          </div>
-          <div class="col-md-6">
-            <h6>Billing Address</h6>
-            <p>
-              {{ order.billingAddress.street }}<br>
-              {{ order.billingAddress.city }}, {{ order.billingAddress.state }} {{ order.billingAddress.zipCode }}<br>
-              {{ order.billingAddress.country }}
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+<div class="order-detail-container">
+  <div class="loading-state" *ngIf="loading">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p>Loading order details...</p>
   </div>
 
-  <div class="col-md-4">
-    <div class="card mb-4">
-      <div class="card-header">
-        <h5>Customer Details</h5>
-      </div>
-      <div class="card-body">
-        <div *ngIf="order.customerId">
-          <p><strong>Name:</strong> {{ order.customerId.name }}</p>
-          <p><strong>Email:</strong> {{ order.customerId.email }}</p>
-          <p><strong>Phone:</strong> {{ order.customerId.phone }}</p>
-        </div>
-        <div *ngIf="!order.customerId">
-          <p class="text-muted">Guest Customer</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <h5>Update Status</h5>
-      </div>
-      <div class="card-body">
-        <form [formGroup]="statusForm" (ngSubmit)="updateStatus()">
-          <div class="mb-3">
-            <label class="form-label">Order Status</label>
-            <select class="form-select" formControlName="status">
-              <option value="pending">Pending</option>
-              <option value="processing">Processing</option>
-              <option value="shipped">Shipped</option>
-              <option value="delivered">Delivered</option>
-              <option value="cancelled">Cancelled</option>
-            </select>
-          </div>
-          <div class="mb-3">
-             <label class="form-label">Payment Status</label>
-             <select class="form-select" formControlName="paymentStatus">
-               <option value="pending">Pending</option>
-               <option value="completed">Completed</option>
-               <option value="failed">Failed</option>
-               <option value="refunded">Refunded</option>
-             </select>
-          </div>
-          <button type="submit" class="btn btn-primary w-100" [disabled]="loading">Update</button>
-        </form>
-        
-        <div class="alert alert-success mt-3" *ngIf="success">{{ success }}</div>
-        <div class="alert alert-danger mt-3" *ngIf="error">{{ error }}</div>
-      </div>
-    </div>
+  <div class="error-state" *ngIf="error && !loading">
+    <i class="bi bi-exclamation-circle"></i>
+    <h3>{{ error }}</h3>
+    <a routerLink="/orders" class="btn btn-outline-primary mt-3">Back to Orders</a>
   </div>
-</div>
 
-<div *ngIf="loading" class="text-center py-5">
-  <div class="spinner-border text-primary" role="status">
-    <span class="visually-hidden">Loading...</span>
+  <div class="content-wrapper fade-in" *ngIf="order && !loading">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="header-content">
+        <div class="d-flex align-items-center gap-3 mb-2">
+            <a routerLink="/orders" class="btn-back"><i class="bi bi-arrow-left"></i></a>
+            <h1 class="page-title">Order #{{ order._id | slice:-8 | uppercase }}</h1>
+        </div>
+        <p class="text-muted mb-0">Placed on {{ order.createdAt | date:'MMMM d, y, h:mm a' }}</p>
+      </div>
+      <div class="header-actions">
+        <span class="status-badge" [ngClass]="'status-' + order.status">{{ order.status | titlecase }}</span>
+        <span class="payment-badge" [ngClass]="'payment-' + order.paymentStatus">{{ order.paymentStatus | titlecase }}</span>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <!-- Left Column: Items & Shipping -->
+      <div class="col-lg-8">
+        <!-- Order Items -->
+        <div class="card mb-4 section-card">
+          <div class="card-header">
+            <h5 class="card-title"><i class="bi bi-bag"></i> Order Items</h5>
+            <span class="item-count">{{ order.items?.length || 0 }} Items</span>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table align-middle">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th class="text-end">Price</th>
+                    <th class="text-center">Qty</th>
+                    <th class="text-end">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of order.items">
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <div class="product-thumb">
+                            <img *ngIf="item.product?.images?.length" [src]="item.product.images[0]" alt="Product">
+                            <i *ngIf="!item.product?.images?.length" class="bi bi-image text-muted"></i>
+                        </div>
+                        <div class="ms-3">
+                          <div class="fw-bold text-dark">{{ item.product?.name || 'Unknown Item' }}</div>
+                          <small class="text-muted" *ngIf="item.product?.sku">SKU: {{ item.product.sku }}</small>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="text-end">{{ item.price | currency }}</td>
+                    <td class="text-center">{{ item.quantity }}</td>
+                    <td class="text-end fw-medium">{{ (item.price * item.quantity) | currency }}</td>
+                  </tr>
+                </tbody>
+                <tfoot class="bg-light">
+                  <tr>
+                    <td colspan="3" class="text-end text-muted">Subtotal</td>
+                    <td class="text-end">{{ order.originalAmount || order.totalAmount | currency }}</td>
+                  </tr>
+                  <tr *ngIf="order.discountAmount">
+                    <td colspan="3" class="text-end text-success">Discount</td>
+                    <td class="text-end text-success">-{{ order.discountAmount | currency }}</td>
+                  </tr>
+                  <tr>
+                    <td colspan="3" class="text-end fw-bold fs-6">Total Amount</td>
+                    <td class="text-end fw-bold fs-5 text-primary">{{ order.totalAmount | currency }}</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Addresses -->
+        <div class="row g-4">
+          <div class="col-md-6">
+            <div class="card h-100 section-card">
+              <div class="card-header">
+                <h5 class="card-title"><i class="bi bi-truck"></i> Shipping Address</h5>
+              </div>
+              <div class="card-body">
+                <div class="address-content" *ngIf="order.shippingAddress">
+                    <p class="mb-1 fw-medium">{{ order.shippingAddress.street }}</p>
+                    <p class="mb-1">{{ order.shippingAddress.city }}, {{ order.shippingAddress.state }} {{ order.shippingAddress.zipCode }}</p>
+                    <p class="mb-0 text-muted">{{ order.shippingAddress.country }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card h-100 section-card">
+              <div class="card-header">
+                <h5 class="card-title"><i class="bi bi-receipt"></i> Billing Address</h5>
+              </div>
+              <div class="card-body">
+                <div class="address-content" *ngIf="order.billingAddress">
+                    <p class="mb-1 fw-medium">{{ order.billingAddress.street }}</p>
+                    <p class="mb-1">{{ order.billingAddress.city }}, {{ order.billingAddress.state }} {{ order.billingAddress.zipCode }}</p>
+                    <p class="mb-0 text-muted">{{ order.billingAddress.country }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Customer & Actions -->
+      <div class="col-lg-4">
+        <!-- Customer Info -->
+        <div class="card mb-4 section-card">
+          <div class="card-header">
+            <h5 class="card-title"><i class="bi bi-person"></i> Customer Details</h5>
+          </div>
+          <div class="card-body text-center p-4">
+            <div class="avatar-circle mb-3 mx-auto">
+                {{ order.customerId?.name?.charAt(0)?.toUpperCase() || 'G' }}
+            </div>
+            <h5 class="mb-1">{{ order.customerId?.name || 'Guest User' }}</h5>
+             <div class="text-muted small mb-3">
+                 <i class="bi bi-envelope me-1"></i> {{ order.customerId?.email || 'No email provided' }}
+             </div>
+             <div class="text-muted small" *ngIf="order.customerId?.phone">
+                 <i class="bi bi-telephone me-1"></i> {{ order.customerId.phone }}
+             </div>
+          </div>
+        </div>
+
+        <!-- Note/Status Update -->
+        <div class="card section-card">
+          <div class="card-header">
+            <h5 class="card-title"><i class="bi bi-sliders"></i> Manage Order</h5>
+          </div>
+          <div class="card-body">
+            <form [formGroup]="statusForm" (ngSubmit)="updateStatus()">
+              <div class="mb-3">
+                <label class="form-label small text-muted text-uppercase fw-bold">Order Status</label>
+                <select class="form-select" formControlName="status">
+                  <option value="pending">Pending</option>
+                  <option value="processing">Processing</option>
+                  <option value="shipped">Shipped</option>
+                  <option value="delivered">Delivered</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
+              
+              <div class="mb-4">
+                <label class="form-label small text-muted text-uppercase fw-bold">Payment Status</label>
+                <select class="form-select" formControlName="paymentStatus">
+                  <option value="pending">Pending</option>
+                  <option value="completed">Completed</option>
+                  <option value="failed">Failed</option>
+                  <option value="refunded">Refunded</option>
+                </select>
+              </div>
+
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary" [disabled]="loading || statusForm.invalid || statusForm.pristine">
+                    <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                    Update Order
+                </button>
+              </div>
+              
+              <div *ngIf="success" class="alert alert-success mt-3 mb-0 small">
+                  <i class="bi bi-check-circle me-1"></i> {{ success }}
+              </div>
+              <div *ngIf="error" class="alert alert-danger mt-3 mb-0 small">
+                  <i class="bi bi-exclamation-circle me-1"></i> {{ error }}
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

@@ -1,88 +1,103 @@
-<div class="card">
-  <div class="card-header d-flex justify-content-between align-items-center">
-    <h3>E-commerce Orders</h3>
-    <div class="d-flex gap-2">
-      <input type="text" class="form-control" placeholder="Search Order ID..." [(ngModel)]="searchQuery" (input)="onFilterChange()">
-      <select title="filter" class="form-select" [(ngModel)]="statusFilter" (change)="onFilterChange()">
-        <option value="">All Statuses</option>
-        <option value="pending">Pending</option>
-        <option value="processing">Processing</option>
-        <option value="shipped">Shipped</option>
-        <option value="delivered">Delivered</option>
-        <option value="cancelled">Cancelled</option>
-      </select>
-    </div>
+<div class="orders-container">
+  <div class="page-header">
+    <h2 class="page-title">E-commerce Orders</h2>
+    <p class="page-subtitle">Manage and track all customer orders</p>
   </div>
-  <div class="card-body p-0">
-    <div class="table-responsive">
-      <table class="table table-hover align-middle mb-0">
-        <thead class="bg-light">
-          <tr>
-            <th class="border-0 rounded-start">Order ID</th>
-            <th class="border-0">Customer</th>
-            <th class="border-0">Date</th>
-            <th class="border-0">Total</th>
-            <th class="border-0">Status</th>
-            <th class="border-0">Payment</th>
-            <th class="border-0 rounded-end">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let order of orders">
-            <td class="fw-bold text-dark">#{{ order._id | slice:-6 | uppercase }}</td>
-            <td>
-              <div class="d-flex align-items-center">
-                <div class="avatar-initial rounded bg-soft-primary text-primary me-2" *ngIf="order.customerId?.name">
-                   {{ order.customerId.name.charAt(0) }}
-                </div>
-                <div>
-                  <span class="d-block fw-bold text-dark" *ngIf="order.customerId?.name">{{ order.customerId.name }}</span>
-                  <span class="small text-muted" *ngIf="order.customerId?.email">{{ order.customerId.email }}</span>
-                  <span *ngIf="!order.customerId?.name" class="text-muted fst-italic">Guest User</span>
-                </div>
-              </div>
-            </td>
-            <td>{{ order.createdAt | date:'mediumDate' }}</td>
-            <td class="fw-bold">{{ order.totalAmount | currency }}</td>
-            <td>
-              <span class="badge rounded-pill" [ngClass]="{
-                'bg-warning': order.status === 'pending',
-                'bg-info': order.status === 'processing',
-                'bg-primary': order.status === 'shipped',
-                'bg-success': order.status === 'delivered',
-                'bg-danger': order.status === 'cancelled'
-              }">{{ order.status | titlecase }}</span>
-            </td>
-            <td>
-              <span class="badge rounded-pill" [ngClass]="{
-                'bg-success': order.paymentStatus === 'completed',
-                'bg-warning': order.paymentStatus === 'pending',
-                'bg-danger': order.paymentStatus === 'failed',
-                'bg-secondary': order.paymentStatus === 'refunded'
-              }">{{ order.paymentStatus | titlecase }}</span>
-            </td>
-            <td>
-              <a [routerLink]="['/orders', order._id]" class="btn btn-sm btn-outline-primary">
-                 View Details
-              </a>
-            </td>
-          </tr>
-          <tr *ngIf="orders.length === 0 && !loading">
-            <td colspan="7" class="text-center py-5 text-muted">
-              <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-              No orders found
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
 
-    <!-- Pagination -->
-    <div class="d-flex justify-content-between align-items-center p-3 border-top" *ngIf="total > limit">
-      <div class="text-muted small">Showing {{ (page - 1) * limit + 1 }} to {{ page * limit > total ? total : page * limit }} of {{ total }} entries</div>
-      <div>
-        <button class="btn btn-sm btn-outline-secondary me-1" [disabled]="page === 1" (click)="onPageChange(page - 1)">Previous</button>
-        <button class="btn btn-sm btn-outline-secondary" [disabled]="page * limit >= total" (click)="onPageChange(page + 1)">Next</button>
+  <div class="card">
+    <div class="card-header">
+      <div class="filters-row">
+        <div class="search-box">
+          <i class="bi bi-search"></i>
+          <input type="text" class="form-control" placeholder="Search by Order ID..." [(ngModel)]="searchQuery" (input)="onSearch(searchQuery)">
+        </div>
+        <select title="filter" class="form-select status-filter" [(ngModel)]="statusFilter" (change)="onFilterChange()">
+          <option value="">All Statuses</option>
+          <option value="pending">Pending</option>
+          <option value="processing">Processing</option>
+          <option value="shipped">Shipped</option>
+          <option value="delivered">Delivered</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Date</th>
+              <th>Items</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Payment</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let order of orders" class="order-row">
+              <td class="order-id">#{{ order._id | slice:-8 | uppercase }}</td>
+              <td>
+                <div class="customer-info">
+                  <div class="avatar" *ngIf="order.customerId?.name">
+                    {{ order.customerId.name.charAt(0).toUpperCase() }}
+                  </div>
+                  <div class="customer-details">
+                    <span class="customer-name" *ngIf="order.customerId?.name">{{ order.customerId.name }}</span>
+                    <span class="customer-email" *ngIf="order.customerId?.email">{{ order.customerId.email }}</span>
+                    <span *ngIf="!order.customerId?.name" class="guest-label">Guest User</span>
+                  </div>
+                </div>
+              </td>
+              <td class="order-date">{{ order.createdAt | date:'MMM d, y' }}</td>
+              <td class="items-count">{{ order.items?.length || 0 }} items</td>
+              <td class="order-total">${{ order.totalAmount | number:'1.2-2' }}</td>
+              <td>
+                <span class="status-badge" [ngClass]="'status-' + order.status">
+                  {{ order.status | titlecase }}
+                </span>
+              </td>
+              <td>
+                <span class="payment-badge" [ngClass]="'payment-' + order.paymentStatus">
+                  {{ order.paymentStatus | titlecase }}
+                </span>
+              </td>
+              <td>
+                <a [routerLink]="['/orders', order._id]" class="btn-view">
+                  <i class="bi bi-eye"></i> View
+                </a>
+              </td>
+            </tr>
+            <tr *ngIf="orders.length === 0 && !loading">
+              <td colspan="8" class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <p>No orders found</p>
+              </td>
+            </tr>
+            <tr *ngIf="loading">
+              <td colspan="8" class="loading-state">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p>Loading orders...</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination-wrapper" *ngIf="total > limit">
+        <div class="pagination-info">Showing {{ (page - 1) * limit + 1 }} to {{ page * limit > total ? total : page * limit }} of {{ total }} orders</div>
+        <div class="pagination-controls">
+          <button class="btn-pagination" [disabled]="page === 1" (click)="onPageChange(page - 1)">
+            <i class="bi bi-chevron-left"></i> Previous
+          </button>
+          <span class="page-number">Page {{ page }} of {{ Math.ceil(total / limit) }}</span>
+          <button class="btn-pagination" [disabled]="page * limit >= total" (click)="onPageChange(page + 1)">
+            Next <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
       </div>
     </div>
   </div>

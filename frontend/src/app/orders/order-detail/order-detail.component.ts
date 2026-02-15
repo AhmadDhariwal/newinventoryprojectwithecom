@@ -35,6 +35,7 @@ export class OrderDetailComponent implements OnInit {
 
   loadOrder(id: string): void {
     this.loading = true;
+    this.error = '';
     this.orderService.getOrderById(id).subscribe({
       next: (res) => {
         this.order = res.data;
@@ -45,7 +46,7 @@ export class OrderDetailComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.error = 'Failed to load order details';
+        this.error = err.error?.message || 'Order not found or access denied';
         this.loading = false;
       }
     });

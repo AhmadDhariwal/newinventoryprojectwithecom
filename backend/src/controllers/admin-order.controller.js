@@ -1,4 +1,5 @@
 const Order = require('../models/order');
+const Product = require('../models/product');
 
 // Get All Orders (Admin/Manager)
 const getAllOrders = async (req, res) => {
@@ -6,30 +7,27 @@ const getAllOrders = async (req, res) => {
         const organizationId = req.organizationId;
         const { page = 1, limit = 10, status, search } = req.query;
 
-        const query = { organizationId };
+        // Find products belonging to this organization
+        const orgProducts = await Product.find({ organizationId }).select('_id').lean();
+        const productIds = orgProducts.map(p => p._id);
 
-        if (status) {
+        // Find orders containing these products
+        const query = { 'items.product': { $in: productIds } };
+
+        if (status && status !== 'all') {
             query.status = status;
         }
 
-        if (search) {
-            // Search by Order ID or Customer Name (need lookup for name, simpler to search ID for now)
-            // Or use regex for string fields
-            query.$or = [
-                { _id: search.match(/^[0-9a-fA-F]{24}$/) ? search : null },
-                { 'shippingAddress.email': { $regex: search, $options: 'i' } } // If we had email in address, actually email is in Customer
-            ].filter(c => c !== null);
-            // Improving search to include Customer name would require aggregation or populate match
-        }
-
-        const orders = await Order.find()   //(query)
+        const orders = await Order.find(query)
             .populate('customerId', 'name email phone')
+            .populate('items.product', 'name sku price images')
             .sort({ createdAt: -1 })
             .skip((page - 1) * limit)
-            .limit(parseInt(limit));
+            .limit(parseInt(limit))
+            .lean();
 
-        const total = await Order.countDocuments(); //(query)
-  console.log("Found : ",total);
+        const total = await Order.countDocuments(query);
+
         res.json({
             success: true,
             data: orders,
@@ -50,12 +48,23 @@ const getOrderById = async (req, res) => {
         const { id } = req.params;
         const organizationId = req.organizationId;
 
-        const order = await Order.findOne({ _id: id, organizationId })
+        const order = await Order.findById(id)
             .populate('customerId', 'name email phone')
-            .populate('items.product', 'name sku price images');
+            .populate('items.product', 'name sku price images')
+            .populate('items.warehouse', 'name address')
+            .lean();
 
         if (!order) {
             return res.status(404).json({ success: false, message: 'Order not found' });
+        }
+
+        // Verify organization owns at least one product in the order
+        const orgProducts = await Product.find({ organizationId }).select('_id').lean();
+        const productIds = orgProducts.map(p => p._id.toString());
+        const hasAccess = order.items.some(item => productIds.includes(item.product._id.toString()));
+
+        if (!hasAccess) {
+            return res.status(403).json({ success: false, message: 'Access denied' });
         }
 
         res.json({ success: true, data: order });
@@ -71,10 +80,19 @@ const updateOrderStatus = async (req, res) => {
         const { status, paymentStatus } = req.body;
         const organizationId = req.organizationId;
 
-        const order = await Order.findOne({ _id: id, organizationId });
+        const order = await Order.findById(id).populate('items.product', 'organizationId');
 
         if (!order) {
             return res.status(404).json({ success: false, message: 'Order not found' });
+        }
+
+        // Verify organization owns at least one product in the order
+        const hasAccess = order.items.some(item => 
+            item.product && item.product.organizationId.toString() === organizationId.toString()
+        );
+
+        if (!hasAccess) {
+            return res.status(403).json({ success: false, message: 'Access denied' });
         }
 
         if (status) order.status = status;
@@ -82,7 +100,11 @@ const updateOrderStatus = async (req, res) => {
 
         await order.save();
 
-        res.json({ success: true, message: 'Order updated successfully', data: order });
+        const updatedOrder = await Order.findById(id)
+            .populate('customerId', 'name email phone')
+            .populate('items.product', 'name sku price images');
+
+        res.json({ success: true, message: 'Order updated successfully', data: updatedOrder });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
     }
