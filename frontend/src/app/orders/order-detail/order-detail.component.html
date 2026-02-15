@@ -55,7 +55,7 @@
                             <i *ngIf="!item.product?.images?.length" class="bi bi-image text-muted"></i>
                         </div>
                         <div class="ms-3">
-                          <div class="fw-bold text-dark">{{ item.product?.name || 'Unknown Item' }}</div>
+                          <div class="order-item-title">{{ item.product?.name || 'Unknown Item' }}</div>
                           <small class="text-muted" *ngIf="item.product?.sku">SKU: {{ item.product.sku }}</small>
                         </div>
                       </div>
@@ -129,12 +129,24 @@
                 {{ order.customerId?.name?.charAt(0)?.toUpperCase() || 'G' }}
             </div>
             <h5 class="mb-1">{{ order.customerId?.name || 'Guest User' }}</h5>
-             <div class="text-muted small mb-3">
-                 <i class="bi bi-envelope me-1"></i> {{ order.customerId?.email || 'No email provided' }}
-             </div>
-             <div class="text-muted small" *ngIf="order.customerId?.phone">
-                 <i class="bi bi-telephone me-1"></i> {{ order.customerId.phone }}
-             </div>
+            <div class="customer-info-list mt-3">
+              <div class="info-row">
+                <span class="info-label">Email:</span>
+                <span class="info-value">{{ order.customerId?.email || 'No email provided' }}</span>
+              </div>
+              <div class="info-row" *ngIf="order.customerId?.phone">
+                <span class="info-label">Phone:</span>
+                <span class="info-value">{{ order.customerId.phone }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Order Date:</span>
+                <span class="info-value">{{ order.createdAt | date:'medium' }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Order Total:</span>
+                <span class="info-value fw-bold text-primary">{{ order.totalAmount | currency }}</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -146,8 +158,8 @@
           <div class="card-body">
             <form [formGroup]="statusForm" (ngSubmit)="updateStatus()">
               <div class="mb-3">
-                <label class="form-label small text-muted text-uppercase fw-bold">Order Status</label>
-                <select class="form-select" formControlName="status">
+                <label class="form-label status-label">Order Status</label>
+                <select title="order status" class="form-select status-select" formControlName="status">
                   <option value="pending">Pending</option>
                   <option value="processing">Processing</option>
                   <option value="shipped">Shipped</option>
@@ -155,24 +167,21 @@
                   <option value="cancelled">Cancelled</option>
                 </select>
               </div>
-              
               <div class="mb-4">
-                <label class="form-label small text-muted text-uppercase fw-bold">Payment Status</label>
-                <select class="form-select" formControlName="paymentStatus">
+                <label class="form-label payment-label">Payment Status</label>
+                <select title="payment status" class="form-select payment-select" formControlName="paymentStatus">
                   <option value="pending">Pending</option>
                   <option value="completed">Completed</option>
                   <option value="failed">Failed</option>
                   <option value="refunded">Refunded</option>
                 </select>
               </div>
-
               <div class="d-grid">
-                <button type="submit" class="btn btn-primary" [disabled]="loading || statusForm.invalid || statusForm.pristine">
+                <button type="submit" class="btn btn-primary btn-update-order" [disabled]="loading || statusForm.invalid || statusForm.pristine">
                     <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
                     Update Order
                 </button>
               </div>
-              
               <div *ngIf="success" class="alert alert-success mt-3 mb-0 small">
                   <i class="bi bi-check-circle me-1"></i> {{ success }}
               </div>
