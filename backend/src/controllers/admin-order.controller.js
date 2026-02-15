@@ -22,14 +22,14 @@ const getAllOrders = async (req, res) => {
             // Improving search to include Customer name would require aggregation or populate match
         }
 
-        const orders = await Order.find(query)
+        const orders = await Order.find()   //(query)
             .populate('customerId', 'name email phone')
             .sort({ createdAt: -1 })
             .skip((page - 1) * limit)
             .limit(parseInt(limit));
 
-        const total = await Order.countDocuments(query);
-
+        const total = await Order.countDocuments(); //(query)
+  console.log("Found : ",total);
         res.json({
             success: true,
             data: orders,

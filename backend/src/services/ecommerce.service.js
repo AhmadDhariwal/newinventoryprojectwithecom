@@ -275,36 +275,20 @@ const createOrder = async (customerId, orderData, organizationId) => {
                 throw new Error(`Product not found: ${item.product}`);
             }
 
-            // Verify product belongs to the organization
-            if (product.organizationId.toString() !== organizationId.toString()) {
-                throw new Error(`Product ${item.product} does not belong to this organization`);
+            // Find stock across ALL warehouses for this product (not limited to customer's org)
+            const allStockLevels = await StockLevel.find({
+                product: item.product
+            }).sort({ quantity: -1 });
+
+            const totalAvailableStock = allStockLevels.reduce((sum, level) => sum + (level.quantity || 0), 0);
+
+            if (totalAvailableStock < item.quantity) {
+                throw new Error(`Insufficient stock for ${product.name}. Available: ${totalAvailableStock}, Required: ${item.quantity}`);
             }
 
-            // Use warehouse from item or default warehouse
-            const warehouseId = item.warehouse || defaultWarehouse._id;
-
-            // Check stock availability
-            let stockLevel = await StockLevel.findOne({
-                product: item.product,
-                warehouse: warehouseId
-            });
-
-            // If no stock level exists, create one with 0 quantity
-            if (!stockLevel) {
-                stockLevel = await StockLevel.create({
-                    product: item.product,
-                    warehouse: warehouseId,
-                    organizationId,
-                    quantity: 0,
-                    minStock: 5
-                });
-            }
-
-            const availableStock = stockLevel.quantity || 0;
-
-            if (availableStock < item.quantity) {
-                throw new Error(`Insufficient stock for ${product.name}. Available: ${availableStock}, Required: ${item.quantity}`);
-            }
+            // Use the warehouse with the most stock or the product's organization warehouse
+            let warehouseId = allStockLevels[0]?.warehouse || defaultWarehouse._id;
+            let stockLevel = allStockLevels[0];
 
             // Calculate item total
             const itemPrice = item.price || product.price;
@@ -321,7 +305,7 @@ const createOrder = async (customerId, orderData, organizationId) => {
             // Deduct stock
             if (stockLevel) {
                 stockLevel.quantity -= item.quantity;
-                await stockLevel.save();
+                await StockLevel.findByIdAndUpdate(stockLevel._id, { quantity: stockLevel.quantity });
             }
 
             // Create outbound stock movement
@@ -331,8 +315,8 @@ const createOrder = async (customerId, orderData, organizationId) => {
                 type: 'OUT',
                 quantity: item.quantity,
                 reason: 'E-COMMERCE_ORDER',
-                user: customerId, // Using customerId as user reference
-                organizationId
+                user: customerId,
+                organizationId: product.organizationId
             });
         }
 

@@ -84,7 +84,7 @@ app.use("/api/settings", verifytoken, ensureOrganizationContext, enforceSecurity
 app.use("/api/activitylog", verifytoken, ensureOrganizationContext, enforceSecurityPolicies, checkMaintenanceMode, activitylogroutes);
 app.use("/api/forecasting", verifytoken, ensureOrganizationContext, enforceSecurityPolicies, checkMaintenanceMode, forecastingroutes);
 app.use("/api/notifications", verifytoken, ensureOrganizationContext, enforceSecurityPolicies, notificationroutes);
-app.use("/api/admin/orders", verifytoken, ensureOrganizationContext, enforceSecurityPolicies, checkMaintenanceMode, adminorderroutes);
+app.use("/api/admin", verifytoken, ensureOrganizationContext, enforceSecurityPolicies, checkMaintenanceMode, adminorderroutes);
 
 
 

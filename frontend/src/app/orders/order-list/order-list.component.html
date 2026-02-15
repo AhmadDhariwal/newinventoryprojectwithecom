@@ -3,7 +3,7 @@
     <h3>E-commerce Orders</h3>
     <div class="d-flex gap-2">
       <input type="text" class="form-control" placeholder="Search Order ID..." [(ngModel)]="searchQuery" (input)="onFilterChange()">
-      <select class="form-select" [(ngModel)]="statusFilter" (change)="onFilterChange()">
+      <select title="filter" class="form-select" [(ngModel)]="statusFilter" (change)="onFilterChange()">
         <option value="">All Statuses</option>
         <option value="pending">Pending</option>
         <option value="processing">Processing</option>
@@ -13,31 +13,39 @@
       </select>
     </div>
   </div>
-  <div class="card-body">
+  <div class="card-body p-0">
     <div class="table-responsive">
-      <table class="table table-hover">
-        <thead>
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light">
           <tr>
-            <th>Order ID</th>
-            <th>Customer</th>
-            <th>Date</th>
-            <th>Total</th>
-            <th>Status</th>
-            <th>Payment</th>
-            <th>Actions</th>
+            <th class="border-0 rounded-start">Order ID</th>
+            <th class="border-0">Customer</th>
+            <th class="border-0">Date</th>
+            <th class="border-0">Total</th>
+            <th class="border-0">Status</th>
+            <th class="border-0">Payment</th>
+            <th class="border-0 rounded-end">Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let order of orders">
-            <td>{{ order._id | slice:0:8 }}...</td>
+            <td class="fw-bold text-dark">#{{ order._id | slice:-6 | uppercase }}</td>
             <td>
-              <span *ngIf="order.customerId?.name">{{ order.customerId.name }}</span>
-              <span *ngIf="!order.customerId?.name" class="text-muted">Guest</span>
+              <div class="d-flex align-items-center">
+                <div class="avatar-initial rounded bg-soft-primary text-primary me-2" *ngIf="order.customerId?.name">
+                   {{ order.customerId.name.charAt(0) }}
+                </div>
+                <div>
+                  <span class="d-block fw-bold text-dark" *ngIf="order.customerId?.name">{{ order.customerId.name }}</span>
+                  <span class="small text-muted" *ngIf="order.customerId?.email">{{ order.customerId.email }}</span>
+                  <span *ngIf="!order.customerId?.name" class="text-muted fst-italic">Guest User</span>
+                </div>
+              </div>
             </td>
-            <td>{{ order.createdAt | date:'short' }}</td>
-            <td>{{ order.totalAmount | currency }}</td>
+            <td>{{ order.createdAt | date:'mediumDate' }}</td>
+            <td class="fw-bold">{{ order.totalAmount | currency }}</td>
             <td>
-              <span class="badge" [ngClass]="{
+              <span class="badge rounded-pill" [ngClass]="{
                 'bg-warning': order.status === 'pending',
                 'bg-info': order.status === 'processing',
                 'bg-primary': order.status === 'shipped',
@@ -46,29 +54,35 @@
               }">{{ order.status | titlecase }}</span>
             </td>
             <td>
-              <span class="badge" [ngClass]="{
+              <span class="badge rounded-pill" [ngClass]="{
                 'bg-success': order.paymentStatus === 'completed',
                 'bg-warning': order.paymentStatus === 'pending',
-                'bg-danger': order.paymentStatus === 'failed'
+                'bg-danger': order.paymentStatus === 'failed',
+                'bg-secondary': order.paymentStatus === 'refunded'
               }">{{ order.paymentStatus | titlecase }}</span>
             </td>
             <td>
-              <a [routerLink]="['/orders', order._id]" class="btn btn-sm btn-outline-primary">View</a>
+              <a [routerLink]="['/orders', order._id]" class="btn btn-sm btn-outline-primary">
+                 View Details
+              </a>
             </td>
           </tr>
           <tr *ngIf="orders.length === 0 && !loading">
-            <td colspan="7" class="text-center py-4">No orders found</td>
+            <td colspan="7" class="text-center py-5 text-muted">
+              <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+              No orders found
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- Simple Pagination (Add better component if available) -->
-    <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="total > limit">
-      <div>Showing {{ (page - 1) * limit + 1 }} to {{ page * limit > total ? total : page * limit }} of {{ total }}</div>
+    <!-- Pagination -->
+    <div class="d-flex justify-content-between align-items-center p-3 border-top" *ngIf="total > limit">
+      <div class="text-muted small">Showing {{ (page - 1) * limit + 1 }} to {{ page * limit > total ? total : page * limit }} of {{ total }} entries</div>
       <div>
-        <button class="btn btn-sm btn-secondary me-2" [disabled]="page === 1" (click)="onPageChange(page - 1)">Prev</button>
-        <button class="btn btn-sm btn-secondary" [disabled]="page * limit >= total" (click)="onPageChange(page + 1)">Next</button>
+        <button class="btn btn-sm btn-outline-secondary me-1" [disabled]="page === 1" (click)="onPageChange(page - 1)">Previous</button>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="page * limit >= total" (click)="onPageChange(page + 1)">Next</button>
       </div>
     </div>
   </div>

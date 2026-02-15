@@ -18,8 +18,7 @@ import { EmptyStateComponent } from '../../shared/components/empty-state/empty-s
       { path: 'profile', component: ProfileComponent },
       { path: 'orders', component: OrdersComponent },
       { path: 'refund/:orderId', component: RefundRequestComponent }
-    ]),
-    EmptyStateComponent
+    ])
   ]
 })
 export class UserModule { }

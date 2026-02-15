@@ -5,12 +5,12 @@ const { verifytoken, restrictto } = require('../middleware/auth.middleware');
 
 // Routes for Admin/Manager
 // GET /api/admin/orders
-router.get('/', verifytoken, restrictto(['admin', 'manager']), adminOrderController.getAllOrders);
+router.get('/orders', verifytoken, restrictto(['admin', 'manager']), adminOrderController.getAllOrders);
 
 // GET /api/admin/orders/:id
-router.get('/:id', verifytoken, restrictto(['admin', 'manager']), adminOrderController.getOrderById);
+router.get('/orders/:id', verifytoken, restrictto(['admin', 'manager']), adminOrderController.getOrderById);
 
 // PUT /api/admin/orders/:id
-router.put('/:id', verifytoken, restrictto(['admin', 'manager']), adminOrderController.updateOrderStatus);
+router.put('/orders/:id', verifytoken, restrictto(['admin', 'manager']), adminOrderController.updateOrderStatus);
 
 module.exports = router;

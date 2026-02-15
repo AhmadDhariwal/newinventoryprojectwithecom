@@ -9,12 +9,10 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-  ],
+  declarations: [],
   imports: [
     CommonModule,
-    RouterModule.forChild([{ path: '', component: CartComponent }]),
-    EmptyStateComponent // Standalone component imported here
+    RouterModule.forChild([{ path: '', component: CartComponent }])
   ]
 })
 export class CartModule { }
