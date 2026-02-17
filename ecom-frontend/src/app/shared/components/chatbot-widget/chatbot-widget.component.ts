@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, AfterViewChecked, Output, EventEmitter } from '@angular/core';
 import { ChatbotService, ChatMessage } from '../../services/chatbot.service';
 
 @Component({
@@ -8,6 +8,8 @@ import { ChatbotService, ChatMessage } from '../../services/chatbot.service';
 })
 export class ChatbotWidgetComponent implements OnInit, AfterViewChecked {
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
+  @Output() close = new EventEmitter<void>();
+
   
   isOpen = false;
   isMinimized = false;

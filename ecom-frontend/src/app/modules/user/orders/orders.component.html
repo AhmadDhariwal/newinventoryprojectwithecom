@@ -1,50 +1,117 @@
-<div class="container section">
-      <div class="user-layout">
-        <aside class="user-sidebar">
-          <h3>Your Account</h3>
-          <ul>
-            <li><a routerLink="/user/profile" routerLinkActive="active">Profile</a></li>
-            <li><a routerLink="/user/orders" routerLinkActive="active">Order History</a></li>
-          </ul>
-        </aside>
+<div class="user-dashboard-wrapper">
+  <div class="container section">
+    <div class="user-layout fade-in">
+      <!-- Sidebar Navigation -->
+      <aside class="dashboard-sidebar">
+        <div class="sidebar-header">
+          <div class="user-avatar" *ngIf="user?.name">
+            {{ user.name.charAt(0) | uppercase }}
+          </div>
+          <div class="user-meta">
+            <h3 class="user-name">{{ user?.name || 'Your Account' }}</h3>
+            <p class="user-role">Member</p>
+          </div>
+        </div>
+        <nav class="dashboard-nav">
+          <a routerLink="/user/profile" routerLinkActive="active" class="nav-item">
+            <i class="bi bi-person-fill"></i>
+            <span>Personal Profile</span>
+          </a>
+          <a routerLink="/user/orders" routerLinkActive="active" class="nav-item">
+            <i class="bi bi-bag-check-fill"></i>
+            <span>Order History</span>
+          </a>
+        </nav>
+      </aside>
 
-        <main class="user-content">
-          <h1>Order History</h1>
-          
-          <div class="orders-list">
-            <div class="order-card fade-in" *ngFor="let order of orders">
+      <!-- Main Content Area -->
+      <main class="dashboard-content">
+        <div class="content-header">
+          <h1 class="content-title">Order History</h1>
+          <p class="content-subtitle">Track and manage your premium purchases</p>
+        </div>
+
+        <div class="loading-overlay" *ngIf="loading">
+          <div class="luxury-spinner"></div>
+        </div>
+
+        <div class="content-body" *ngIf="!loading">
+          <div class="orders-list" *ngIf="orders.length > 0">
+            <div class="order-card luxe-card" *ngFor="let order of orders">
+              <!-- Order Header -->
               <div class="order-header">
-                <div>
-                  <span class="order-id">Order #{{ order._id.slice(-8) }}</span>
-                  <span class="order-date">{{ order.createdAt | date:'mediumDate' }}</span>
+                <div class="order-id-group">
+                  <span class="label">Order ID</span>
+                  <span class="value">#{{ order._id.slice(-8) | uppercase }}</span>
                 </div>
-                <span class="status-badge" [attr.data-status]="order.status">{{ order.status }}</span>
+                <div class="order-date-group">
+                  <span class="label">Placed On</span>
+                  <span class="value">{{ order.createdAt | date:'mediumDate' }}</span>
+                </div>
+                <div class="order-status-group">
+                  <span class="status-badge" [attr.data-status]="order.status">{{ order.status }}</span>
+                </div>
               </div>
+
+              <!-- Order Body -->
               <div class="order-body">
                 <div class="order-items">
-                  <div class="item" *ngFor="let item of order.items">
-                    {{ item.quantity }}x {{ item.product.name }}
+                  <div class="item-preview" *ngFor="let item of order.items">
+                    <div class="item-info">
+                      <h4 class="item-name">{{ item.product.name }}</h4>
+                      <p class="item-qty">Quantity: {{ item.quantity }}</p>
+                    </div>
+                    <span class="item-price">{{ (item.product.discountPrice || item.product.price) * item.quantity | currency }}</span>
                   </div>
                 </div>
-                <div class="order-meta">
-                  <div class="total-amount">{{ order.totalAmount | currency }}</div>
-                  <button class="btn-refund" *ngIf="order.status === 'delivered'" [routerLink]="['/user/refund', order._id]">Request Refund</button>
+
+                <!-- Status Timeline -->
+                <div class="status-timeline">
+                  <div class="timeline-step" [class.active]="order.status === 'processing' || order.status === 'shipped' || order.status === 'delivered'">
+                    <div class="step-dot"></div>
+                    <span>Processing</span>
+                  </div>
+                  <div class="timeline-step" [class.active]="order.status === 'shipped' || order.status === 'delivered'">
+                    <div class="step-line"></div>
+                    <div class="step-dot"></div>
+                    <span>Shipped</span>
+                  </div>
+                  <div class="timeline-step" [class.active]="order.status === 'delivered'">
+                    <div class="step-line"></div>
+                    <div class="step-dot"></div>
+                    <span>Delivered</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Order Footer -->
+              <div class="order-footer">
+                <div class="total-info">
+                  <span class="label">Total Amount</span>
+                  <span class="total-value">{{ order.totalAmount | currency }}</span>
+                </div>
+                <div class="order-actions">
+                  <button class="btn btn-outline-sm" *ngIf="order.status === 'delivered'" [routerLink]="['/user/refund', order._id]">
+                    Request Refund
+                  </button>
+                  <button class="btn btn-gold-sm">View Details</button>
                 </div>
               </div>
             </div>
-
-
-
-            <div class="empty-state-wrapper" *ngIf="orders.length === 0 && !loading">
-              <app-empty-state
-                title="No orders yet"
-                message="You haven't placed any orders yet. Start exploring our collection."
-                icon="bi-box-seam"
-                buttonText="Start Shopping"
-                buttonLink="/products">
-              </app-empty-state>
-            </div>
           </div>
-        </main>
-      </div>
+
+          <!-- Empty State -->
+          <div class="empty-state-wrapper" *ngIf="orders.length === 0">
+            <app-empty-state
+              title="No orders found"
+              message="Experience our curated collections by placing your first order."
+              icon="bi-box-seam"
+              buttonText="Discover Collections"
+              buttonLink="/products">
+            </app-empty-state>
+          </div>
+        </div>
+      </main>
     </div>
+  </div>
+</div>

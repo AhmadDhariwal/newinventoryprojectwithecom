@@ -5,9 +5,15 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
+// .settings-container {
+//   display: flex;
+//   min-height: 100vh;
+//   background-color: #f8fafc;
+// }
 .settings-container {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;       // CHANGE THIS
+  overflow: hidden;    // ADD THIS
   background-color: #f8fafc;
 }
 
@@ -15,7 +21,7 @@
   width: 280px;
   background: #ffffff;
   border-right: 1px solid #e5e7eb;
-  position: sticky;
+  position:sticky;
   top: 0;
   height: 100vh;
   overflow-y: auto;
@@ -132,10 +138,23 @@
   }
 }
 
+// .settings-content {
+//   flex: 1;
+//   padding: 24px;
+//   max-width: calc(100vw - 280px);
+//   overflow-x: auto;
+//   background-color: #f8fafc;
+// }
+.settings-sidebar {
+  width: 280px;
+  height: 100vh;
+  overflow-y: auto;
+}
+
 .settings-content {
   flex: 1;
   padding: 24px;
-  max-width: calc(100vw - 280px);
+  overflow-y: auto;    // ADD THIS
   overflow-x: auto;
   background-color: #f8fafc;
 }
@@ -157,38 +176,38 @@
     flex-direction: column;
   }
   
-  .settings-sidebar {
-    width: 100%;
-    height: auto;
-    position: static;
-    border-right: none;
-    border-bottom: 1px solid #e5e7eb;
+  // .settings-sidebar {
+  //   width: 100%;
+  //   height: auto;
+  //   position: sticky;
+  //   border-right: none;
+  //   border-bottom: 1px solid #e5e7eb;
     
-    .sidebar-header {
-      padding: 16px 20px;
+  //   .sidebar-header {
+  //     padding: 16px 20px;
       
-      .sidebar-title {
-        font-size: 18px;
-      }
-    }
+  //     .sidebar-title {
+  //       font-size: 18px;
+  //     }
+  //   }
     
-    .settings-nav {
-      padding: 12px 0;
+  //   .settings-nav {
+  //     padding: 12px 0;
       
-      .nav-section {
-        margin-bottom: 16px;
+  //     .nav-section {
+  //       margin-bottom: 16px;
         
-        .nav-section-title {
-          padding: 0 20px;
-        }
+  //       .nav-section-title {
+  //         padding: 0 20px;
+  //       }
         
-        .nav-item {
-          padding: 10px 20px;
-          font-size: 14px;
-        }
-      }
-    }
-  }
+  //       .nav-item {
+  //         padding: 10px 20px;
+  //         font-size: 14px;
+  //       }
+  //     }
+  //   }
+  // }
   
   .settings-content {
     padding: 16px;

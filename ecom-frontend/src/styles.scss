@@ -3,25 +3,40 @@
 @import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css');
 
 :root {
-    /* Luxury Palette */
-    --primary-color: #E8E3DD;
-    /* Beige */
-    --primary-dark: #D4C5B5;
-    /* Darker Beige */
-    --accent-color: #C8A97E;
+    /* Premium Navy & Gold Palette */
+    --navy-deep: #0A192F;
+    /* Darkest Navy for backgrounds */
+    --navy-main: #112240;
+    /* Primary Navy */
+    --navy-light: #233554;
+    /* Lighter Navy for accents */
+    --accent-gold: #C8A97E;
     /* Muted Gold */
+    --accent-gold-light: #D4B68C;
+
+    --primary-color: var(--navy-main);
+    --primary-dark: var(--navy-deep);
+    --accent-color: var(--accent-gold);
     --accent-dark: #A68B64;
-    --dark-color: #2B2B2B;
-    /* Warm Black */
-    --soft-color: #F7F5F2;
-    /* Off-white */
+    --dark-color: var(--navy-deep);
+    --soft-color: #F8F9FA;
     --white: #FFFFFF;
 
     /* Text Colors */
-    --text-main: #2B2B2B;
-    --text-muted: #666666;
-    --text-light: #999999;
+    --text-main: #1a1a1a;
+    --text-muted: #64748B;
+    --text-light: #94A3B8;
     --text-on-dark: #FFFFFF;
+
+    /* Professional Spacing (8px Grid) */
+    --s-1: 8px;
+    --s-2: 16px;
+    --s-3: 24px;
+    --s-4: 32px;
+    --s-5: 40px;
+    --s-6: 48px;
+    --s-8: 64px;
+    --s-12: 96px;
 
     /* Spacing System */
     --space-sm: 8px;
@@ -40,27 +55,27 @@
     --radius-md: 16px;
     --radius-lg: 24px;
     --radius-pill: 9999px;
-    --border-light: rgba(0, 0, 0, 0.05);
+    --border-light: rgba(0, 0, 15, 0.08);
 
     /* Shadows (Soft & Luxurious) */
-    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.03);
-    --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.08);
-    --shadow-lift: 0 15px 35px rgba(0, 0, 0, 0.1);
+    --shadow-sm: 0 4px 12px rgba(10, 25, 47, 0.05);
+    --shadow-md: 0 10px 30px rgba(10, 25, 47, 0.08);
+    --shadow-lg: 0 20px 40px rgba(10, 25, 47, 0.12);
+    --shadow-lift: 0 15px 35px rgba(10, 25, 47, 0.15);
 
     /* Transitions */
     --transition-base: all 0.25s ease-in-out;
     --transition-slow: all 0.6s ease-in-out;
 
     /* Glassmorphism */
-    --glass-bg: rgba(255, 255, 255, 0.85);
-    --glass-blur: 12px;
+    --glass-bg: rgba(255, 255, 255, 0.9);
+    --glass-blur: 15px;
     --glass-border: rgba(255, 255, 255, 0.5);
 
     /* Status */
-    --error-color: #D32F2F;
-    --success-color: #388E3C;
-    --warning-color: #FFA000;
+    --error-color: #EF4444;
+    --success-color: #10B981;
+    --warning-color: #F59E0B;
 }
 
 body {

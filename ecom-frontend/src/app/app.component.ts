@@ -3,17 +3,27 @@ import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
 import { PromotionPopupComponent } from './shared/components/promotion-popup/promotion-popup.component';
+import { CartDrawerComponent } from './shared/components/cart-drawer/cart-drawer.component';
 import { SharedModule } from './shared/shared.module';
-
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, FooterComponent, PromotionPopupComponent, SharedModule],
-
+  imports: [RouterOutlet, NavbarComponent, FooterComponent, PromotionPopupComponent, CartDrawerComponent, SharedModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
   title = 'ecom-frontend';
+  isCartOpen = false;
+
+  openCart() {
+    this.isCartOpen = true;
+    document.body.style.overflow = 'hidden';
+  }
+
+  closeCart() {
+    this.isCartOpen = false;
+    document.body.style.overflow = '';
+  }
 }

@@ -7,7 +7,7 @@
 }
 
 .chat-toggle-btn {
-    background: #ff4081; // Pink/Brand color
+    background: whitesmoke; // Changed from whitesmoke
     color: white;
     border: none;
     border-radius: 50%;
@@ -119,16 +119,37 @@
         }
     }
 
-    .header-actions button {
-        background: none;
-        border: none;
-        color: #9ca3af;
-        cursor: pointer;
-        padding: 5px;
-        transition: color 0.2s;
+    .header-actions {
+        display: flex;
+        gap: 8px;
 
-        &:hover {
-            color: #4b5563;
+        .action-btn {
+            background: #f3f4f6;
+            border: none;
+            color: #4b5563; // Darker for visibility
+            cursor: pointer;
+            padding: 8px;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+
+            &:hover {
+                background: #e5e7eb;
+                color: #1f2937;
+            }
+
+            &.close-btn:hover {
+                background: #fee2e2;
+                color: #ef4444;
+            }
+
+            i {
+                font-size: 14px;
+            }
         }
     }
 }

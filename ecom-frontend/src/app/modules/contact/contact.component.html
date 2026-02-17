@@ -1,118 +1,92 @@
-<div class="contact-page">
-  <div class="page-header">
-    <div class="container">
-      <h1 class="page-title">Contact Us</h1>
-      <p class="page-subtitle">We'd love to hear from you</p>
+<div class="contact-page-wrapper">
+  <div class="contact-hero">
+    <div class="container fade-in">
+      <h1 class="hero-title">Connect With Us</h1>
+      <p class="hero-subtitle">Our dedicated concierge team is at your service</p>
     </div>
   </div>
 
-  <div class="container section">
-    <div class="contact-layout">
-      <div class="contact-info">
-        <h2>Get in Touch</h2>
-        <p>Have a question or need assistance? Our team is here to help.</p>
+  <div class="container">
+    <div class="contact-main luxe-card glass-morph fade-in">
+      <div class="contact-grid">
+        <!-- Contact Information -->
+        <div class="contact-sidebar">
+          <div class="section-badge">Get in Touch</div>
+          <h2 class="contact-heading">Visit Our Boutique</h2>
+          <p class="contact-text">Experience the fusion of craftsmanship and luxury in person at our flagship locations.</p>
 
-        <div class="info-item">
-          <i class="bi bi-geo-alt"></i>
-          <div>
-            <h4>Address</h4>
-            <p>123 Elegance Street, Fashion District<br>New York, NY 10001</p>
-          </div>
-        </div>
+          <div class="info-list">
+            <div class="info-item">
+              <div class="icon-box"><i class="bi bi-geo-alt"></i></div>
+              <div class="info-detail">
+                <h4>Main Atelier</h4>
+                <p>123 Elegance Street, Fashion District<br>New York, NY 10001</p>
+              </div>
+            </div>
 
-        <div class="info-item">
-          <i class="bi bi-telephone"></i>
-          <div>
-            <h4>Phone</h4>
-            <p>+1 (555) 123-4567</p>
-          </div>
-        </div>
+            <div class="info-item">
+              <div class="icon-box"><i class="bi bi-telephone"></i></div>
+              <div class="info-detail">
+                <h4>Concierge Line</h4>
+                <p>+1 (555) LUXE-123</p>
+              </div>
+            </div>
 
-        <div class="info-item">
-          <i class="bi bi-envelope"></i>
-          <div>
-            <h4>Email</h4>
-            <p>contact&#64;elegance.com</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-container">
-        <div *ngIf="successMessage" class="alert alert-success mt-1">
-          {{ successMessage }}
-        </div>
-        <div *ngIf="errorMessage" class="alert alert-error mt-1">
-          {{ errorMessage }}
-        </div>
-
-        <form class="contact-form" [formGroup]="contactForm" (ngSubmit)="onSubmit()">
-          <div class="form-group">
-            <label class="form-label">Name</label>
-            <input
-              type="text"
-              formControlName="name"
-              class="form-control"
-              [class.is-invalid]="submitted && f['name'].errors"
-              placeholder="Your full name"
-            >
-            <div *ngIf="submitted && f['name'].errors" class="error-feedback">
-              <small *ngIf="f['name'].errors['required']">Name is required</small>
-              <small *ngIf="f['name'].errors['minlength']">Name must be at least 2 characters</small>
+            <div class="info-item">
+              <div class="icon-box"><i class="bi bi-envelope"></i></div>
+              <div class="info-detail">
+                <h4>Email Inquiries</h4>
+                <p>concierge&#64;luxestore.com</p>
+              </div>
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="form-label">Email</label>
-            <input
-              type="email"
-              formControlName="email"
-              class="form-control"
-              [class.is-invalid]="submitted && f['email'].errors"
-              placeholder="Your email address"
-            >
-            <div *ngIf="submitted && f['email'].errors" class="error-feedback">
-              <small *ngIf="f['email'].errors['required']">Email is required</small>
-              <small *ngIf="f['email'].errors['email']">Please enter a valid email</small>
+          <!-- Small Map Placeholder -->
+          <div class="map-placeholder">
+            <div class="map-overlay">
+              <i class="bi bi-geo-fill"></i>
+              <span>View Map</span>
             </div>
           </div>
+        </div>
 
-          <div class="form-group">
-            <label class="form-label">Subject</label>
-            <input
-              type="text"
-              formControlName="subject"
-              class="form-control"
-              [class.is-invalid]="submitted && f['subject'].errors"
-              placeholder="What is this regarding?"
-            >
-            <div *ngIf="submitted && f['subject'].errors" class="error-feedback">
-              <small *ngIf="f['subject'].errors['required']">Subject is required</small>
-              <small *ngIf="f['subject'].errors['minlength']">Subject must be at least 5 characters</small>
-            </div>
+        <!-- Contact Form -->
+        <div class="contact-form-area">
+          <div *ngIf="successMessage" class="status-msg success">
+            {{ successMessage }}
+          </div>
+          <div *ngIf="errorMessage" class="status-msg error">
+            {{ errorMessage }}
           </div>
 
-          <div class="form-group">
-            <label class="form-label">Message</label>
-            <textarea
-              formControlName="message"
-              class="form-control"
-              [class.is-invalid]="submitted && f['message'].errors"
-              rows="6"
-              placeholder="Write your message here..."
-            ></textarea>
-            <div *ngIf="submitted && f['message'].errors" class="error-feedback">
-              <small *ngIf="f['message'].errors['required']">Message is required</small>
-              <small *ngIf="f['message'].errors['minlength']">Message must be at least 10 characters</small>
+          <form class="luxe-form" [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+            <div class="grid-pair">
+              <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" formControlName="name" class="form-control" placeholder="Enter your name">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email" formControlName="email" class="form-control" placeholder="your@email.com">
+              </div>
             </div>
-          </div>
 
-          <button type="submit" class="btn btn-primary" [disabled]="loading">
-             <span *ngIf="loading" class="spinner"></span>
-             {{ loading ? 'Sending...' : 'Send Message' }}
-          </button>
-        </form>
+            <div class="form-group">
+              <label class="form-label">Subject</label>
+              <input type="text" formControlName="subject" class="form-control" placeholder="How can we help?">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Your Message</label>
+              <textarea formControlName="message" class="form-control" rows="8" placeholder="Tell us more..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-gold" [disabled]="loading">
+              {{ loading ? 'Sending Inquiry...' : 'Send Inquiry' }}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
 </div>
-

@@ -1,4 +1,11 @@
 /* Modern Luxury Home Styles */
+.home {
+  background-color: var(--navy-deep);
+  color: var(--white) !important;
+
+  /* Apply the Requested Overlay globally or via a pseudo-element if needed,
+     but here we'll use it as part of the background logic for sections */
+}
 
 /* Hero Section */
 .hero {
@@ -11,18 +18,12 @@
   color: var(--white);
 
   /* Parallax Background */
-  background: url('https://images.unsplash.com/photo-1618220179428-22790b461013?q=80&w=2500&auto=format&fit=crop') center/cover no-repeat fixed;
+  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+    url('https://images.unsplash.com/photo-1618220179428-22790b461013?q=80&w=2500&auto=format&fit=crop') center/cover no-repeat fixed;
 
   &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.4);
-    /* Dark overlay for text readability */
-    z-index: 1;
+    display: none;
+    /* Removed the old overlay in favor of the requested gradient above */
   }
 }
 
@@ -96,7 +97,7 @@
   font-size: 12px;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: var(--accent-dark);
+  color: var(--accent-gold);
   display: block;
   margin-bottom: 16px;
   font-weight: 600;
@@ -105,7 +106,7 @@
 .section-title {
   font-family: var(--font-serif);
   font-size: 42px;
-  color: var(--dark-color);
+  color: var(--white);
   font-weight: 400;
   position: relative;
   display: inline-block;
@@ -160,8 +161,11 @@
 .category-card {
   position: relative;
   overflow: hidden;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   cursor: pointer;
+  border: 4px solid rgba(255, 255, 255, 0.05);
+  /* Block-like border */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 
   /* Mosaic Layout */
   grid-column: span 4;
@@ -239,13 +243,13 @@
   }
 }
 
-/* Featured & Arrivals */
+/* Featured & Arrivals (Featured Selection) */
 .bg-soft {
-  background-color: var(--soft-color);
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 .bg-white {
-  background-color: var(--white);
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 .products-grid {
@@ -256,7 +260,7 @@
 
 /* Flash Sale */
 .sale-section {
-  background-color: var(--dark-color);
+  background-color: rgba(0, 0, 0, 0.4);
   color: var(--white);
 
   .section-title {
@@ -274,8 +278,8 @@
 
 /* Features Info */
 .info-section {
-  background-color: var(--white);
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  background-color: rgba(0, 0, 0, 0.4);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .info-grid {
@@ -312,8 +316,8 @@
 /* Brands Section */
 .brands-section {
   padding: 40px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  background: var(--white);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.4);
   overflow: hidden;
 }
 
@@ -371,12 +375,13 @@
 }
 
 .review-card {
-  background: var(--white);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
   padding: 32px;
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   transition: var(--transition-base);
-  border: 1px solid rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   position: relative;
 
   &:hover {
@@ -447,13 +452,13 @@
 .name {
   font-size: 14px;
   font-weight: 600;
-  color: var(--dark-color);
+  color: var(--white);
 }
 
 .verified {
   font-size: 11px;
-  color: var(--success-color);
-  /* Need to ensure this var exists or use # */
+  color: #34d399;
+  /* Emerald for verified check */
   display: flex;
   align-items: center;
   gap: 4px;
@@ -462,10 +467,10 @@
 
 /* Newsletter */
 .newsletter-section {
-  background-color: #D4C5B5;
-  /* Elegant Taupe */
+  background-color: rgba(0, 0, 0, 0.4);
   padding: 100px 0;
   text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .newsletter-content {
@@ -476,7 +481,7 @@
 .newsletter-title {
   font-family: var(--font-serif);
   font-size: 36px;
-  color: var(--dark-color);
+  color: var(--white);
   margin-bottom: 16px;
 }
 
@@ -486,18 +491,141 @@
   margin-top: 32px;
 
   input {
-    background: var(--white);
-    border: none;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 16px 24px;
+    color: var(--white);
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
   }
 
-  button {
-    background: var(--dark-color);
-    color: var(--white);
-    padding: 16px 40px;
+  /* Instagram Section */
+  .section-instagram {
+    padding: 120px 0;
+    background: rgba(0, 0, 0, 0.4);
+
+    .section-header {
+      margin-bottom: 60px;
+      text-align: center;
+
+      .section-subtitle {
+        color: var(--accent-gold);
+        letter-spacing: 4px;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 13px;
+        margin-bottom: 12px;
+        display: block;
+      }
+
+      .section-title {
+        font-size: 42px;
+        margin-bottom: 15px;
+        color: var(--white);
+      }
+
+      .section-description {
+        color: var(--text-light);
+        max-width: 600px;
+        margin: 0 auto;
+        font-size: 16px;
+      }
+    }
+  }
+
+  .instagram-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+
+  .insta-item {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    cursor: pointer;
+    border: 3px solid rgba(255, 255, 255, 0.08);
+    /* Block-like design */
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .insta-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 25, 47, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+
+      i {
+        color: var(--white);
+        font-size: 32px;
+        transform: translateY(20px);
+        transition: transform 0.4s ease;
+      }
+    }
 
     &:hover {
-      background: #000;
+      img {
+        transform: scale(1.1);
+      }
+
+      .insta-overlay {
+        opacity: 1;
+
+        i {
+          transform: translateY(0);
+        }
+      }
+    }
+  }
+
+  @media (max-width: 992px) {
+    .instagram-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 576px) {
+    .instagram-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .section-instagram .section-title {
+      font-size: 32px;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .hero-title {
+      font-size: 56px;
+    }
+
+    .products-grid,
+    .values-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    button {
+      background: var(--dark-color);
+      color: var(--white);
+      padding: 16px 40px;
+
+      &:hover {
+        background: #000;
+      }
     }
   }
 }
@@ -525,4 +653,11 @@
   .newsletter-form {
     flex-direction: column;
   }
+}
+
+/* Explicit overlay for other sections */
+.categories-section,
+.testimonials-section,
+.section-instagram {
+  background-color: rgba(0, 0, 0, 0.4) !important;
 }

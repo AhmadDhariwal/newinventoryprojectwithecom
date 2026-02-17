@@ -1,29 +1,40 @@
-<div class="product-card">
-  <div class="product-image-wrapper" [routerLink]="['/products', product._id]">
-    <img 
-      class="product-image" 
-      [src]="getProductImage()" 
-      [alt]="product.name"
-    >
-    <div class="product-overlay" *ngIf="product.inStock">
-      <button 
-        (click)="addToCart($event)" 
-        class="btn-quick-add"
-        aria-label="Add to cart"
-      >
-        Add to Cart
-      </button>
-    </div>
+<div class="product-card" [routerLink]="['/products', product._id]">
+  <div class="product-image-wrapper">
+    <img class="product-image" [src]="getProductImage()" [alt]="product.name">
+    
+    <!-- Badges -->
     <div class="product-badge" *ngIf="!product.inStock">Sold Out</div>
     <div class="product-badge sale-badge" *ngIf="product.inStock && product.discountPercentage">
-      -{{ product.discountPercentage }}%
+      {{ product.discountPercentage }}% OFF
     </div>
+
+    <!-- Quick Actions Overlay -->
+    <div class="product-overlay" *ngIf="product.inStock">
+      <button (click)="addToCart($event)" class="btn-quick-add">
+        Add to Bag
+      </button>
+    </div>
+
+    <!-- Wishlist Icon -->
+    <button class="wishlist-btn" (click)="$event.stopPropagation()" title="Add to Wishlist">
+      <i class="bi bi-heart"></i>
+    </button>
   </div>
+
   <div class="product-info">
-    <div class="product-meta">
-      <span class="product-category">{{ product.category?.name }}</span>
+    <span class="product-category">{{ product.category.name }}</span>
+    <h3 class="product-name">{{ product.name }}</h3>
+    
+    <!-- Rating Placeholder -->
+    <div class="product-rating">
+      <i class="bi bi-star-fill text-gold"></i>
+      <i class="bi bi-star-fill text-gold"></i>
+      <i class="bi bi-star-fill text-gold"></i>
+      <i class="bi bi-star-fill text-gold"></i>
+      <i class="bi bi-star-half text-gold"></i>
+      <span class="rating-count">(4.5)</span>
     </div>
-    <h3 class="product-name" [routerLink]="['/products', product._id]">{{ product.name }}</h3>
+
     <div class="product-price-wrapper">
       <span class="product-price" [class.discounted]="product.discountPrice">
         {{ (product.discountPrice || product.price) | currency }}
@@ -33,5 +44,4 @@
       </span>
     </div>
   </div>
-
 </div>

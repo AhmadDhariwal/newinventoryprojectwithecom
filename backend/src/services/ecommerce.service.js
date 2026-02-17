@@ -11,6 +11,7 @@ const Complaint = require('../models/complaint');
 const Notification = require('../models/notification');
 const Coupon = require('../models/coupon');
 const notificationService = require('./notification.service');
+const Category = require('../models/category');
 
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -93,6 +94,10 @@ const getPublicProducts = async (filters = {}) => {
     const query = {
         status: 'active'
     };
+
+    if (filters.organizationId) {
+        query.organizationId = filters.organizationId;
+    }
 
     if (filters.category) {
         const Category = require('../models/category');
@@ -612,10 +617,9 @@ const updateCustomerProfile = async (customerId, updateData, organizationId) => 
 
 // Get Categories
 const getCategories = async () => {
-    const Category = require('../models/category');
 
     const categories = await Category.find({
-        status: 'active'
+        isActive: true
     })
         .select('name description parentId')
         .sort({ name: 1 })

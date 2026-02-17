@@ -1,4 +1,4 @@
-<nav class="navbar">
+<nav class="navbar" [class.scrolled]="isScrolled">
   <div class="container">
     <div class="navbar-content">
       <!-- Mobile Menu Button -->
@@ -53,8 +53,8 @@
           </a>
         </ng-template>
 
-        <a routerLink="/cart" class="icon-btn cart-btn" title="Cart">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <button class="icon-btn cart-btn" title="Cart" (click)="onCartClick($event)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
             <line x1="3" y1="6" x2="21" y2="6"/>
             <path d="M16 10a4 4 0 0 1-8 0"/>
@@ -62,7 +62,7 @@
           <span class="cart-count" *ngIf="(cartService.cartItems$ | async)?.length as count">
             {{ count }}
           </span>
-        </a>
+        </button>
       </div>
     </div>
   </div>

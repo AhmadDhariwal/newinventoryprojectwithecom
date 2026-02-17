@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, HostListener, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -14,9 +14,16 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent {
+  @Output() openCart = new EventEmitter<void>();
   showSearch = false;
   searchQuery = '';
   showMenu = false;
+  isScrolled = false;
+
+  @HostListener('window:scroll', [])
+  onWindowScroll() {
+    this.isScrolled = window.scrollY > 20;
+  }
 
   toggleMenu() {
     this.showMenu = !this.showMenu;
@@ -30,8 +37,17 @@ export class NavbarComponent {
   constructor(
     public authService: AuthService,
     public cartService: CartService,
-    private router: Router
+    private router: Router,
+    private elementRef: ElementRef
   ) {}
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (this.showSearch && !this.elementRef.nativeElement.contains(event.target)) {
+      this.showSearch = false;
+      this.searchQuery = '';
+    }
+  }
 
   toggleSearch() {
     this.showSearch = !this.showSearch;
@@ -45,6 +61,11 @@ export class NavbarComponent {
       this.router.navigate(['/products'], { queryParams: { search: this.searchQuery } });
       this.toggleSearch();
     }
+  }
+
+  onCartClick(event: Event) {
+    event.preventDefault();
+    this.openCart.emit();
   }
 
   logout() {

@@ -15,7 +15,7 @@ export interface ChatMessage {
   providedIn: 'root'
 })
 export class ChatbotService {
-  private apiUrl = `${environment.apiUrl}/chat/customer`;
+  private apiUrl = 'http://localhost:3000/api/chat/customer';
   private messagesSubject = new BehaviorSubject<ChatMessage[]>([]);
   messages$ = this.messagesSubject.asObservable();
 

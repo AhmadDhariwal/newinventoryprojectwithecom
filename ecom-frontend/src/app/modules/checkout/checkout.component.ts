@@ -18,7 +18,7 @@ import { environment } from '../../../environments/environment';
 })
 export class CheckoutComponent implements OnInit {
   checkoutForm: FormGroup;
-  step = 1;
+  step = 1; // 1: Delivery, 2: Review, 3: Payment
   cartItems: any[] = [];
   submitting = false;
   orderSuccess = false;
@@ -27,9 +27,6 @@ export class CheckoutComponent implements OnInit {
   isGuest = false;
   error = '';
   
-  // Coupon local state
-
-
   couponCode = '';
   appliedCoupon: any = null;
   couponError = '';
@@ -44,11 +41,21 @@ export class CheckoutComponent implements OnInit {
     private router: Router
   ) {
     this.checkoutForm = this.fb.group({
+      // Shipping
       street: ['', Validators.required],
       city: ['', Validators.required],
       state: ['', Validators.required],
       zipCode: ['', Validators.required],
       country: ['', Validators.required],
+      
+      // Billing
+      billingSameAsShipping: [true],
+      billingStreet: [''],
+      billingCity: [''],
+      billingState: [''],
+      billingZipCode: [''],
+      billingCountry: [''],
+
       paymentMethod: ['cash_on_delivery', Validators.required],
       
       // Guest fields
@@ -58,6 +65,39 @@ export class CheckoutComponent implements OnInit {
     });
   }
 
+  ngOnInit() {
+    this.cartService.cartItems$.subscribe(items => {
+      this.cartItems = items;
+      if (items.length === 0 && !this.orderSuccess) {
+        this.router.navigate(['/cart']);
+      }
+    });
+
+    const user = this.authService.getCurrentUser() as any;
+    if (user) {
+      this.organizationId = user.organizationId || environment.organizationId;
+      this.isGuest = false;
+      
+      // Pre-fill from profile
+      this.checkoutForm.patchValue({
+        street: user.shippingAddress?.street || '',
+        city: user.shippingAddress?.city || '',
+        state: user.shippingAddress?.state || '',
+        zipCode: user.shippingAddress?.zipCode || '',
+        country: user.shippingAddress?.country || ''
+      });
+    } else {
+      this.isGuest = true;
+      this.organizationId = environment.organizationId;
+      
+      this.f['guestName'].setValidators([Validators.required]);
+      this.f['guestEmail'].setValidators([Validators.required, Validators.email]);
+      this.f['guestPhone'].setValidators([Validators.required]);
+      this.checkoutForm.updateValueAndValidity();
+    }
+  }
+
+  get f() { return this.checkoutForm.controls; }
 
   applyCoupon() {
     if (!this.couponCode) return;
@@ -93,88 +133,74 @@ export class CheckoutComponent implements OnInit {
     return Math.max(0, this.cartService.getTotalAmount() - this.discountAmount);
   }
 
-
-  ngOnInit() {
-    this.cartService.cartItems$.subscribe(items => {
-      this.cartItems = items;
-      if (items.length === 0 && !this.orderSuccess) {
-        this.router.navigate(['/cart']);
+  nextStep() {
+    if (this.step === 1) {
+      if (this.isStep1Invalid()) {
+        this.checkoutForm.markAllAsTouched();
+        return;
       }
-    });
-
-    // Populate address if customer profile exists
-    const user = this.authService.getCurrentUser();
-    if (user) {
-      this.organizationId = (user as any).organizationId || '';
-      // Mocking pre-fill
-      this.checkoutForm.patchValue({
-         street: (user as any).shippingAddress?.street || '',
-         city: (user as any).shippingAddress?.city || '',
-         state: (user as any).shippingAddress?.state || '',
-         zipCode: (user as any).shippingAddress?.zipCode || '',
-         country: (user as any).shippingAddress?.country || ''
-      });
-    } else {
-      this.isGuest = true;
-      this.organizationId = environment.organizationId;
-      
-      // Add validators for guest fields
-      this.f['guestName'].setValidators([Validators.required]);
-      this.f['guestEmail'].setValidators([Validators.required, Validators.email]);
-      this.f['guestPhone'].setValidators([Validators.required]);
-      this.checkoutForm.updateValueAndValidity();
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.step++;
   }
 
-
-  get f() { return this.checkoutForm.controls; }
+  prevStep() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.step--;
+  }
 
   isStep1Invalid() {
-    const basicInvalid = this.f['street'].invalid || this.f['city'].invalid || this.f['state'].invalid || this.f['zipCode'].invalid || this.f['country'].invalid;
+    // Shipping fields validation
+    const shippingInvalid = this.f['street'].invalid || this.f['city'].invalid || this.f['state'].invalid || 
+                            this.f['zipCode'].invalid || this.f['country'].invalid;
     
-    if (this.isGuest) {
-       const guestInvalid = !this.f['guestName'].value || !this.f['guestEmail'].value || this.f['guestEmail'].invalid;
-       return basicInvalid || guestInvalid;
+    // Billing validation if not same as shipping
+    let billingInvalid = false;
+    if (!this.f['billingSameAsShipping'].value) {
+      billingInvalid = !this.f['billingStreet'].value || !this.f['billingCity'].value || 
+                       !this.f['billingState'].value || !this.f['billingZipCode'].value || 
+                       !this.f['billingCountry'].value;
     }
-    return basicInvalid;
+
+    if (this.isGuest) {
+      const guestInvalid = this.f['guestName'].invalid || this.f['guestEmail'].invalid || this.f['guestPhone'].invalid;
+      return shippingInvalid || billingInvalid || guestInvalid;
+    }
+    return shippingInvalid || billingInvalid;
   }
-
-
-  nextStep() { this.step++; }
-  prevStep() { this.step--; }
 
   onSubmit() {
     if (this.checkoutForm.invalid) return;
 
     this.submitting = true;
-    this.couponError = '';
     this.error = '';
+
+    const shipping = {
+      street: this.f['street'].value,
+      city: this.f['city'].value,
+      state: this.f['state'].value,
+      zipCode: this.f['zipCode'].value,
+      country: this.f['country'].value
+    };
+
+    const billing = this.f['billingSameAsShipping'].value ? shipping : {
+      street: this.f['billingStreet'].value,
+      city: this.f['billingCity'].value,
+      state: this.f['billingState'].value,
+      zipCode: this.f['billingZipCode'].value,
+      country: this.f['billingCountry'].value
+    };
 
     const orderData = {
       items: this.cartItems.map(item => ({
         product: item.product._id,
         quantity: item.quantity,
-        price: item.product.price
+        price: item.product.discountPrice || item.product.price
       })),
-      shippingAddress: {
-        street: this.f['street'].value,
-        city: this.f['city'].value,
-        state: this.f['state'].value,
-        zipCode: this.f['zipCode'].value,
-        country: this.f['country'].value
-      },
-      billingAddress: {
-        street: this.f['street'].value,
-        city: this.f['city'].value,
-        state: this.f['state'].value,
-        zipCode: this.f['zipCode'].value,
-        country: this.f['country'].value
-      },
+      shippingAddress: shipping,
+      billingAddress: billing,
       paymentMethod: this.f['paymentMethod'].value,
       couponCode: this.appliedCoupon ? this.appliedCoupon.code : null,
-
-      
-      // Include guest details if guest
       guestDetails: this.isGuest ? {
         name: this.f['guestName'].value,
         email: this.f['guestEmail'].value,
@@ -183,17 +209,16 @@ export class CheckoutComponent implements OnInit {
       organizationId: this.organizationId
     };
 
-
-
     this.orderService.createOrder(orderData).subscribe({
       next: (res) => {
         this.orderSuccess = true;
         this.lastOrderId = res.data._id;
         this.cartService.clearCart();
         this.submitting = false;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       },
       error: (err) => {
-        this.error = err.message || 'An error occurred while placing the order.';
+        this.error = err.error?.message || 'An error occurred while placing the order.';
         this.submitting = false;
       }
     });

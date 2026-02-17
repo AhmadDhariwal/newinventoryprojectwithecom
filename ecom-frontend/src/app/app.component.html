@@ -1,10 +1,11 @@
 <div class="app-wrapper">
-  <app-navbar></app-navbar>
+  <app-navbar (openCart)="openCart()"></app-navbar>
 
   <main class="main-content">
     <router-outlet></router-outlet>
   </main>
 
+  <app-cart-drawer [isOpen]="isCartOpen" (close)="closeCart()"></app-cart-drawer>
   <app-promotion-popup></app-promotion-popup>
   <app-chatbot-widget></app-chatbot-widget>
   <app-footer></app-footer>

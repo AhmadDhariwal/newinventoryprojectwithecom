@@ -1,34 +1,103 @@
- <div class="container section">
-      <div class="user-layout">
-        <aside class="user-sidebar">
-          <h3>Your Account</h3>
-          <ul>
-            <li><a routerLink="/user/profile" routerLinkActive="active">Profile</a></li>
-            <li><a routerLink="/user/orders" routerLinkActive="active">Order History</a></li>
-          </ul>
-        </aside>
-
-        <main class="user-content">
-          <h1>Profile Detail</h1>
-          <div class="profile-card fade-in" *ngIf="user">
-            <div class="profile-header">
-               <div class="avatar">{{ user.name.charAt(0) }}</div>
-               <div>
-                 <h2>{{ user.name }}</h2>
-                 <p>{{ user.email }}</p>
-               </div>
-            </div>
-            <div class="profile-info">
-               <div class="info-group">
-                 <label>Organization ID</label>
-                 <span>{{ user.organizationId }}</span>
-               </div>
-               <div class="info-group">
-                 <label>Member Since</label>
-                 <span>{{ user.createdAt | date }}</span>
-               </div>
-            </div>
+<div class="user-dashboard-wrapper">
+  <div class="container section">
+    <div class="user-layout fade-in">
+      <!-- Sidebar Navigation -->
+      <aside class="dashboard-sidebar">
+        <div class="sidebar-header">
+          <div class="user-avatar" *ngIf="profileForm.get('name')?.value">
+            {{ profileForm.get('name')?.value.charAt(0) | uppercase }}
           </div>
-        </main>
-      </div>
+          <div class="user-meta">
+            <h3 class="user-name">{{ profileForm.get('name')?.value }}</h3>
+            <p class="user-role">Premium Member</p>
+          </div>
+        </div>
+        <nav class="dashboard-nav">
+          <a routerLink="/user/profile" routerLinkActive="active" class="nav-item">
+            <i class="bi bi-person-fill"></i>
+            <span>Personal Profile</span>
+          </a>
+          <a routerLink="/user/orders" routerLinkActive="active" class="nav-item">
+            <i class="bi bi-bag-check-fill"></i>
+            <span>Order History</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="dashboard-content">
+        <div class="content-header">
+          <h1 class="content-title">Personal Details</h1>
+          <p class="content-subtitle">Manage your account information and preferences</p>
+        </div>
+
+        <div class="loading-overlay" *ngIf="loading">
+          <div class="luxury-spinner"></div>
+        </div>
+
+        <div class="content-body" *ngIf="!loading">
+          <form [formGroup]="profileForm" (ngSubmit)="onUpdate()" class="profile-edit-form">
+            <!-- Account Info Section -->
+            <div class="form-section">
+              <h4 class="section-title">Account Information</h4>
+              <div class="grid-row">
+                <div class="form-group">
+                  <label class="form-label">Full Name</label>
+                  <input type="text" formControlName="name" class="form-control" placeholder="Enter full name">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Email Address</label>
+                  <input type="email" formControlName="email" class="form-control" placeholder="your@email.com">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input type="tel" formControlName="phone" class="form-control" placeholder="+1 (555) 000-0000">
+              </div>
+            </div>
+
+            <!-- Address Section -->
+            <div class="form-section">
+              <h4 class="section-title">Default Shipping Address</h4>
+              <div class="form-group">
+                <label class="form-label">Street Address</label>
+                <input type="text" formControlName="street" class="form-control" placeholder="Street Address">
+              </div>
+              <div class="grid-row">
+                <div class="form-group">
+                  <label class="form-label">City</label>
+                  <input type="text" formControlName="city" class="form-control" placeholder="City">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">State / Province</label>
+                  <input type="text" formControlName="state" class="form-control" placeholder="State">
+                </div>
+              </div>
+              <div class="grid-row">
+                <div class="form-group">
+                  <label class="form-label">Zip Code</label>
+                  <input type="text" formControlName="zipCode" class="form-control" placeholder="Zip">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Country</label>
+                  <input type="text" formControlName="country" class="form-control" placeholder="Country">
+                </div>
+              </div>
+            </div>
+
+            <div class="status-messages">
+              <p class="success-msg" *ngIf="successMsg">{{ successMsg }}</p>
+              <p class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</p>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" [disabled]="saving">
+                {{ saving ? 'Saving Changes...' : 'Save Profile' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </main>
     </div>
+  </div>
+</div>

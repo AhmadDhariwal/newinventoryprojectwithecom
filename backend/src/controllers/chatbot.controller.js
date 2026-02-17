@@ -12,7 +12,7 @@ const customerChat = async (req, res) => {
         const result = await ChatbotService.processQuery(customerId, 'customer', organizationId, message);
 
         res.json({
-            success: true,
+            success: result.success,
             response: result.response,
             intent: result.intent
         });
@@ -35,7 +35,7 @@ const internalChat = async (req, res) => {
         const result = await ChatbotService.processQuery(userid, role, organizationId, message);
 
         res.json({
-            success: true,
+            success: result.success,
             response: result.response,
             intent: result.intent
         });

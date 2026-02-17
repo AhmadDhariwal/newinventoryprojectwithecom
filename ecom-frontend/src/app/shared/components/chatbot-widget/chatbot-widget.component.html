@@ -1,12 +1,14 @@
 <div class="chatbot-container" [class.open]="isOpen" [class.minimized]="isMinimized">
   
-    <button *ngIf="!isOpen" class="chat-toggle-btn" (click)="toggleChat()">
+    <button *ngIf="!isOpen" class="chat-toggle-btn" (click)="toggleChat()"> 🤖 
       <i class="fas fa-comment-dots"></i>
       <div class="notification-badge">1</div>
     </button>
+   
+
   
     <div class="chat-window" *ngIf="isOpen">
-      <div class="chat-header" (click)="minimizeChat()">
+      <div class="chat-header" (click)="minimizeChat() ; $event.stopPropagation()">
         <div class="header-content">
           <div class="avatar">🤖</div>
           <div class="info">
@@ -15,10 +17,10 @@
           </div>
         </div>
         <div class="header-actions">
-          <button (click)="minimizeChat()">
+          <button class="action-btn" (click)="minimizeChat() ; $event.stopPropagation()" title="Minimize">
             <i class="fas" [class.fa-minus]="!isMinimized" [class.fa-expand]="isMinimized"></i>
           </button>
-          <button (click)="toggleChat()">
+          <button class="action-btn close-btn" (click)="toggleChat() ; $event.stopPropagation()" title="Close">
             <i class="fas fa-times"></i>
           </button>
         </div>

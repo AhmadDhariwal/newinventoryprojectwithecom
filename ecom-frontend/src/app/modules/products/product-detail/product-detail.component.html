@@ -1,94 +1,127 @@
-<div class="product-detail" *ngIf="product; else loader">
+<div class="product-premium-page" *ngIf="product; else loader">
   <div class="container section-sm">
-    <nav class="breadcrumb">
-      <a routerLink="/">Home</a>
-      <span class="separator">/</span>
-      <a routerLink="/products">Shop</a>
-      <span class="separator">/</span>
-      <span>{{ product.name }}</span>
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb-nav">
+      <div class="breadcrumb-container">
+        <a routerLink="/">Home</a>
+        <span class="sep">/</span>
+        <a routerLink="/products">Collection</a>
+        <span class="sep">/</span>
+        <span class="current">{{ product.name }}</span>
+      </div>
     </nav>
 
-    <div class="product-layout">
-      <div class="product-gallery">
-        <div class="main-image">
-          <img 
-            [src]="getMainImage()" 
-            [alt]="product.name"
-          >
-        </div>
-        <div class="thumbnail-list" *ngIf="product.images && product.images.length > 1">
-          <div 
-            class="thumbnail" 
-            [class.active]="selectedImageIndex === i"
-            *ngFor="let img of product.images; let i = index"
-            (click)="selectedImageIndex = i"
-          >
-            <img [src]="'http://localhost:3000' + img" [alt]="product.name">
+    <div class="product-spotlight-grid">
+      <!-- Media Gallery -->
+      <div class="media-column">
+        <div class="sticky-media">
+          <div class="hero-image-vessel">
+            <img [src]="getMainImage()" [alt]="product.name" class="img-fluid hero-img shadow-xl">
+          </div>
+          <div class="media-scroller" *ngIf="product.images && product.images.length > 1">
+            <div 
+              class="media-thumb" 
+              [class.active]="selectedImageIndex === i"
+              *ngFor="let img of product.images; let i = index"
+              (click)="selectedImageIndex = i"
+            >
+              <img [src]="'http://localhost:3000' + img" [alt]="product.name">
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="product-details">
-        <span class="product-category">{{ product.category.name }}</span>
-        <h1 class="product-title">{{ product.name }}</h1>
-        <div class="product-sku">SKU: {{ product.sku }}</div>
-        
-        <div class="product-price-section">
-          <div class="product-price">{{ product.price | currency }}</div>
-          <div class="stock-status" [class.out-of-stock]="!product.inStock">
-            {{ product.inStock ? 'In Stock' : 'Out of Stock' }}
-            <span *ngIf="product.inStock" class="stock-qty">({{ product.stockAvailable }} available)</span>
+      <!-- Product Information -->
+      <div class="content-column">
+        <div class="product-identity">
+          <span class="category-tag">{{ product.category.name }}</span>
+          <h1 class="main-title">{{ product.name }}</h1>
+          <div class="sku-info">Model: {{ product.sku }}</div>
+        </div>
+
+        <div class="pricing-card">
+          <div class="price-display">{{ product.price | currency }}</div>
+          <div class="stock-badge" [class.low]="product.inStock && product.stockAvailable < 5" [class.out]="!product.inStock">
+            <span class="pulse-dot"></span>
+            {{ product.inStock ? (product.stockAvailable < 5 ? 'Low Stock: ' + product.stockAvailable + ' left' : 'In Stock') : 'Currently Unavailable' }}
           </div>
         </div>
 
-        <div class="product-description">
-          <p>{{ product.description }}</p>
+        <div class="narrative-vessel">
+          <h3 class="vessel-heading">The Story</h3>
+          <p class="narrative-text">{{ product.description }}</p>
         </div>
 
-        <div class="product-actions" *ngIf="product.inStock">
-          <div class="quantity-selector">
-            <button (click)="changeQty(-1)" [disabled]="quantity <= 1">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="5" y1="12" x2="19" y2="12"/>
-              </svg>
-            </button>
-            <span class="quantity-value">{{ quantity }}</span>
-            <button (click)="changeQty(1)" [disabled]="quantity >= product.stockAvailable">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="12" y1="5" x2="12" y2="19"/>
-                <line x1="5" y1="12" x2="19" y2="12"/>
-              </svg>
-            </button>
+        <div class="interaction-layer" *ngIf="product.inStock">
+          <div class="qty-selector-premium">
+            <label>Quantity</label>
+            <div class="stepper-vessel">
+              <button (click)="changeQty(-1)" [disabled]="quantity <= 1">
+                <i class="fas fa-minus"></i>
+              </button>
+              <span class="qty-count">{{ quantity }}</span>
+              <button (click)="changeQty(1)" [disabled]="quantity >= product.stockAvailable">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
           </div>
-          <button class="btn btn-primary btn-add-cart" (click)="addToCart()">
-            Add to Cart
+          <button class="btn-purchase-premium" (click)="addToCart()">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Add to Shopping Bag</span>
           </button>
         </div>
 
-        <div class="product-meta">
-          <div class="meta-item">
-            <span class="meta-label">Category:</span>
-            <span class="meta-value">{{ product.category.name }}</span>
-          </div>
-          <div class="meta-item" *ngIf="product.stockByWarehouse && product.stockByWarehouse.length">
-            <span class="meta-label">Available at:</span>
-            <span class="meta-value">
+        <div class="attribute-list">
+          <div class="attr-row">
+            <span class="attr-label">Warehouse Availability</span>
+            <span class="attr-value" *ngIf="product.stockByWarehouse && product.stockByWarehouse.length">
               <span *ngFor="let stock of product.stockByWarehouse; let last = last">
                 {{ stock.warehouse.name }}<span *ngIf="!last">, </span>
               </span>
             </span>
           </div>
+          <div class="attr-row">
+            <span class="attr-label">Delivery</span>
+            <span class="attr-value">Express shipping available</span>
+          </div>
         </div>
       </div>
+    </div>
+
+    <!-- Featured Products Showcase -->
+    <div class="discovery-section" *ngIf="featuredProducts.length > 0">
+      <div class="discovery-header">
+        <h2 class="discovery-title">More to Discover</h2>
+        <p class="discovery-subtitle">Curated recommendations for your collection</p>
+      </div>
+      <div class="discovery-grid">
+        <div class="discovery-col" *ngFor="let item of featuredProducts">
+          <app-product-card [product]="item"></app-product-card>
+        </div>
+      </div>
+    </div>
+    <!-- Mobile Sticky Add to Cart -->
+    <div class="mobile-sticky-action" *ngIf="product.inStock">
+      <div class="sticky-info">
+        <span class="sticky-name">{{ product.name }}</span>
+        <span class="sticky-price">{{ product.price | currency }}</span>
+      </div>
+      <button class="btn btn-primary" (click)="addToCart()">Add to Bag</button>
     </div>
   </div>
 </div>
 
 <ng-template #loader>
   <div class="container section">
-    <div class="skeleton-loader">
-      <div class="skeleton" style="height: 600px; max-width: 600px;"></div>
-      <div class="skeleton" style="height: 600px; flex: 1;"></div>
+    <div class="skeleton-premium">
+      <div class="skeleton-media"></div>
+      <div class="skeleton-content">
+        <div class="skeleton-line title"></div>
+        <div class="skeleton-line price"></div>
+        <div class="skeleton-line text"></div>
+        <div class="skeleton-line text"></div>
+        <div class="skeleton-line action"></div>
+      </div>
     </div>
   </div>
 </ng-template>

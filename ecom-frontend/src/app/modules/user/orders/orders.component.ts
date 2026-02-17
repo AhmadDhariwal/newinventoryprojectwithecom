@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { OrderService } from '../../../core/services/order.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Order } from '../../../core/models/models';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterModule } from '@angular/router';
@@ -13,10 +14,21 @@ import { EmptyStateComponent } from '../../../shared/components/empty-state/empt
   styleUrl: './orders.component.scss'
 })
 export class OrdersComponent implements OnInit{
- orders: Order[] = [];
+  orders: Order[] = [];
   loading = true;
-  constructor(private orderService: OrderService) {}
+  user: any = null;
+
+  constructor(
+    private orderService: OrderService,
+    private authService: AuthService
+  ) {}
+
   ngOnInit() {
+    this.user = this.authService.getCurrentUser();
+    this.loadOrders();
+  }
+
+  loadOrders() {
     this.orderService.getOrders().subscribe({
       next: (res) => {
         this.orders = res.data;

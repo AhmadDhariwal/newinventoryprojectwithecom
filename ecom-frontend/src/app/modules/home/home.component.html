@@ -71,7 +71,7 @@
           <div class="category-overlay">
             <div class="category-content">
               <h3>{{ cat.name }}</h3>
-              <a [routerLink]="['/products']" [queryParams]="{category: cat._id}" class="btn btn-outline-white" style="border-color: #fff; color: #fff;">View</a>
+              <a  [routerLink]="['/products']" [queryParams]="{category: cat._id}" class="btn btn-outline-white" style="border-color: #fff; color: #fff;">View</a>
             </div>
           </div>
         </div>
@@ -231,4 +231,42 @@
       </div>
     </div>
   </section>
+
+  <!-- Section 9: Instagram Gallery -->
+  <section class="section-instagram">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="section-subtitle">#LUXESTORE</span>
+        <h2 class="section-title">Follow the Lifestyle</h2>
+        <p class="section-description">Join our global community of connoisseurs and share your #LuxeExperience with us.</p>
+      </div>
+      <div class="instagram-grid">
+        <div class="insta-item">
+          <img src="https://images.unsplash.com/photo-1549439602-43ebca2327af?auto=format&fit=crop&q=80&w=800" alt="Luxe 1">
+          <div class="insta-overlay">
+            <i class="bi bi-instagram"></i>
+          </div>
+        </div>
+        <div class="insta-item">
+          <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=800" alt="Luxe 2">
+          <div class="insta-overlay">
+            <i class="bi bi-instagram"></i>
+          </div>
+        </div>
+        <div class="insta-item">
+          <img src="https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&q=80&w=800" alt="Luxe 3">
+          <div class="insta-overlay">
+            <i class="bi bi-instagram"></i>
+          </div>
+        </div>
+        <div class="insta-item">
+          <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&q=80&w=800" alt="Luxe 4">
+          <div class="insta-overlay">
+            <i class="bi bi-instagram"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
 </div>

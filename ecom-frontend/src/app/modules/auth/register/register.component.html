@@ -1,50 +1,108 @@
 <div class="auth-page">
   <div class="auth-container">
-    <div class="auth-card">
+    <div class="auth-card fade-in">
       <div class="auth-header">
-        <h1 class="auth-title">Create Account</h1>
-        <p class="auth-subtitle">Join our exclusive community</p>
+        <h1 class="auth-title">Create Your Account</h1>
+        <p class="auth-subtitle">Join LUXE STORE for an exclusive experience</p>
       </div>
 
       <form [formGroup]="regForm" (ngSubmit)="onRegister()" class="auth-form">
-        <div class="form-group">
-          <label class="form-label">Full Name</label>
-          <input 
-            type="text" 
-            formControlName="name" 
-            class="form-control" 
-            placeholder="Enter your full name"
-          >
+        <!-- Account Section -->
+        <div class="form-section">
+          <h3 class="section-title">Account Details</h3>
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" formControlName="name" class="form-control" placeholder="Enter your full name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" formControlName="email" class="form-control" placeholder="your@email.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input type="tel" formControlName="phone" class="form-control" placeholder="+1 (555) 000-0000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" formControlName="password" class="form-control" placeholder="Create a strong password">
+          </div>
         </div>
-        
-        <div class="form-group">
-          <label class="form-label">Email Address</label>
-          <input 
-            type="email" 
-            formControlName="email" 
-            class="form-control" 
-            placeholder="your@email.com"
-          >
+
+        <!-- Shipping Section -->
+        <div class="form-section">
+          <h3 class="section-title">Shipping Address</h3>
+          <div class="form-group">
+            <label class="form-label">Street Address</label>
+            <input type="text" formControlName="street" class="form-control" placeholder="123 Luxury Ave">
+          </div>
+          <div class="grid-row">
+            <div class="form-group">
+              <label class="form-label">City</label>
+              <input type="text" formControlName="city" class="form-control" placeholder="City">
+            </div>
+            <div class="form-group">
+              <label class="form-label">State / Province</label>
+              <input type="text" formControlName="state" class="form-control" placeholder="State">
+            </div>
+          </div>
+          <div class="grid-row">
+            <div class="form-group">
+              <label class="form-label">Zip Code</label>
+              <input type="text" formControlName="zipCode" class="form-control" placeholder="Zip">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Country</label>
+              <input type="text" formControlName="country" class="form-control" placeholder="Country">
+            </div>
+          </div>
         </div>
-        
-        <div class="form-group">
-          <label class="form-label">Password</label>
-          <input 
-            type="password" 
-            formControlName="password" 
-            class="form-control" 
-            placeholder="Create a password"
-          >
+
+        <!-- Billing Toggle -->
+        <div class="billing-toggle">
+          <label class="checkbox-container">
+            <input type="checkbox" formControlName="billingSameAsShipping">
+            <span class="checkmark"></span>
+            Billing address is same as shipping
+          </label>
         </div>
-        
+
+        <!-- Billing Section (Conditional) -->
+        <div class="form-section" *ngIf="!regForm.get('billingSameAsShipping')?.value">
+          <h3 class="section-title">Billing Address</h3>
+          <div class="form-group">
+            <label class="form-label">Street Address</label>
+            <input type="text" formControlName="billingStreet" class="form-control" placeholder="123 Billing St">
+          </div>
+          <div class="grid-row">
+            <div class="form-group">
+              <label class="form-label">City</label>
+              <input type="text" formControlName="billingCity" class="form-control" placeholder="City">
+            </div>
+            <div class="form-group">
+              <label class="form-label">State / Province</label>
+              <input type="text" formControlName="billingState" class="form-control" placeholder="State">
+            </div>
+          </div>
+          <div class="grid-row">
+            <div class="form-group">
+              <label class="form-label">Zip Code</label>
+              <input type="text" formControlName="billingZipCode" class="form-control" placeholder="Zip">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Country</label>
+              <input type="text" formControlName="billingCountry" class="form-control" placeholder="Country">
+            </div>
+          </div>
+        </div>
+
         <p class="error-msg" *ngIf="error">{{ error }}</p>
 
         <button type="submit" class="btn btn-primary btn-block" [disabled]="submitting">
-          {{ submitting ? 'Creating Account...' : 'Create Account' }}
+          {{ submitting ? 'Processing...' : 'Create Account' }}
         </button>
 
         <p class="auth-switch">
-          Already have an account? 
+          Already a member? 
           <a routerLink="/auth/login">Sign in</a>
         </p>
       </form>
