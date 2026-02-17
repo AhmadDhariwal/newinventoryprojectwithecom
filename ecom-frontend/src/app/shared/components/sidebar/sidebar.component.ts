@@ -19,4 +19,9 @@ export class SidebarComponent {
   closeSidebar() {
     this.close.emit();
   }
+
+  logout() {
+    this.authService.logout();
+    this.closeSidebar();
+  }
 }

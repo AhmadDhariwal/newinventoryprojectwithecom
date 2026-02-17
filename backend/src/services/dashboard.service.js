@@ -11,30 +11,30 @@ const getAccessibleUserIds = async (role, userId) => {
   if (role === 'admin') {
     return null;
   }
-  
+
   if (role === 'manager') {
     const user = await User.findById(userId).select('assignedUsers');
     const assignedUsers = user?.assignedUsers || [];
     return [userId, ...assignedUsers.map(id => id.toString())];
   }
-  
+
   return [userId];
 };
 
 const buildFilter = (organizationId, role, userIds, fieldName = 'createdBy') => {
   const filter = { organizationId: new mongoose.Types.ObjectId(organizationId) };
-  
+
   if (role !== 'admin' && userIds) {
     filter[fieldName] = { $in: userIds.map(id => new mongoose.Types.ObjectId(id)) };
   }
-  
+
   return filter;
 };
 
 exports.getDashboardSummary = async (user, organizationId) => {
   try {
     const userIds = await getAccessibleUserIds(user.role, user.userid);
-    
+
     const productFilter = { organizationId: new mongoose.Types.ObjectId(organizationId) };
     const supplierFilter = { organizationId: new mongoose.Types.ObjectId(organizationId) };
     const purchaseFilter = buildFilter(organizationId, user.role, userIds, 'createdBy');
@@ -54,56 +54,62 @@ exports.getDashboardSummary = async (user, organizationId) => {
     ] = await Promise.all([
       Product.countDocuments(productFilter),
       Supplier.countDocuments(supplierFilter),
-      
+
       PurchaseOrder.aggregate([
         { $match: { ...purchaseFilter, status: { $in: ["APPROVED", "RECEIVED"] } } },
         { $group: { _id: null, total: { $sum: "$totalamount" } } }
       ]),
-      
+
       StockLevel.aggregate([
         { $match: stockFilter },
         { $group: { _id: null, qty: { $sum: "$quantity" } } }
       ]),
-      
+
       StockLevel.aggregate([
         { $match: stockFilter },
         { $lookup: { from: 'products', localField: 'product', foreignField: '_id', as: 'productInfo' } },
         { $lookup: { from: 'warehouses', localField: 'warehouse', foreignField: '_id', as: 'warehouseInfo' } },
         { $match: { $expr: { $and: [{ $gt: ["$minStock", 0] }, { $lte: ["$quantity", "$minStock"] }] } } },
-        { $project: { 
-          productId: "$product", 
-          productName: { $arrayElemAt: ["$productInfo.name", 0] }, 
-          sku: { $arrayElemAt: ["$productInfo.sku", 0] }, 
-          warehouseName: { $arrayElemAt: ["$warehouseInfo.name", 0] }, 
-          availableQty: "$quantity", 
-          minStock: "$minStock" 
-        }}
-      ]),
-      
-      StockMovement.aggregate([
-        { $match: { 
-          ...movementFilter, 
-          type: 'IN',
-          createdAt: { 
-            $gte: new Date(new Date().setHours(0, 0, 0, 0)),
-            $lt: new Date(new Date().setHours(23, 59, 59, 999))
+        {
+          $project: {
+            productId: "$product",
+            productName: { $arrayElemAt: ["$productInfo.name", 0] },
+            sku: { $arrayElemAt: ["$productInfo.sku", 0] },
+            warehouseName: { $arrayElemAt: ["$warehouseInfo.name", 0] },
+            availableQty: "$quantity",
+            minStock: "$minStock"
           }
-        }},
+        }
+      ]),
+
+      StockMovement.aggregate([
+        {
+          $match: {
+            ...movementFilter,
+            type: 'IN',
+            createdAt: {
+              $gte: new Date(new Date().setHours(0, 0, 0, 0)),
+              $lt: new Date(new Date().setHours(23, 59, 59, 999))
+            }
+          }
+        },
         { $group: { _id: null, qty: { $sum: '$quantity' } } }
       ]),
-      
+
       StockMovement.aggregate([
-        { $match: { 
-          ...movementFilter, 
-          type: 'OUT',
-          createdAt: { 
-            $gte: new Date(new Date().setHours(0, 0, 0, 0)),
-            $lt: new Date(new Date().setHours(23, 59, 59, 999))
+        {
+          $match: {
+            ...movementFilter,
+            type: 'OUT',
+            createdAt: {
+              $gte: new Date(new Date().setHours(0, 0, 0, 0)),
+              $lt: new Date(new Date().setHours(23, 59, 59, 999))
+            }
           }
-        }},
+        },
         { $group: { _id: null, qty: { $sum: '$quantity' } } }
       ]),
-      
+
       PurchaseOrder.countDocuments({ ...purchaseFilter, status: 'PENDING' }),
       PurchaseOrder.countDocuments({ ...purchaseFilter, status: 'APPROVED' })
     ]);
@@ -136,19 +142,19 @@ exports.getStockTrend = async (days = 30, user, organizationId) => {
   try {
     const userIds = await getAccessibleUserIds(user.role, user.userid);
     const movementFilter = buildFilter(organizationId, user.role, userIds, 'user');
-    
+
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
     startDate.setHours(0, 0, 0, 0);
 
     const stockTrend = await StockMovement.aggregate([
       { $match: { ...movementFilter, createdAt: { $gte: startDate } } },
-      { 
-        $group: { 
-          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, 
-          inQty: { $sum: { $cond: [{ $eq: ["$type", "IN"] }, "$quantity", 0] } }, 
-          outQty: { $sum: { $cond: [{ $eq: ["$type", "OUT"] }, "$quantity", 0] } } 
-        } 
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          inQty: { $sum: { $cond: [{ $eq: ["$type", "IN"] }, "$quantity", 0] } },
+          outQty: { $sum: { $cond: [{ $eq: ["$type", "OUT"] }, "$quantity", 0] } }
+        }
       },
       { $sort: { "_id": 1 } },
       { $project: { date: "$_id", inQty: 1, outQty: 1, _id: 0 } }
@@ -165,7 +171,7 @@ exports.getPurchaseTrend = async (days = 30, user, organizationId) => {
   try {
     const userIds = await getAccessibleUserIds(user.role, user.userid);
     const purchaseFilter = buildFilter(organizationId, user.role, userIds, 'createdBy');
-    
+
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
     startDate.setHours(0, 0, 0, 0);
@@ -173,13 +179,13 @@ exports.getPurchaseTrend = async (days = 30, user, organizationId) => {
     const purchaseTrend = await PurchaseOrder.aggregate([
       { $match: { ...purchaseFilter, createdAt: { $gte: startDate } } },
       { $unwind: "$items" },
-      { 
-        $group: { 
-          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, 
-          totalAmount: { $sum: "$totalamount" }, 
-          totalQuantity: { $sum: "$items.quantity" }, 
-          count: { $sum: 1 } 
-        } 
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          totalAmount: { $sum: "$totalamount" },
+          totalQuantity: { $sum: "$items.quantity" },
+          count: { $sum: 1 }
+        }
       },
       { $sort: { "_id": 1 } },
       { $project: { date: "$_id", totalAmount: 1, totalQuantity: 1, count: 1, _id: 0 } }
@@ -192,23 +198,24 @@ exports.getPurchaseTrend = async (days = 30, user, organizationId) => {
   }
 };
 
+
 exports.getSalesTrend = async (days = 30, user, organizationId) => {
   try {
     const userIds = await getAccessibleUserIds(user.role, user.userid);
     const salesFilter = buildFilter(organizationId, user.role, userIds, 'user');
-    
+
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
     startDate.setHours(0, 0, 0, 0);
 
     const salesTrend = await SalesOrder.aggregate([
       { $match: { ...salesFilter, createdAt: { $gte: startDate } } },
-      { 
-        $group: { 
-          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, 
-          totalRevenue: { $sum: "$totalamount" }, 
-          totalOrders: { $sum: 1 } 
-        } 
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          totalRevenue: { $sum: "$totalamount" },
+          totalOrders: { $sum: 1 }
+        }
       },
       { $sort: { "_id": 1 } },
       { $project: { date: "$_id", totalRevenue: 1, totalOrders: 1, _id: 0 } }
@@ -217,6 +224,107 @@ exports.getSalesTrend = async (days = 30, user, organizationId) => {
     return salesTrend;
   } catch (error) {
     console.error('Sales trend error:', error);
+    throw error;
+  }
+};
+
+exports.getOrderStatusAnalytics = async (days = 30, user, organizationId) => {
+  try {
+    const filter = {};
+
+    if (organizationId) {
+      filter.$or = [
+        { organizationId: new mongoose.Types.ObjectId(organizationId) },
+        { organizationId: { $exists: false } },
+        { organizationId: null }
+      ];
+    } else {
+      // If no organizationId in context, still show orders that don't have one
+      filter.$or = [
+        { organizationId: { $exists: false } },
+        { organizationId: null }
+      ];
+    }
+
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    startDate.setHours(0, 0, 0, 0);
+
+    filter.createdAt = { $gte: startDate };
+
+    const Order = require('../models/order');
+
+    const statusTrend = await Order.aggregate([
+      { $match: filter },
+      {
+        $group: {
+          _id: {
+            date: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+            status: "$status"
+          },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $group: {
+          _id: "$_id.date",
+          statuses: {
+            $push: {
+              status: "$_id.status",
+              count: "$count"
+            }
+          },
+          totalDayOrders: { $sum: "$count" }
+        }
+      },
+      { $sort: { "_id": 1 } },
+      {
+        $project: {
+          date: "$_id",
+          total: "$totalDayOrders",
+          processing: {
+            $sum: {
+              $map: {
+                input: { $filter: { input: "$statuses", as: "s", cond: { $eq: ["$$s.status", "processing"] } } },
+                as: "item",
+                in: "$$item.count"
+              }
+            }
+          },
+          completed: {
+            $sum: {
+              $map: {
+                input: { $filter: { input: "$statuses", as: "s", cond: { $eq: ["$$s.status", "delivered"] } } },
+                as: "item",
+                in: "$$item.count"
+              }
+            }
+          },
+          pending: {
+            $sum: {
+              $map: {
+                input: { $filter: { input: "$statuses", as: "s", cond: { $eq: ["$$s.status", "pending"] } } },
+                as: "item",
+                in: "$$item.count"
+              }
+            }
+          },
+          returned: {
+            $sum: {
+              $map: {
+                input: { $filter: { input: "$statuses", as: "s", cond: { $eq: ["$$s.status", "cancelled"] } } },
+                as: "item",
+                in: "$$item.count"
+              }
+            }
+          }
+        }
+      }
+    ]);
+
+    return statusTrend;
+  } catch (error) {
+    console.error('Order Status Analytics error:', error);
     throw error;
   }
 };

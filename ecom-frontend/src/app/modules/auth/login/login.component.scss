@@ -49,8 +49,7 @@
   display: block;
   font-size: 13px;
   font-weight: 500;
-  //color: var(--text-light);
-  color: white;
+  color: var(--white);
   margin-bottom: 8px;
   letter-spacing: 0.5px;
 }
@@ -129,6 +128,18 @@
       text-decoration: underline;
     }
   }
+}
+
+.auth-title,
+.auth-subtitle,
+.form-label,
+.auth-switch {
+  color: var(--white) !important;
+}
+
+.auth-subtitle,
+.auth-switch {
+  opacity: 0.9 !important;
 }
 
 @media (max-width: 576px) {

@@ -18,6 +18,9 @@
         <span class="greeting">Hello,</span>
         <span class="username">{{ user.name}}</span>
       </div>
+      <button class="icon-btn logout-inline" (click)="logout()" title="Logout">
+        <i class="bi bi-box-arrow-right"></i>
+      </button>
     </div>
     <ng-template #guestUser>
       <div class="guest-summary">
@@ -52,6 +55,10 @@
       <a routerLink="/products" [queryParams]="{onlySale: true}" (click)="closeSidebar()" routerLinkActive="active" class="highlight">
         <span>Sale</span>
         <i class="bi bi-chevron-right"></i>
+      </a>
+      <a (click)="logout()" class="logout-link" *ngIf="authService.currentUser$ | async">
+        <span>Logout</span>
+        <i class="bi bi-box-arrow-right"></i>
       </a>
     </nav>
 

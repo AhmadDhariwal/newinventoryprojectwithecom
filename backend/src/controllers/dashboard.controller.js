@@ -52,3 +52,14 @@ exports.getSalesTrend = async (req, res) => {
   }
 };
 
+exports.getOrderStatusAnalytics = async (req, res) => {
+  try {
+    const range = parseInt(req.query.range) || 30;
+    const data = await dashboardService.getOrderStatusAnalytics(range, req.user, req.organizationId);
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+

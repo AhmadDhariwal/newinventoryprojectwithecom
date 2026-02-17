@@ -187,6 +187,12 @@
 
     <!-- Data Visuals -->
     <div class="charts-container" *ngIf="stats.totalproducts > 0 || stats.stockInToday > 0 || stats.stockOutToday > 0 || stats.totalpurchases > 0; else noDataMessage">
+      
+      <!-- New Order Status Analytics -->
+      <section class="charts-section full-width">
+        <app-order-analytics-chart></app-order-analytics-chart>
+      </section>
+
       <section class="charts-section">
         <h2 class="section-title">Inventory Fluctuations</h2>
         <div class="single-chart">

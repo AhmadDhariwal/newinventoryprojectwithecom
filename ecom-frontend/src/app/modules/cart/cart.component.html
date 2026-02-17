@@ -21,7 +21,7 @@
             <div class="col-product">
               <div class="product-cell">
                 <img 
-                  [src]="'https://via.placeholder.com/120x150?text=' + item.product.name" 
+                  [src]="item.product.images?.length ? item.product.images?.[0] : 'https://via.placeholder.com/120x150?text=' + item.product.name" 
                   [alt]="item.product.name"
                   class="product-image"
                 >

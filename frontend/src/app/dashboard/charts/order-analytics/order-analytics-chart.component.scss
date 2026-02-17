@@ -1,0 +1,145 @@
+.analytics-card {
+    background: rgba(10, 25, 47, 0.4);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 24px;
+    height: 100%;
+    color: #ffffff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+
+    &:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+
+    .header-main {
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: 0.5px;
+            color: #ffffff;
+        }
+
+        .card-subtitle {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            margin: 4px 0 0;
+        }
+    }
+}
+
+.range-filters {
+    display: flex;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 4px;
+    gap: 4px;
+
+    .filter-btn {
+        padding: 6px 12px;
+        border-radius: 8px;
+        border: none;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        &.active {
+            background: #3498db;
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(52, 152, 220, 0.3);
+        }
+    }
+}
+
+.card-body {
+    position: relative;
+    min-height: 350px;
+}
+
+.chart-wrapper {
+    width: 100%;
+}
+
+.loading-state,
+.error-state {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+
+    span,
+    p {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.6);
+    }
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(52, 152, 220, 0.1);
+    border-top-color: #3498db;
+    border-radius: 50%;
+    animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.retry-btn {
+    background: transparent;
+    border: 1px solid #3498db;
+    color: #3498db;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+        background: #3498db;
+        color: #ffffff;
+    }
+}
+
+@media (max-width: 768px) {
+    .card-header {
+        flex-direction: column;
+        gap: 16px;
+
+        .range-filters {
+            width: 100%;
+            justify-content: space-between;
+
+            .filter-btn {
+                flex: 1;
+            }
+        }
+    }
+}

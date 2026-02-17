@@ -46,8 +46,8 @@
 /* Sidebar Section */
 .contact-sidebar {
   padding: 60px;
- // background: rgba(255, 255, 255, 0.02);
- background-color: #36454f;
+  background-color: #1a2a44;
+  /* Story-like highlight color */
   border-right: 1px solid rgba(255, 255, 255, 0.05);
 
   .section-badge {
@@ -171,7 +171,7 @@
 /* Form Section */
 .contact-form-area {
   padding: 60px;
-  background-color: #36454f;
+  background-color: var(--navy-deep);
 }
 
 .luxe-form {

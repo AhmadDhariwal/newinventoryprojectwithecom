@@ -1,5 +1,9 @@
 @import '../../styles/theme';
 
+.charts-section.full-width {
+  grid-column: 1 / -1;
+}
+
 .dashboard-container {
   min-height: 100vh;
   background-color: var(--bg-main);

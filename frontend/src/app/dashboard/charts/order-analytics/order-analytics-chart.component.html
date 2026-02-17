@@ -1,0 +1,50 @@
+<div class="analytics-card">
+  <div class="card-header">
+    <div class="header-main">
+      <h3 class="card-title">Order Status Intelligence</h3>
+      <p class="card-subtitle">Distribution of orders across fulfillment stages</p>
+    </div>
+    
+    <div class="range-filters">
+      <button 
+        *ngFor="let r of ranges" 
+        (click)="setRange(r.value)"
+        [class.active]="selectedRange === r.value"
+        class="filter-btn">
+        {{ r.label }}
+      </button>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner"></div>
+      <span>Calibrating metrics...</span>
+    </div>
+
+    <div *ngIf="error && !loading" class="error-state">
+      <i class="fas fa-exclamation-triangle"></i>
+      <p>Unable to retrieve analytics data</p>
+      <button (click)="fetchData()" class="retry-btn">Re-attempt Sync</button>
+    </div>
+
+    <div [hidden]="loading || error" class="chart-wrapper">
+      <div id="chart">
+        <apx-chart
+          [series]="chartOptions.series"
+          [chart]="chartOptions.chart"
+          [dataLabels]="chartOptions.dataLabels"
+          [plotOptions]="chartOptions.plotOptions"
+          [xaxis]="chartOptions.xaxis"
+          [yaxis]="chartOptions.yaxis"
+          [stroke]="chartOptions.stroke"
+          [fill]="chartOptions.fill"
+          [tooltip]="chartOptions.tooltip"
+          [legend]="chartOptions.legend"
+          [colors]="chartOptions.colors"
+          [grid]="chartOptions.grid"
+        ></apx-chart>
+      </div>
+    </div>
+  </div>
+</div>

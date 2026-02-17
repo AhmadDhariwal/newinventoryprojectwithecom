@@ -25,4 +25,8 @@ export class DashboardService {
   getSalesTrend(days: number = 30): Observable<any> {
     return this.http.get(`${this.api}/sales-trend?days=${days}`);
   }
+  
+  getOrderStatusAnalytics(range: number = 30): Observable<any> {
+    return this.http.get(`${this.api}/analytics/order-status?range=${range}`);
+  }
 }
