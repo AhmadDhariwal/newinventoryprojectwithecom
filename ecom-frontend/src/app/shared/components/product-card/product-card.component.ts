@@ -24,6 +24,11 @@ export class ProductCardComponent {
     return `https://via.placeholder.com/400x500?text=${encodeURIComponent(this.product.name)}`;
   }
 
+  getStarArray(): boolean[] {
+    const rating = Math.round(this.product.averageRating || 0);
+    return Array(5).fill(false).map((_, i) => i < rating);
+  }
+
   addToCart(event: Event) {
     event.stopPropagation();
     this.cartService.addToCart(this.product);

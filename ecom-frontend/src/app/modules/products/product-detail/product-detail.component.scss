@@ -1,20 +1,21 @@
 // Premium Design Constants
-$accent-pink: Black;
-$deep-slate: #111827;
-$muted-gray: #6b7280;
-$soft-bg: #f9fafb;
+$accent-gold: #ffd700;
+$navy-deep: #050a15;
+$navy-muted: rgba(255, 255, 255, 0.05);
 $white: #ffffff;
-$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+$text-muted: rgba(255, 255, 255, 0.5);
+$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
 
 .product-premium-page {
-  background-color: $white;
+  background-color: var(--navy-deep);
+  color: $white;
   min-height: 100vh;
   padding-bottom: 100px;
 }
 
 .breadcrumb-nav {
   padding: 30px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   margin-bottom: 60px;
 
   .breadcrumb-container {
@@ -25,20 +26,20 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
     letter-spacing: 0.02em;
 
     a {
-      color: $muted-gray;
+      color: $text-muted;
       transition: color 0.3s;
 
       &:hover {
-        color: $accent-pink;
+        color: $accent-gold;
       }
     }
 
     .sep {
-      color: #d1d5db;
+      color: rgba(255, 255, 255, 0.2);
     }
 
     .current {
-      color: $deep-slate;
+      color: $white;
     }
   }
 }
@@ -58,7 +59,7 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
   }
 
   .hero-image-vessel {
-    background: $soft-bg;
+    background: rgba(255, 255, 255, 0.02);
     border-radius: 32px;
     overflow: hidden;
     margin-bottom: 24px;
@@ -66,7 +67,8 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 
     img {
       width: 100%;
@@ -93,7 +95,7 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
       cursor: pointer;
       border: 2px solid transparent;
       transition: all 0.3s;
-      background: $soft-bg;
+      background: rgba(255, 255, 255, 0.05);
 
       img {
         width: 100%;
@@ -102,8 +104,8 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
       }
 
       &.active {
-        border-color: $accent-pink;
-        box-shadow: 0 0 0 4px rgba(255, 64, 129, 0.1);
+        border-color: $accent-gold;
+        box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.1);
       }
     }
   }
@@ -114,8 +116,8 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
   .category-tag {
     display: inline-block;
     padding: 8px 16px;
-    background: rgba(255, 64, 129, 0.05);
-    color: $accent-pink;
+    background: rgba(255, 215, 0, 0.1);
+    color: $accent-gold;
     font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
@@ -127,7 +129,7 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
   .main-title {
     font-size: 48px;
     font-weight: 800;
-    color: $deep-slate;
+    color: $white;
     line-height: 1.1;
     margin-bottom: 12px;
     letter-spacing: -0.02em;
@@ -135,7 +137,7 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
 
   .sku-info {
     font-size: 14px;
-    color: $muted-gray;
+    color: $text-muted;
     font-family: 'Inter', sans-serif;
     margin-bottom: 40px;
   }
@@ -149,7 +151,7 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
     .price-display {
       font-size: 40px;
       font-weight: 700;
-      color: $accent-pink;
+      color: $accent-gold;
     }
 
     .stock-badge {
@@ -173,7 +175,7 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
       }
 
       &.out {
-        color: #6b7280;
+        color: rgba(255, 255, 255, 0.3);
 
         .pulse-dot {
           animation: none;
@@ -202,7 +204,7 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
   .narrative-vessel {
     margin-bottom: 48px;
     padding-top: 32px;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
 
     .vessel-heading {
       font-size: 16px;
@@ -210,10 +212,11 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
       margin-bottom: 16px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
+      color: $white;
     }
 
     .narrative-text {
-      color: #4b5563;
+      color: rgba(255, 255, 255, 0.7);
       line-height: 1.8;
       font-size: 16px;
     }
@@ -230,36 +233,38 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
         font-size: 12px;
         font-weight: 600;
         margin-bottom: 8px;
-        color: $muted-gray;
+        color: $text-muted;
       }
 
       .stepper-vessel {
         display: flex;
         align-items: center;
-        background: $soft-bg;
+        background: rgba(255, 255, 255, 0.03);
         padding: 6px;
         border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
 
         button {
           width: 40px;
           height: 40px;
-          background: white;
+          background: rgba(255, 255, 255, 0.1);
           border: none;
+          color: $white;
           border-radius: 10px;
           cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
           transition: all 0.2s;
 
           &:hover:not(:disabled) {
-            background: $accent-pink;
+           // background: $accent-gold;
+           background-color: var(--navy-deep);
             color: white;
           }
 
           &:disabled {
-            opacity: 0.4;
+            opacity: 0.2;
             cursor: not-allowed;
           }
         }
@@ -269,6 +274,7 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
           text-align: center;
           font-weight: 700;
           font-size: 18px;
+          color: $white;
         }
       }
     }
@@ -276,8 +282,8 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
     .btn-purchase-premium {
       flex: 1;
       margin-top: 25px;
-      background: $deep-slate;
-      color: white;
+      background: $white;
+      color: $navy-deep;
       border: none;
       border-radius: 16px;
       font-size: 16px;
@@ -287,20 +293,20 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
       justify-content: center;
       gap: 12px;
       cursor: pointer;
-      transition: all 0.3s;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
 
       &:hover {
-        background: black;
+        background: $accent-gold;
         transform: translateY(-2px);
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
       }
     }
   }
 
   .attribute-list {
     padding-top: 32px;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
 
     .attr-row {
       display: flex;
@@ -309,12 +315,12 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
       font-size: 14px;
 
       .attr-label {
-        color: $muted-gray;
+        color: $text-muted;
       }
 
       .attr-value {
         font-weight: 600;
-        color: $deep-slate;
+        color: $white;
       }
     }
   }
@@ -324,7 +330,7 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
 .discovery-section {
   margin-top: 120px;
   padding-top: 80px;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 
   .discovery-header {
     text-align: center;
@@ -334,10 +340,11 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
       font-size: 36px;
       font-weight: 800;
       margin-bottom: 12px;
+      color: $white;
     }
 
     .discovery-subtitle {
-      color: $muted-gray;
+      color: $text-muted;
       font-size: 18px;
     }
   }
@@ -357,13 +364,13 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
 
   .skeleton-media {
     height: 600px;
-    background: #eee;
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 32px;
   }
 
   .skeleton-line {
     height: 20px;
-    background: #eee;
+    background: rgba(255, 255, 255, 0.05);
     margin-bottom: 20px;
   }
 
@@ -400,17 +407,18 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(5, 10, 21, 0.95);
   backdrop-filter: blur(12px);
   padding: 16px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.3);
   z-index: 1000;
   transform: translateY(100%);
   transition: transform 0.3s ease;
   display: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 
   @media (max-width: 768px) {
     display: flex;
@@ -427,12 +435,12 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
     .sticky-name {
       font-size: 14px;
       font-weight: 700;
-      color: var(--text-primary);
+      color: $white;
     }
 
     .sticky-price {
       font-size: 14px;
-      color: var(--accent-blue);
+      color: $accent-gold;
       font-weight: 800;
     }
   }
@@ -440,5 +448,9 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
   .btn-primary {
     padding: 10px 24px;
     font-size: 14px;
+    background: $accent-gold;
+    color: $navy-deep;
+    border: none;
+    font-weight: 700;
   }
 }

@@ -1,70 +1,96 @@
-<div class="complaint-page">
-  <div class="page-header">
-    <div class="container">
-      <h1 class="page-title">Submit a Complaint</h1>
-      <p class="page-subtitle">We're sorry something went wrong. Let's fix it.</p>
+<div class="complaint-page-wrapper">
+  <div class="container">
+    <div class="complaint-header">
+      <h1 class="premium-title">Resolution Center</h1>
+      <p class="premium-subtitle">Your satisfaction is our priority. Let's resolve your concern.</p>
     </div>
-  </div>
 
-  <div class="container section">
-    <div class="container-narrow">
-      <div *ngIf="successMessage" class="alert alert-success">
-        {{ successMessage }}
-      </div>
-      <div *ngIf="errorMessage" class="alert alert-error">
-        {{ errorMessage }}
-      </div>
+    <div class="complaint-grid">
+      <div class="complaint-form-vessel">
+        <div *ngIf="successMessage" class="alert-premium success">
+          <i class="bi bi-check-circle-fill"></i>
+          {{ successMessage }}
+        </div>
+        <div *ngIf="errorMessage" class="alert-premium error">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          {{ errorMessage }}
+        </div>
 
-      <div class="form-card">
-        <form [formGroup]="complaintForm" (ngSubmit)="onSubmit()">
-          <div class="form-group">
-            <label class="form-label">Order ID / Reference</label>
-            <input
-              type="text"
-              formControlName="orderId"
-              class="form-control"
-              [class.is-invalid]="submitted && f['orderId'].errors"
-              placeholder="e.g. 64b2f..."
-              [readOnly]="!!orderId"
-            >
-            <div *ngIf="submitted && f['orderId'].errors" class="error-feedback">
-              <small *ngIf="f['orderId'].errors['required']">Order ID is required</small>
+        <div class="premium-card">
+          <form [formGroup]="complaintForm" (ngSubmit)="onSubmit()">
+            <div class="form-grid">
+              <div class="form-group-premium">
+                <label>Order Reference</label>
+                <div class="input-vessel">
+                  <i class="bi bi-hash"></i>
+                  <input
+                    type="text"
+                    formControlName="orderId"
+                    class="premium-input"
+                    [class.error]="submitted && f['orderId'].errors"
+                    placeholder="Enter Order ID"
+                    [readOnly]="!!orderId"
+                  >
+                </div>
+                <div *ngIf="submitted && f['orderId'].errors" class="premium-error-text">
+                  Order ID is required
+                </div>
+              </div>
+
+              <div class="form-group-premium">
+                <label>Issue Category</label>
+                <div class="input-vessel">
+                  <i class="bi bi-tag"></i>
+                  <select title="Category" formControlName="category" class="premium-select" [class.error]="submitted && f['category'].errors">
+                    <option value="product_quality">Product Quality</option>
+                    <option value="delivery">Delivery Issues</option>
+                    <option value="wrong_item">Wrong Item Received</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <div class="form-group">
-            <label class="form-label">Complaint Category</label>
-            <select title="Category" formControlName="category" class="form-control" [class.is-invalid]="submitted && f['category'].errors">
-              <option value="product_quality">Product Quality</option>
-              <option value="delivery">Delivery Issues</option>
-              <option value="wrong_item">Wrong Item Received</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Description</label>
-            <textarea
-              formControlName="description"
-              class="form-control"
-              [class.is-invalid]="submitted && f['description'].errors"
-              rows="8"
-              placeholder="Please provide as much detail as possible..."
-            ></textarea>
-            <div *ngIf="submitted && f['description'].errors" class="error-feedback">
-              <small *ngIf="f['description'].errors['required']">Description is required</small>
-              <small *ngIf="f['description'].errors['minlength']">Please provide at least 20 characters</small>
+            <div class="form-group-premium full-width">
+              <label>Detailed Description</label>
+              <textarea
+                formControlName="description"
+                class="premium-textarea"
+                [class.error]="submitted && f['description'].errors"
+                rows="6"
+                placeholder="Tell us more about the issue..."
+              ></textarea>
+              <div class="form-footer-meta">
+                <div *ngIf="submitted && f['description'].errors" class="premium-error-text">
+                  <span *ngIf="f['description'].errors['required']">Description is required</span>
+                  <span *ngIf="f['description'].errors['minlength']">Please provide at least 20 characters</span>
+                </div>
+                <div class="char-countdown-premium">{{ f['description'].value?.length || 0 }} / 1000</div>
+              </div>
             </div>
-          </div>
 
-          <div class="form-actions">
-            <button type="submit" class="btn btn-primary" [disabled]="loading">
-               <span *ngIf="loading" class="spinner"></span>
-               {{ loading ? 'Submitting...' : 'Submit Complaint' }}
-            </button>
-            <a [routerLink]="['/']" class="btn btn-outline">Cancel</a>
-          </div>
-        </form>
+            <div class="premium-actions">
+              <button type="submit" class="btn-premium-submit" [disabled]="loading">
+                <span *ngIf="loading" class="premium-spinner"></span>
+                {{ loading ? 'Processing...' : 'Submit Resolution Request' }}
+              </button>
+              <a [routerLink]="['/']" class="btn-premium-cancel">Return Home</a>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="complaint-info-panel">
+        <div class="info-card">
+          <i class="bi bi-clock-history"></i>
+          <h4>Review Time</h4>
+          <p>Most resolution requests are reviewed within 24-48 business hours.</p>
+        </div>
+        <div class="info-card">
+          <i class="bi bi-shield-check"></i>
+          <h4>Fair Resolution</h4>
+          <p>We're committed to ensuring every concern is handled with care and fairness.</p>
+        </div>
       </div>
     </div>
   </div>

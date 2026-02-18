@@ -1,7 +1,7 @@
 <div class="product-card" [routerLink]="['/products', product._id]">
   <div class="product-image-wrapper">
-    <img class="product-image" [src]="getProductImage()" [alt]="product.name">
-    
+    <img title="Product name" class="product-image" [src]="getProductImage()" [alt]="product.name">
+
     <!-- Badges -->
     <div class="product-badge" *ngIf="!product.inStock">Sold Out</div>
     <div class="product-badge sale-badge" *ngIf="product.inStock && product.discountPercentage">
@@ -24,16 +24,18 @@
   <div class="product-info">
     <span class="product-category">{{ product.category.name }}</span>
     <h3 class="product-name">{{ product.name }}</h3>
-    
-    <!-- Rating Placeholder -->
-    <div class="product-rating">
-      <i class="bi bi-star-fill text-gold"></i>
-      <i class="bi bi-star-fill text-gold"></i>
-      <i class="bi bi-star-fill text-gold"></i>
-      <i class="bi bi-star-fill text-gold"></i>
-      <i class="bi bi-star-half text-gold"></i>
-      <span class="rating-count">(4.5)</span>
+
+    <!-- Rating -->
+    <div class="product-rating" *ngIf="product.totalReviews && product.totalReviews > 0; else noRating">
+      <i *ngFor="let star of getStarArray()" 
+         [class]="star ? 'bi bi-star-fill text-gold' : 'bi bi-star text-gold'"></i>
+      <span class="rating-count">({{ product.averageRating?.toFixed(1) }}) {{ product.totalReviews }}</span>
     </div>
+    <ng-template #noRating>
+      <div class="product-rating no-reviews">
+        <span class="rating-count">No reviews yet</span>
+      </div>
+    </ng-template>
 
     <div class="product-price-wrapper">
       <span class="product-price" [class.discounted]="product.discountPrice">

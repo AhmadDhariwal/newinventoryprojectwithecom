@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule} from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
@@ -14,7 +14,7 @@ export class SidebarComponent {
   @Input() isOpen = false;
   @Output() close = new EventEmitter<void>();
 
-  constructor(public authService: AuthService) {}
+  constructor(public authService: AuthService , private router : Router) {}
 
   closeSidebar() {
     this.close.emit();
@@ -22,6 +22,7 @@ export class SidebarComponent {
 
   logout() {
     this.authService.logout();
+      this.router.navigate (['/login']);
     this.closeSidebar();
   }
 }

@@ -22,6 +22,7 @@ const notificationroutes = require("./src/routes/notification.routes");
 const ecommerceroutes = require("./src/routes/ecommerce.routes");
 const adminorderroutes = require("./src/routes/admin-order.routes");
 const chatbotroutes = require("./src/routes/chatbot.routes");
+const reviewroutes = require("./src/routes/review.routes");
 const cors = require('cors');
 
 const userroute = require('./src/routes/user');
@@ -68,6 +69,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/user', userroute);
 app.use('/api/organizations', organizationroutes);
 app.use('/api/ecommerce', ecommerceroutes);
+app.use('/api/reviews', reviewroutes);
 
 // Protected routes - require authentication, organization context, and maintenance check
 app.use('/items', verifytoken, ensureOrganizationContext, enforceSecurityPolicies, checkMaintenanceMode, restrictto(["admin", "user"]), route);

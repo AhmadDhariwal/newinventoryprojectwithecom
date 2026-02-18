@@ -1,0 +1,157 @@
+<div class="reviews-section-wrapper">
+  <div class="container">
+    <div class="reviews-header">
+      <h2 class="section-title">Experience & Feedback</h2>
+      <p class="section-subtitle">What our collection owners are saying</p>
+    </div>
+
+    <div class="reviews-layout-grid">
+      <!-- Left Column: Summary & Controls -->
+      <div class="side-panel">
+        <div class="review-summary-premium">
+          <div class="summary-stats" *ngIf="summary.totalReviews > 0; else noReviews">
+            <div class="rating-overview">
+              <div class="avg-rating">{{ summary.averageRating.toFixed(1) }}</div>
+              <div class="stars-display">
+                <i *ngFor="let filled of getStarArray(Math.round(summary.averageRating))" 
+                   [class]="filled ? 'bi bi-star-fill' : 'bi bi-star'" 
+                   class="star-icon"></i>
+              </div>
+              <div class="total-reviews">Based on {{ summary.totalReviews }} {{ summary.totalReviews === 1 ? 'verified review' : 'verified reviews' }}</div>
+            </div>
+
+            <div class="rating-breakdown">
+              <div class="breakdown-row" *ngFor="let star of [5, 4, 3, 2, 1]">
+                <span class="star-label">{{ star }} <i class="bi bi-star-fill"></i></span>
+                <div class="progress-bar-premium">
+                  <div class="progress-fill" [style.width.%]="getRatingPercentage(summary.ratingBreakdown[star === 5 ? 'five' : star === 4 ? 'four' : star === 3 ? 'three' : star === 2 ? 'two' : 'one'])"></div>
+                </div>
+                <span class="count">{{ summary.ratingBreakdown[star === 5 ? 'five' : star === 4 ? 'four' : star === 3 ? 'three' : star === 2 ? 'two' : 'one'] }}</span>
+              </div>
+            </div>
+          </div>
+
+          <ng-template #noReviews>
+            <div class="no-reviews-empty">
+              <i class="bi bi-chat-square-text"></i>
+              <p>No reviews yet. Be the first to share your thoughts!</p>
+            </div>
+          </ng-template>
+        </div>
+
+        <div class="write-review-prompt" *ngIf="!showForm">
+          <button class="btn-write-premium" (click)="showForm = true">
+            <i class="bi bi-pencil-square"></i> Write a Review
+          </button>
+        </div>
+
+        <!-- Write Review Form -->
+        <div class="write-review-card" *ngIf="showForm">
+          <div class="card-header">
+            <h3>Share Your Experience</h3>
+            <button class="btn-close" (click)="showForm = false">&times;</button>
+          </div>
+          
+          <form [formGroup]="reviewForm" (ngSubmit)="onSubmit()">
+            <div class="form-group">
+              <label>Overall Rating</label>
+              <div class="star-selector-premium">
+                <i *ngFor="let star of [1,2,3,4,5]" 
+                   class="bi" 
+                   [class.bi-star-fill]="star <= (hoverRating || selectedRating)"
+                   [class.bi-star]="star > (hoverRating || selectedRating)"
+                   (click)="setRating(star)"
+                   (mouseenter)="hoverRating = star"
+                   (mouseleave)="hoverRating = 0"></i>
+              </div>
+              <div class="error-text" *ngIf="reviewForm.get('rating')?.touched && reviewForm.get('rating')?.errors">
+                Please provide a rating
+              </div>
+            </div>
+
+            <div *ngIf="!isLoggedIn" class="guest-info-grid">
+              <div class="form-group">
+                <label>Name</label>
+                <input type="text" formControlName="guestName" class="form-control-premium" placeholder="Your name">
+                <div class="error-text" *ngIf="reviewForm.get('guestName')?.touched && reviewForm.get('guestName')?.errors?.['required']">
+                  Name is required
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" formControlName="guestEmail" class="form-control-premium" placeholder="Email address">
+                <div class="error-text" *ngIf="reviewForm.get('guestEmail')?.touched && reviewForm.get('guestEmail')?.errors">
+                  <span *ngIf="reviewForm.get('guestEmail')?.errors?.['required']">Email is required</span>
+                  <span *ngIf="reviewForm.get('guestEmail')?.errors?.['email']">Invalid email format</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Your Review</label>
+              <textarea formControlName="comment" class="form-control-premium" rows="4" 
+                        placeholder="What did you think of the product?"></textarea>
+              <div class="form-footer-meta">
+                <div class="error-text" *ngIf="reviewForm.get('comment')?.touched && reviewForm.get('comment')?.errors">
+                  <span *ngIf="reviewForm.get('comment')?.errors?.['required']">Review content is required</span>
+                  <span *ngIf="reviewForm.get('comment')?.errors?.['minlength']">Minimum 10 characters required</span>
+                </div>
+                <div class="char-countdown">{{ reviewForm.get('comment')?.value?.length || 0 }} / 1000</div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-submit-premium" [disabled]="submitting">
+              {{ submitting ? 'Submitting...' : 'Post Review' }}
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Right Column: Reviews List -->
+      <div class="main-content">
+        <div class="list-controls">
+          <h3 class="list-title">Customer Stories ({{ summary.totalReviews }})</h3>
+        </div>
+        
+        <div *ngIf="loading" class="loading-state">
+          <div class="spinner-border text-gold" role="status"></div>
+          <span>Refining reviews...</span>
+        </div>
+
+        <div *ngIf="!loading && reviews.length === 0" class="empty-list-state">
+          <p>No reviews have been posted for this product yet.</p>
+        </div>
+
+        <div class="reviews-feed">
+          <div class="review-item-premium" *ngFor="let review of reviews">
+            <div class="review-meta">
+              <div class="user-vessel">
+                <div class="avatar-premium">{{ review.reviewerName.charAt(0).toUpperCase() }}</div>
+                <div class="user-details">
+                  <span class="user-name">{{ review.reviewerName }}</span>
+                  <span class="verified-tag" *ngIf="review.isVerifiedPurchase">
+                    <i class="bi bi-patch-check-fill"></i> Verified Purchase
+                  </span>
+                </div>
+              </div>
+              <div class="review-date-premium">{{ formatDate(review.createdAt) }}</div>
+            </div>
+
+            <div class="review-rating-line">
+              <i *ngFor="let filled of getStarArray(review.rating)" 
+                 [class]="filled ? 'bi bi-star-fill' : 'bi bi-star'"></i>
+            </div>
+
+            <div class="review-text-premium">{{ review.comment }}</div>
+          </div>
+        </div>
+
+        <div class="pagination-vessel" *ngIf="hasMore">
+          <button class="btn-load-more" (click)="currentPage = currentPage + 1; loadReviews()">
+            Explore More Reviews
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

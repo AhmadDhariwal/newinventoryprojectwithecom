@@ -147,6 +147,7 @@ async function optionalCustomerAuth(req, res, next) {
         organizationId: decoded.organizationId,
         role: decoded.role
       };
+      req.organizationId = decoded.organizationId;
     }
     next();
   } catch (err) {
@@ -156,10 +157,10 @@ async function optionalCustomerAuth(req, res, next) {
 }
 
 module.exports = {
-
   verifytoken,
   restrictto,
   user,
   verifyCustomerToken,
   optionalCustomerAuth,
+  optionalAuth: optionalCustomerAuth
 }

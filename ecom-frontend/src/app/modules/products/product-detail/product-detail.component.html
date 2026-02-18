@@ -19,8 +19,8 @@
             <img [src]="getMainImage()" [alt]="product.name" class="img-fluid hero-img shadow-xl">
           </div>
           <div class="media-scroller" *ngIf="product.images && product.images.length > 1">
-            <div 
-              class="media-thumb" 
+            <div
+              class="media-thumb"
               [class.active]="selectedImageIndex === i"
               *ngFor="let img of product.images; let i = index"
               (click)="selectedImageIndex = i"
@@ -56,11 +56,11 @@
           <div class="qty-selector-premium">
             <label>Quantity</label>
             <div class="stepper-vessel">
-              <button (click)="changeQty(-1)" [disabled]="quantity <= 1">
+              <button (click)="changeQty(-1)" [disabled]="quantity <= 1" title="Decrease quantity">
                 <i class="fas fa-minus"></i>
               </button>
               <span class="qty-count">{{ quantity }}</span>
-              <button (click)="changeQty(1)" [disabled]="quantity >= product.stockAvailable">
+              <button (click)="changeQty(1)" [disabled]="quantity >= product.stockAvailable" title="Increase quantity">
                 <i class="fas fa-plus"></i>
               </button>
             </div>
@@ -88,6 +88,9 @@
       </div>
     </div>
 
+    <!-- Reviews Section -->
+    <app-product-reviews [productId]="product._id"></app-product-reviews>
+
     <!-- Featured Products Showcase -->
     <div class="discovery-section" *ngIf="featuredProducts.length > 0">
       <div class="discovery-header">
@@ -100,6 +103,7 @@
         </div>
       </div>
     </div>
+
     <!-- Mobile Sticky Add to Cart -->
     <div class="mobile-sticky-action" *ngIf="product.inStock">
       <div class="sticky-info">

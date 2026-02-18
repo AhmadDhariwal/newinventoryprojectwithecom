@@ -135,7 +135,7 @@ const getPublicProducts = async (filters = {}) => {
 
     const products = await Product.find(query)
         .populate('category', 'name')
-        .select('name sku description price discountPrice discountPercentage category status images')
+        .select('name sku description price discountPrice discountPercentage category status images averageRating totalReviews')
         .sort({ createdAt: -1 })
         .lean();
 
@@ -163,7 +163,7 @@ const getProductDetails = async (productId) => {
         status: 'active'
     })
         .populate('category', 'name')
-        .select('name sku description price discountPrice discountPercentage category status images')
+        .select('name sku description price discountPrice discountPercentage category status images averageRating totalReviews ratingBreakdown')
         .lean();
 
     if (!product) {

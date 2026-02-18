@@ -6,7 +6,6 @@ export interface Product {
   price: number;
   discountPrice?: number;
   discountPercentage?: number;
-
   category: {
     _id: string;
     name: string;
@@ -15,6 +14,15 @@ export interface Product {
   stockAvailable: number;
   inStock: boolean;
   images?: string[];
+  averageRating?: number;
+  totalReviews?: number;
+  ratingBreakdown?: {
+    five: number;
+    four: number;
+    three: number;
+    two: number;
+    one: number;
+  };
   stockByWarehouse?: {
     warehouse: {
       _id: string;

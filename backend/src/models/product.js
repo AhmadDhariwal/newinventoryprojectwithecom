@@ -46,6 +46,25 @@ const productschema = new mongoose.Schema({
     enum: ["active", "inactive"],
     default: "active",
   },
+  // Review & Rating fields
+  averageRating: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 5
+  },
+  totalReviews: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  ratingBreakdown: {
+    five: { type: Number, default: 0 },
+    four: { type: Number, default: 0 },
+    three: { type: Number, default: 0 },
+    two: { type: Number, default: 0 },
+    one: { type: Number, default: 0 }
+  },
   // Multi-tenant fields
   organizationId: {
     type: mongoose.Schema.Types.ObjectId,

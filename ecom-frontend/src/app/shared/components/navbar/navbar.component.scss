@@ -1,5 +1,5 @@
 .navbar {
-  position: sticky;
+  position:fixed ;
   top: 0;
   left: 0;
   right: 0;
@@ -14,7 +14,7 @@
   &.scrolled {
     height: 60px;
     background-color: rgba(10, 25, 47, 0.95);
-    backdrop-filter: blur(15px);
+   // backdrop-filter: blur(15px);
     box-shadow: 0 10px 30px -10px rgba(2, 12, 27, 0.7);
   }
 }

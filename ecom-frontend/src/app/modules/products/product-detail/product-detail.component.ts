@@ -5,11 +5,12 @@ import { ProductService } from '../../../core/services/product.service';
 import { CartService } from '../../../core/services/cart.service';
 import { Product } from '../../../core/models/models';
 import { ProductCardComponent } from '../../../shared/components/product-card/product-card.component';
+import { ProductReviewsComponent } from '../../../shared/components/product-reviews/product-reviews.component';
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, ProductCardComponent],
+  imports: [CommonModule, RouterModule, ProductCardComponent, ProductReviewsComponent],
   templateUrl: './product-detail.component.html',
   styleUrls: ['./product-detail.component.scss']
 })
