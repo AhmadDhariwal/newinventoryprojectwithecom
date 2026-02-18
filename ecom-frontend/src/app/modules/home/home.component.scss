@@ -115,6 +115,7 @@
 .section-header {
   margin-bottom: 60px;
   text-align: center;
+  background-color: var(--navy-deep);
 }
 
 .section-subtitle {
@@ -274,7 +275,7 @@
 .info-section,
 .brands-section,
 .newsletter-section {
-  background-color: transparent !important;
+  background-color: var(--navy-deep) !important;
 }
 
 .section {
@@ -323,7 +324,7 @@
 
 /* Features Info */
 .info-section {
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: var(--navy-deep);
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -349,6 +350,7 @@
     margin-bottom: 12px;
     text-transform: uppercase;
     letter-spacing: 1px;
+    color: var(--white);
   }
 
   p {
@@ -362,7 +364,7 @@
 .brands-section {
   padding: 40px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--navy-deep);
   overflow: hidden;
 }
 
@@ -457,14 +459,13 @@
   font-family: var(--font-heading);
   font-size: 18px;
   font-weight: 600;
-  color : white;
-  //color: var(--dark-color);
+  color: var(--white);
   margin-bottom: 8px;
 }
 
 .review-text {
   font-size: 15px;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.7);
   line-height: 1.6;
   margin-bottom: 24px;
 }
@@ -513,7 +514,7 @@
 
 /* Newsletter */
 .newsletter-section {
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: var(--navy-deep);
   padding: 100px 0;
   text-align: center;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
@@ -551,7 +552,7 @@
 /* Instagram Section (Follow the Lifestyle) */
 .section-instagram {
   padding: 120px 0;
-  background: transparent !important;
+  background: var(--navy-deep) !important;
   position: relative;
   z-index: 1;
 
@@ -684,5 +685,5 @@
 .categories-section,
 .testimonials-section,
 .section-instagram {
-  background-color: rgba(0, 0, 0, 0.4) !important;
+  background-color: var(--navy-deep) !important;
 }

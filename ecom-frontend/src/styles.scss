@@ -6,7 +6,9 @@
     /* Premium Navy & Gold Palette */
     --navy-deep: #0A192F;
     /* Darkest Navy for backgrounds */
-    --navy-main: #112240;
+    --navy-main : var(--navy-deep);
+
+   // --navy-main: #112240;
     /* Primary Navy */
     --navy-light: #233554;
     /* Lighter Navy for accents */

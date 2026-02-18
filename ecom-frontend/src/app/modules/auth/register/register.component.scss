@@ -3,7 +3,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at top left, var(--navy-main), var(--navy-deep));
+    background-color: var(--navy-deep);
+  //background: radial-gradient(circle at top left, var(--navy-main), var(--navy-deep));
   padding: 120px 24px 80px;
 }
 

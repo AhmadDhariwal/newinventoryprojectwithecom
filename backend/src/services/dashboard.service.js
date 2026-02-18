@@ -6,6 +6,7 @@ const StockMovement = require('../models/stockmovement');
 const StockLevel = require('../models/stocklevel');
 const User = require('../models/user');
 const mongoose = require('mongoose');
+ const Order = require('../models/order');
 
 const getAccessibleUserIds = async (role, userId) => {
   if (role === 'admin') {
@@ -230,29 +231,29 @@ exports.getSalesTrend = async (days = 30, user, organizationId) => {
 
 exports.getOrderStatusAnalytics = async (days = 30, user, organizationId) => {
   try {
-    const filter = {};
-
-    if (organizationId) {
-      filter.$or = [
-        { organizationId: new mongoose.Types.ObjectId(organizationId) },
-        { organizationId: { $exists: false } },
-        { organizationId: null }
-      ];
-    } else {
-      // If no organizationId in context, still show orders that don't have one
-      filter.$or = [
-        { organizationId: { $exists: false } },
-        { organizationId: null }
-      ];
-    }
+    const endDate = new Date();
+    endDate.setHours(23, 59, 59, 999);
 
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
     startDate.setHours(0, 0, 0, 0);
 
-    filter.createdAt = { $gte: startDate };
+    // Get products for this organization (same as admin-order controller)
+    const orgProducts = await Product.find({ organizationId: new mongoose.Types.ObjectId(organizationId) }).select('_id').lean();
+    const productIds = orgProducts.map(p => p._id);
 
-    const Order = require('../models/order');
+
+    if (productIds.length === 0) {
+      console.log('No products found for this organization!');
+      return [];
+    }
+
+    const filter = {
+      'items.product': { $in: productIds },
+      createdAt: { $gte: startDate, $lte: endDate }
+    };
+
+    const totalOrders = await Order.countDocuments(filter);
 
     const statusTrend = await Order.aggregate([
       { $match: filter },
@@ -322,6 +323,7 @@ exports.getOrderStatusAnalytics = async (days = 30, user, organizationId) => {
       }
     ]);
 
+   
     return statusTrend;
   } catch (error) {
     console.error('Order Status Analytics error:', error);

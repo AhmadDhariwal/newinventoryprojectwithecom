@@ -34,7 +34,7 @@
 
           <div class="form-group">
             <label class="form-label">Complaint Category</label>
-            <select formControlName="category" class="form-control" [class.is-invalid]="submitted && f['category'].errors">
+            <select title="Category" formControlName="category" class="form-control" [class.is-invalid]="submitted && f['category'].errors">
               <option value="product_quality">Product Quality</option>
               <option value="delivery">Delivery Issues</option>
               <option value="wrong_item">Wrong Item Received</option>
@@ -62,7 +62,7 @@
                <span *ngIf="loading" class="spinner"></span>
                {{ loading ? 'Submitting...' : 'Submit Complaint' }}
             </button>
-            <a routerLink="/user/orders" class="btn btn-outline">Cancel</a>
+            <a [routerLink]="['/']" class="btn btn-outline">Cancel</a>
           </div>
         </form>
       </div>
