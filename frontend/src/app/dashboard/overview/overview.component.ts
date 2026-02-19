@@ -9,6 +9,8 @@ import { LowStockWidgetComponent } from '../widgets/low-stock-widget/low-stock-w
 import { SkeletonComponent } from '../../shared/components/skeleton/skeleton.component';
 import { StockDepletionWidgetComponent } from '../widgets/stock-depletion-widget/stock-depletion-widget.component';
 import { OrderAnalyticsChartComponent } from '../charts/order-analytics/order-analytics-chart.component';
+import { ApprovedpurchaseamountComponent } from '../widgets/approvedpurchaseamount/approvedpurchaseamount.component';
+import { PendingpurchaseamountComponent } from '../widgets/pendingpurchaseamount/pendingpurchaseamount.component';
 import { AppCurrencyPipe } from '../../shared/pipes/currency.pipe';
 import { interval, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -16,7 +18,7 @@ import { switchMap } from 'rxjs/operators';
 @Component({
   selector: 'app-overview',
   standalone: true,
-  imports: [CommonModule, RouterModule, StockTrendComponent, PurchaseTrendComponent, SalesTrendComponent, LowStockWidgetComponent, SkeletonComponent, StockDepletionWidgetComponent, OrderAnalyticsChartComponent, AppCurrencyPipe],
+  imports: [CommonModule, RouterModule, StockTrendComponent, PurchaseTrendComponent, SalesTrendComponent, LowStockWidgetComponent, SkeletonComponent, StockDepletionWidgetComponent, OrderAnalyticsChartComponent, ApprovedpurchaseamountComponent, PendingpurchaseamountComponent, AppCurrencyPipe],
   templateUrl: './overview.component.html',
   styleUrl: './overview.component.scss'
 })
@@ -34,7 +36,9 @@ export class OverviewComponent implements OnInit, OnDestroy {
     lowStockItems: 0,
     stockInToday: 0,
     stockOutToday: 0,
-    pendingPurchases: 0
+    pendingPurchases: 0,
+    approvedPurchaseAmount: 0,
+    pendingPurchaseAmount: 0
   };
 
   lowStockItems: any[] = [];
@@ -71,7 +75,9 @@ export class OverviewComponent implements OnInit, OnDestroy {
           stockInToday: data.widgets?.stockInToday || 0,
           stockOutToday: data.widgets?.stockOutToday || 0,
           approvedpurchases: data.widgets?.approvedPurchases || 0,
-          pendingPurchases: data.widgets?.pendingPurchases || 0
+          pendingPurchases: data.widgets?.pendingPurchases || 0,
+          approvedPurchaseAmount: data.widgets?.approvedPurchaseAmount || 0,
+          pendingPurchaseAmount: data.widgets?.pendingPurchaseAmount || 0
         };
         this.lowStockItems = data.alerts?.lowStockItems || [];
         this.loadStockTrend();
@@ -138,7 +144,9 @@ export class OverviewComponent implements OnInit, OnDestroy {
             lowStockItems: data.alerts?.lowStockCount || 0,
             stockInToday: data.widgets?.stockInToday || 0,
             stockOutToday: data.widgets?.stockOutToday || 0,
-            pendingPurchases: data.widgets?.pendingPurchases || 0
+            pendingPurchases: data.widgets?.pendingPurchases || 0,
+            approvedPurchaseAmount: data.widgets?.approvedPurchaseAmount || 0,
+            pendingPurchaseAmount: data.widgets?.pendingPurchaseAmount || 0
           };
           this.lowStockItems = data.alerts?.lowStockItems || [];
         },

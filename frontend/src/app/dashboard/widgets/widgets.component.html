@@ -18,6 +18,14 @@
     [approvedCount]="data.widgets?.approvedPurchases || 0">
   </app-pending-purchases>
 
+  <app-pending-purchase-amount
+    [amount]="data.widgets?.pendingPurchaseAmount || 0">
+  </app-pending-purchase-amount>
+
+  <app-approved-purchase-amount
+    [amount]="data.widgets?.approvedPurchaseAmount || 0">
+  </app-approved-purchase-amount>
+
   <app-stock-today
     [stockIn]="data.widgets?.stockInToday || 0"
     [stockOut]="data.widgets?.stockOutToday || 0">

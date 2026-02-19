@@ -141,5 +141,29 @@ export class ProductDetailsComponent implements OnInit {
       alert('No valid stock level ID to update');
     }
   }
+
+  updateProductSettings(): void {
+    if (this.updating || !this.product) return;
+
+    this.updating = true;
+
+    const updateData = {
+      reorderLevel: Number(this.product.reorderLevel) || 0,
+      reservedQuantity: Number(this.product.reservedQuantity) || 0
+    };
+
+    this.productService.updateProductStock(this.product._id, updateData).subscribe({
+      next: (result) => {
+        console.log('Product settings updated successfully');
+        this.updating = false;
+      },
+      error: (err) => {
+        const sanitizedError = String(err.error?.error || err.message || 'Unknown error').replace(/[\r\n\t]/g, ' ');
+        console.error('Error updating product settings:', sanitizedError);
+        alert('Error updating product settings: ' + sanitizedError);
+        this.updating = false;
+      }
+    });
+  }
 }
 

@@ -21,9 +21,7 @@ const createpurchaseorder = async (data, userId, organizationId) => {
     throw new Error("Supplier not found or inactive");
   }
 
-  if (!StockLevel || StockLevel.quantity < data.quantity) {
-    throw new Error("Insufficient stock");
-  }
+
 
 
   // Validate warehouse belongs to organization
@@ -73,34 +71,34 @@ const processPurchaseOrderReceipt = async (purchaseOrderId, user) => {
     const product = await Product.findOne({ _id: item.product, organizationId });
     if (!product) throw new Error(`Product ${item.product} not found in this organization`);
 
-    // Create stock movement with organization context
+    // Create stock movement with organization context - INCREASE stock for purchases
     await StockMovement.create({
       product: item.product,
       warehouse: purchaseorder.warehouse,
-      type: "OUT",
+      type: "IN",
       quantity: item.quantity,
       reason: "PURCHASE",
       referenceId: purchaseorder._id,
       user: userId,
-      organizationId // Critical: Add organizationId
+      organizationId
     });
 
-    // Update inventory
+    // Update inventory - INCREASE quantity
     const inventory = await Inventory.findOne({
       product: item.product,
       warehouse: purchaseorder.warehouse,
-      organizationId // Scope by organization
+      organizationId
     });
 
     if (inventory) {
-      inventory.quantity -= item.quantity;
+      inventory.quantity += item.quantity;
       await inventory.save();
     } else {
       await Inventory.create({
         product: item.product,
         name: product.name,
         price: product.price,
-        category: product.category, // Assuming category is an ID or String, Inventory model expects String? Checking model.js line 23: type: String. If product.category is ObjectId (ref Category), we might need to populate it or just cast to string. Let's assume string for now or ID string.
+        category: product.category,
         quantity: item.quantity,
         warehouse: purchaseorder.warehouse,
         organizationId,
@@ -108,15 +106,15 @@ const processPurchaseOrderReceipt = async (purchaseOrderId, user) => {
       });
     }
 
-    // Update stock level
+    // Update stock level - INCREASE quantity
     const stock = await StockLevel.findOne({
       product: item.product,
       warehouse: purchaseorder.warehouse,
-      organizationId // Scope by organization
+      organizationId
     });
 
     if (stock) {
-      stock.quantity -= item.quantity;
+      stock.quantity += item.quantity;
       await stock.save();
     } else {
       await StockLevel.create({
@@ -126,7 +124,7 @@ const processPurchaseOrderReceipt = async (purchaseOrderId, user) => {
         reservedQuantity: 0,
         reorderLevel: 0,
         minStock: 0,
-        organizationId // Critical: Add organizationId
+        organizationId
       });
     }
   }

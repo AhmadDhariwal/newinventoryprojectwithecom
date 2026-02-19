@@ -36,6 +36,19 @@ const productschema = new mongoose.Schema({
     type: Number,
     default: null
   },
+  // Inventory management fields
+  reorderLevel: {
+    type: Number,
+    default: 0,
+    min: 0,
+    description: "Global reorder level for this product"
+  },
+  reservedQuantity: {
+    type: Number,
+    default: 0,
+    min: 0,
+    description: "Total reserved quantity across all warehouses"
+  },
 
   images: {
     type: [String],

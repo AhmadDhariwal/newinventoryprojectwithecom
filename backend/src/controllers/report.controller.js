@@ -14,8 +14,8 @@ const getstockreport = async (req, res) => {
 
 const getstockmovementreport = async (req, res) => {
   try {
-    const { organizationId } = req;
-    const report = await reportservice.getstockmovementreport(organizationId);
+    const { organizationId, user } = req;
+    const report = await reportservice.getstockmovementreport(organizationId, user);
     res.status(200).json(report);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -24,8 +24,8 @@ const getstockmovementreport = async (req, res) => {
 
 const exportStockMovementsCSV = async (req, res) => {
   try {
-    const { organizationId } = req;
-    const csv = await reportservice.exportStockMovementsCSV({ ...req.query, organizationId });
+    const { organizationId, user } = req;
+    const csv = await reportservice.exportStockMovementsCSV({ ...req.query, organizationId }, user);
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', 'attachment; filename=stock-movements.csv');
     res.send(csv);
@@ -36,8 +36,8 @@ const exportStockMovementsCSV = async (req, res) => {
 
 const exportStockMovementsExcel = async (req, res) => {
   try {
-    const { organizationId } = req;
-    const buffer = await reportservice.exportStockMovementsExcel({ ...req.query, organizationId });
+    const { organizationId, user } = req;
+    const buffer = await reportservice.exportStockMovementsExcel({ ...req.query, organizationId }, user);
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', 'attachment; filename=stock-movements.xlsx');
     res.send(buffer);

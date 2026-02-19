@@ -6,6 +6,7 @@ const notificationService = require('./notification.service');
 
 /**
  * Initialize stock levels for all products in all warehouses for a specific organization
+ * Only creates stock levels with 0 quantity - no random values
  */
 const initializeStockLevels = async (organizationId) => {
   try {
@@ -39,10 +40,10 @@ const initializeStockLevels = async (organizationId) => {
           const newStock = {
             product: product._id,
             warehouse: warehouse._id,
-            quantity: Math.floor(Math.random() * 100) + 10,
+            quantity: 0, // Always start with 0
             reservedQuantity: 0,
-            reorderLevel: 20,
-            minStock: 10
+            reorderLevel: 0, // User should set this manually
+            minStock: 0 // User should set this manually
           };
 
           if (organizationId) {
@@ -90,10 +91,10 @@ const getOrCreateStockLevel = async (productId, warehouseId, organizationId) => 
       const newStock = {
         product: productId,
         warehouse: warehouseId,
-        quantity: 0,
+        quantity: 0, // Always start with 0 quantity
         reservedQuantity: 0,
-        reorderLevel: 20,
-        minStock: 10
+        reorderLevel: 0, // Start with 0, user can set manually
+        minStock: 0 // Start with 0, user can set manually
       };
 
       if (organizationId) {

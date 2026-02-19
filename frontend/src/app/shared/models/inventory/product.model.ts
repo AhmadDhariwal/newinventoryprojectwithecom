@@ -10,6 +10,8 @@ export interface Product {
   price: number;
   discountPrice?: number;
   discountPercentage?: number;
+  reorderLevel?: number;
+  reservedQuantity?: number;
 
   images?: string[];
   status: 'active' | 'inactive';

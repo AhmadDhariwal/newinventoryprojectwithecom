@@ -124,6 +124,23 @@
     font-weight: 700;
     color: var(--text-main);
   }
+
+  .inline-input {
+    width: 120px;
+    padding: 0.5rem 0.75rem;
+    border: 2px solid var(--border-main);
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    font-size: 1rem;
+    background: var(--bg-main);
+    transition: all var(--transition-normal);
+
+    &:focus {
+      outline: none;
+      border-color: var(--brand-primary);
+      box-shadow: 0 0 0 3px var(--brand-primary-light);
+    }
+  }
 }
 
 .stock-table {

@@ -22,8 +22,13 @@ class BusinessSettingsController {
   // PUT /api/business-settings
   async updateBusinessSettings(req, res) {
     try {
-      const { organizationId } = req;
-      const settings = await businessSettingsService.updateSettings(organizationId, req.body);
+      const { organizationId, userid } = req;
+      const settings = await businessSettingsService.updateSettings(
+        organizationId, 
+        req.body, 
+        userid, 
+        req.ip
+      );
       res.status(200).json({
         success: true,
         data: settings,

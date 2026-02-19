@@ -41,7 +41,7 @@ export class OrderAnalyticsChartComponent implements OnInit {
   
   loading = true;
   error = false;
-  selectedRange = 30;
+  selectedRange = 7;
   
   ranges = [
     { label: '7 Days', value: 7 },
@@ -53,7 +53,7 @@ export class OrderAnalyticsChartComponent implements OnInit {
 
   ngOnInit(): void {
     this.initChart();
-    this.fetchData();
+    this.fetchData(7);
   }
 
   initChart() {

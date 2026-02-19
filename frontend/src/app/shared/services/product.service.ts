@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { tap, map } from 'rxjs/operators';
 import { Product } from '../models/inventory/product.model';
 import { ActivityLogsService } from './activity-logs.service';
 
@@ -29,11 +29,32 @@ export class ProductService {
       });
     }
 
-    return this.http.get<any>(this.baseUrl, { params: httpParams });
+    return this.http.get<any>(this.baseUrl, { params: httpParams }).pipe(
+      map(response => {
+        // Handle new API response format
+        if (response.success && response.data) {
+          return response.data;
+        }
+        // Handle old API response format
+        if (response.items) {
+          return response.items;
+        }
+        // Fallback to direct response
+        return response;
+      })
+    );
   }
 
   getProductById(id: string): Observable<Product> {
-    return this.http.get<Product>(`${this.baseUrl}/${id}`);
+    return this.http.get<any>(`${this.baseUrl}/${id}`).pipe(
+      map(response => {
+        // Handle both old and new API response formats
+        if (response.success && response.data) {
+          return response.data;
+        }
+        return response;
+      })
+    );
   }
 
   createProduct(product: Partial<Product> | FormData): Observable<Product> {
@@ -94,6 +115,16 @@ export class ProductService {
 
   updateStockLevelWithRules(stockLevelId: string, data: { quantity?: number, reservedQuantity?: number, reorderLevel?: number, minStock?: number }): Observable<any> {
     return this.http.put<any>(`${this.inventoryUrl}/stocklevels/${stockLevelId}`, data);
+  }
+
+  updateProductStock(productId: string, data: { reorderLevel?: number, reservedQuantity?: number }): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/${productId}/stock`, data).pipe(
+      tap((result: any) => {
+        if (result && result.data && result.data.name) {
+          this.activityService.logUpdate('Products', `Stock settings for ${result.data.name}`, result.data._id).subscribe();
+        }
+      })
+    );
   }
 
 }

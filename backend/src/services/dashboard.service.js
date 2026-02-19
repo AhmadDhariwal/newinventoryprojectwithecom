@@ -6,7 +6,7 @@ const StockMovement = require('../models/stockmovement');
 const StockLevel = require('../models/stocklevel');
 const User = require('../models/user');
 const mongoose = require('mongoose');
- const Order = require('../models/order');
+const Order = require('../models/order');
 
 const getAccessibleUserIds = async (role, userId) => {
   if (role === 'admin') {
@@ -45,20 +45,27 @@ exports.getDashboardSummary = async (user, organizationId) => {
     const [
       totalProducts,
       totalSuppliers,
-      purchaseAmount,
+      purchaseStats,
       stockQty,
       lowStockItems,
       stockInToday,
       stockOutToday,
       pendingPurchases,
-      approvedPurchases
+      approvedPurchases,
+      recentApprovedPurchases
     ] = await Promise.all([
       Product.countDocuments(productFilter),
       Supplier.countDocuments(supplierFilter),
 
       PurchaseOrder.aggregate([
-        { $match: { ...purchaseFilter, status: { $in: ["APPROVED", "RECEIVED"] } } },
-        { $group: { _id: null, total: { $sum: "$totalamount" } } }
+        { $match: purchaseFilter },
+        {
+          $group: {
+            _id: "$status",
+            total: { $sum: "$totalamount" },
+            count: { $sum: 1 }
+          }
+        }
       ]),
 
       StockLevel.aggregate([
@@ -112,15 +119,26 @@ exports.getDashboardSummary = async (user, organizationId) => {
       ]),
 
       PurchaseOrder.countDocuments({ ...purchaseFilter, status: 'PENDING' }),
-      PurchaseOrder.countDocuments({ ...purchaseFilter, status: 'APPROVED' })
+      PurchaseOrder.countDocuments({ ...purchaseFilter, status: 'RECEIVED' }),
+
+      PurchaseOrder.find({ ...purchaseFilter, status: 'RECEIVED' })
+        .sort({ approvedAt: -1 })
+        .limit(5)
+        .populate('supplier', 'name')
+        .populate('createdBy', 'name')
+        .lean()
     ]);
+
+    const approvedAmount = purchaseStats.find(s => s._id === 'APPROVED')?.total || 0;
+    const pendingAmount = purchaseStats.find(s => s._id === 'PENDING')?.total || 0;
+    const receivedAmount = purchaseStats.find(s => s._id === 'RECEIVED')?.total || 0;
 
     return {
       kpis: {
         totalProducts: totalProducts || 0,
         totalSuppliers: totalSuppliers || 0,
         totalStockQty: stockQty[0]?.qty || 0,
-        totalPurchaseAmount: purchaseAmount[0]?.total || 0
+        totalPurchaseAmount: approvedAmount + receivedAmount
       },
       alerts: {
         lowStockCount: lowStockItems.length || 0,
@@ -129,9 +147,12 @@ exports.getDashboardSummary = async (user, organizationId) => {
       widgets: {
         pendingPurchases: pendingPurchases || 0,
         approvedPurchases: approvedPurchases || 0,
+        pendingPurchaseAmount: pendingAmount,
+        approvedPurchaseAmount: approvedAmount,
         stockInToday: stockInToday[0]?.qty || 0,
         stockOutToday: stockOutToday[0]?.qty || 0
-      }
+      },
+      recentApprovedPurchases: recentApprovedPurchases || []
     };
   } catch (error) {
     console.error('Dashboard error:', error);
@@ -229,7 +250,7 @@ exports.getSalesTrend = async (days = 30, user, organizationId) => {
   }
 };
 
-exports.getOrderStatusAnalytics = async (days = 30, user, organizationId) => {
+exports.getOrderStatusAnalytics = async (days = 7, user, organizationId) => {
   try {
     const endDate = new Date();
     endDate.setHours(23, 59, 59, 999);
@@ -323,7 +344,7 @@ exports.getOrderStatusAnalytics = async (days = 30, user, organizationId) => {
       }
     ]);
 
-   
+
     return statusTrend;
   } catch (error) {
     console.error('Order Status Analytics error:', error);

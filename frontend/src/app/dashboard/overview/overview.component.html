@@ -185,6 +185,15 @@
       </div>
     </section>
 
+    <!-- Financial Procurement Overview -->
+    <section class="financial-widgets-section">
+      <h2 class="section-title">Financial Flow</h2>
+      <div class="widgets-grid-financial">
+        <app-approved-purchase-amount [amount]="stats.approvedpurchases"></app-approved-purchase-amount>
+        <app-pending-purchase-amount [amount]="stats.pendingpurchases"></app-pending-purchase-amount>
+      </div>
+    </section>
+
     <!-- Data Visuals -->
     <div class="charts-container" *ngIf="stats.totalproducts > 0 || stats.stockInToday > 0 || stats.stockOutToday > 0 || stats.totalpurchases > 0; else noDataMessage">
       

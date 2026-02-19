@@ -17,50 +17,78 @@ exports.getLogs = async (req, res) => {
 
     const query = { organizationId };
 
+    // Handle user access permissions
     let associatedUserIds = [userid];
     if (role === 'admin') {
-      const createdUsers = await User.find({ createdBy: userid }).select('_id');
-      associatedUserIds = [...associatedUserIds, ...createdUsers.map(u => u._id)];
+      // Admin can see all users in organization
+      const allUsers = await User.find({ organizationId }).select('_id');
+      associatedUserIds = allUsers.map(u => u._id.toString());
+    } else if (role === 'manager') {
+      // Manager can see assigned users + own
+      const manager = await User.findById(userid).select('assignedUsers');
+      const assignedUsers = manager?.assignedUsers || [];
+      associatedUserIds = [userid, ...assignedUsers.map(id => id.toString())];
     }
 
-    if (targetUserId) {
-      if (associatedUserIds.map(id => id.toString()).includes(targetUserId)) {
+    // Apply user filter
+    if (targetUserId && targetUserId.trim() !== '') {
+      if (associatedUserIds.includes(targetUserId)) {
         query.user = targetUserId;
       } else {
         return res.status(403).json({ success: false, message: 'Unauthorized to view logs for this user' });
       }
-    } else {
+    } else if (role !== 'admin') {
       query.user = { $in: associatedUserIds };
     }
 
+    // Apply action filter - exact match
     if (action && action.trim() !== '') {
       query.action = action.trim();
     }
 
+    // Apply module filter - exact match
     if (module && module.trim() !== '') {
       query.module = module.trim();
     }
 
+    // Apply date range filter
     if (startDate || endDate) {
       query.createdAt = {};
-      if (startDate) query.createdAt.$gte = new Date(startDate);
-      if (endDate) query.createdAt.$lte = new Date(endDate);
+      if (startDate) {
+        const start = new Date(startDate);
+        start.setHours(0, 0, 0, 0);
+        query.createdAt.$gte = start;
+      }
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        query.createdAt.$lte = end;
+      }
     }
 
+    // Apply search filter
     if (search && search.trim() !== '') {
+      const searchRegex = { $regex: search.trim(), $options: "i" };
       const matchingUsers = await User.find({
         organizationId,
         $or: [
-          { name: { $regex: search, $options: "i" } },
-          { email: { $regex: search, $options: "i" } }
+          { name: searchRegex },
+          { email: searchRegex }
         ]
       }).select('_id');
 
-      query.$or = [
-        { entityName: { $regex: search, $options: "i" } },
-        { description: { $regex: search, $options: "i" } },
-        { user: { $in: matchingUsers.map(u => u._id) } }
+      const searchConditions = [
+        { action: searchRegex },
+        { module: searchRegex },
+        { entityName: searchRegex },
+        { description: searchRegex }
       ];
+
+      if (matchingUsers.length > 0) {
+        searchConditions.push({ user: { $in: matchingUsers.map(u => u._id) } });
+      }
+
+      query.$or = searchConditions;
     }
 
     const logs = await ActivityLog.find(query)
@@ -162,12 +190,17 @@ exports.getLogStats = async (req, res) => {
 
     const statsQuery = { organizationId };
 
-    if (role !== 'admin') {
-      statsQuery.user = userid;
+    if (role === 'admin') {
+      // Admin sees stats for all users in organization
+      const allUsers = await User.find({ organizationId }).select('_id');
+      statsQuery.user = { $in: allUsers.map(u => u._id) };
+    } else if (role === 'manager') {
+      // Manager sees stats for assigned users + own
+      const manager = await User.findById(userid).select('assignedUsers');
+      const assignedUsers = manager?.assignedUsers || [];
+      statsQuery.user = { $in: [userid, ...assignedUsers.map(id => id.toString())] };
     } else {
-      const createdUsers = await User.find({ createdBy: userid }).select('_id');
-      const associatedUserIds = [userid, ...createdUsers.map(u => u._id)];
-      statsQuery.user = { $in: associatedUserIds };
+      statsQuery.user = userid;
     }
 
     const stats = await ActivityLog.aggregate([

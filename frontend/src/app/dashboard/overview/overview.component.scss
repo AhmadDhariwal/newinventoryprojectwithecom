@@ -350,6 +350,17 @@
   }
 }
 
+/* Financial Widgets section */
+.financial-widgets-section {
+  margin-bottom: 5rem;
+
+  .widgets-grid-financial {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2.5rem;
+  }
+}
+
 @media (max-width: 768px) {
   .dashboard-header {
     padding: 4rem 1.5rem;
