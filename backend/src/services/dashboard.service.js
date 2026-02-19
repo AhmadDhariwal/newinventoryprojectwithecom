@@ -52,7 +52,9 @@ exports.getDashboardSummary = async (user, organizationId) => {
       stockOutToday,
       pendingPurchases,
       approvedPurchases,
-      recentApprovedPurchases
+      recentApprovedPurchases,
+      salesStats,
+      internalSalesStats
     ] = await Promise.all([
       Product.countDocuments(productFilter),
       Supplier.countDocuments(supplierFilter),
@@ -126,19 +128,35 @@ exports.getDashboardSummary = async (user, organizationId) => {
         .limit(5)
         .populate('supplier', 'name')
         .populate('createdBy', 'name')
-        .lean()
+        .lean(),
+
+      // New: E-commerce Sales (Order model)
+      Order.aggregate([
+        { $match: { organizationId: new mongoose.Types.ObjectId(organizationId), status: { $ne: 'cancelled' } } },
+        { $group: { _id: null, total: { $sum: "$totalAmount" } } }
+      ]),
+
+      // New: Internal Sales (SalesOrder model)
+      SalesOrder.aggregate([
+        { $match: { organizationId: new mongoose.Types.ObjectId(organizationId) } },
+        { $group: { _id: null, total: { $sum: "$totalamount" } } }
+      ])
     ]);
 
     const approvedAmount = purchaseStats.find(s => s._id === 'APPROVED')?.total || 0;
     const pendingAmount = purchaseStats.find(s => s._id === 'PENDING')?.total || 0;
     const receivedAmount = purchaseStats.find(s => s._id === 'RECEIVED')?.total || 0;
 
+    const ecomSales = salesStats?.[0]?.total || 0;
+    const internalSales = internalSalesStats?.[0]?.total || 0;
+
     return {
       kpis: {
         totalProducts: totalProducts || 0,
         totalSuppliers: totalSuppliers || 0,
         totalStockQty: stockQty[0]?.qty || 0,
-        totalPurchaseAmount: approvedAmount + receivedAmount
+        totalPurchaseAmount: receivedAmount, // Only count received in total spend
+        totalSalesAmount: ecomSales + internalSales
       },
       alerts: {
         lowStockCount: lowStockItems.length || 0,
@@ -148,7 +166,7 @@ exports.getDashboardSummary = async (user, organizationId) => {
         pendingPurchases: pendingPurchases || 0,
         approvedPurchases: approvedPurchases || 0,
         pendingPurchaseAmount: pendingAmount,
-        approvedPurchaseAmount: approvedAmount,
+        approvedPurchaseAmount: receivedAmount,
         stockInToday: stockInToday[0]?.qty || 0,
         stockOutToday: stockOutToday[0]?.qty || 0
       },
@@ -224,26 +242,59 @@ exports.getPurchaseTrend = async (days = 30, user, organizationId) => {
 exports.getSalesTrend = async (days = 30, user, organizationId) => {
   try {
     const userIds = await getAccessibleUserIds(user.role, user.userid);
-    const salesFilter = buildFilter(organizationId, user.role, userIds, 'user');
-
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
     startDate.setHours(0, 0, 0, 0);
 
-    const salesTrend = await SalesOrder.aggregate([
-      { $match: { ...salesFilter, createdAt: { $gte: startDate } } },
-      {
-        $group: {
-          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-          totalRevenue: { $sum: "$totalamount" },
-          totalOrders: { $sum: 1 }
+    const matchFilter = {
+      organizationId: new mongoose.Types.ObjectId(organizationId),
+      createdAt: { $gte: startDate }
+    };
+
+    const [ecomTrend, internalTrend] = await Promise.all([
+      Order.aggregate([
+        { $match: { ...matchFilter, status: { $ne: 'cancelled' } } },
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+            totalRevenue: { $sum: "$totalAmount" },
+            totalOrders: { $sum: 1 }
+          }
         }
-      },
-      { $sort: { "_id": 1 } },
-      { $project: { date: "$_id", totalRevenue: 1, totalOrders: 1, _id: 0 } }
+      ]),
+      SalesOrder.aggregate([
+        { $match: matchFilter },
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+            totalRevenue: { $sum: "$totalamount" },
+            totalOrders: { $sum: 1 }
+          }
+        }
+      ])
     ]);
 
-    return salesTrend;
+    // Combine trends
+    const combinedMap = new Map();
+
+    [...ecomTrend, ...internalTrend].forEach(item => {
+      if (combinedMap.has(item._id)) {
+        const existing = combinedMap.get(item._id);
+        combinedMap.set(item._id, {
+          date: item._id,
+          totalRevenue: existing.totalRevenue + item.totalRevenue,
+          totalOrders: existing.totalOrders + item.totalOrders
+        });
+      } else {
+        combinedMap.set(item._id, {
+          date: item._id,
+          totalRevenue: item.totalRevenue,
+          totalOrders: item.totalOrders
+        });
+      }
+    });
+
+    return Array.from(combinedMap.values()).sort((a, b) => a.date.localeCompare(b.date));
   } catch (error) {
     console.error('Sales trend error:', error);
     throw error;

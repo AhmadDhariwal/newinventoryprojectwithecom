@@ -122,6 +122,19 @@
           </div>
         </div>
 
+        <div class="kpi-card kpi-violet" tabindex="0">
+          <div class="kpi-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="kpi-content">
+            <h3>Revenue Velocity</h3>
+            <p class="kpi-value">{{ stats.totalSales | appCurrency }}</p>
+            <span class="kpi-label">Aggregated sales volume</span>
+            <div class="kpi-trend up">
+              <i class="fas fa-caret-up"></i>
+              <span>+18.5% Growth</span>
+            </div>
+          </div>
+        </div>
+
         <div class="kpi-card kpi-danger" [class.kpi-alert]="stats.lowStockItems > 0" tabindex="0">
           <div class="kpi-icon"><i class="fas fa-shield-alt"></i></div>
           <div class="kpi-content">
@@ -169,7 +182,7 @@
             <h3>Order Performance</h3>
           </div>
           <div class="activity-content">
-            <p class="activity-value">{{ stats.approvedpurchases | number }} Approved</p>
+            <p class="activity-value">{{ stats.approvedPurchases | number }} Approved</p>
           </div>
         </div>
 
@@ -189,8 +202,8 @@
     <section class="financial-widgets-section">
       <h2 class="section-title">Financial Flow</h2>
       <div class="widgets-grid-financial">
-        <app-approved-purchase-amount [amount]="stats.approvedpurchases"></app-approved-purchase-amount>
-        <app-pending-purchase-amount [amount]="stats.pendingpurchases"></app-pending-purchase-amount>
+        <app-approved-purchase-amount [amount]="stats.approvedPurchaseAmount"></app-approved-purchase-amount>
+        <app-pending-purchase-amount [amount]="stats.pendingPurchaseAmount"></app-pending-purchase-amount>
       </div>
     </section>
 

@@ -33,10 +33,12 @@ export class OverviewComponent implements OnInit, OnDestroy {
     totalsuppliers: 0,
     totalStock: 0,
     totalpurchases: 0,
+    totalSales: 0,
     lowStockItems: 0,
     stockInToday: 0,
     stockOutToday: 0,
     pendingPurchases: 0,
+    approvedPurchases: 0,
     approvedPurchaseAmount: 0,
     pendingPurchaseAmount: 0
   };
@@ -71,10 +73,11 @@ export class OverviewComponent implements OnInit, OnDestroy {
           totalsuppliers: data.kpis?.totalSuppliers || 0,
           totalStock: data.kpis?.totalStockQty || 0,
           totalpurchases: data.kpis?.totalPurchaseAmount || 0,
+          totalSales: data.kpis?.totalSalesAmount || 0,
           lowStockItems: data.alerts?.lowStockCount || 0,
           stockInToday: data.widgets?.stockInToday || 0,
           stockOutToday: data.widgets?.stockOutToday || 0,
-          approvedpurchases: data.widgets?.approvedPurchases || 0,
+          approvedPurchases: data.widgets?.approvedPurchases || 0,
           pendingPurchases: data.widgets?.pendingPurchases || 0,
           approvedPurchaseAmount: data.widgets?.approvedPurchaseAmount || 0,
           pendingPurchaseAmount: data.widgets?.pendingPurchaseAmount || 0
@@ -141,9 +144,11 @@ export class OverviewComponent implements OnInit, OnDestroy {
             totalsuppliers: data.kpis?.totalSuppliers || 0,
             totalStock: data.kpis?.totalStockQty || 0,
             totalpurchases: data.kpis?.totalPurchaseAmount || 0,
+            totalSales: data.kpis?.totalSalesAmount || 0,
             lowStockItems: data.alerts?.lowStockCount || 0,
             stockInToday: data.widgets?.stockInToday || 0,
             stockOutToday: data.widgets?.stockOutToday || 0,
+            approvedPurchases: data.widgets?.approvedPurchases || 0,
             pendingPurchases: data.widgets?.pendingPurchases || 0,
             approvedPurchaseAmount: data.widgets?.approvedPurchaseAmount || 0,
             pendingPurchaseAmount: data.widgets?.pendingPurchaseAmount || 0
