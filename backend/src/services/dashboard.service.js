@@ -150,6 +150,14 @@ exports.getDashboardSummary = async (user, organizationId) => {
     const ecomSales = salesStats?.[0]?.total || 0;
     const internalSales = internalSalesStats?.[0]?.total || 0;
 
+    console.log('Dashboard Summary Stats:', {
+      organizationId,
+      ecomSalesCount: salesStats?.length || 0,
+      ecomSalesTotal: ecomSales,
+      internalSalesCount: internalSalesStats?.length || 0,
+      internalSalesTotal: internalSales
+    });
+
     return {
       kpis: {
         totalProducts: totalProducts || 0,
@@ -241,15 +249,26 @@ exports.getPurchaseTrend = async (days = 30, user, organizationId) => {
 
 exports.getSalesTrend = async (days = 30, user, organizationId) => {
   try {
-    const userIds = await getAccessibleUserIds(user.role, user.userid);
+    const orgId = new mongoose.Types.ObjectId(organizationId);
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
     startDate.setHours(0, 0, 0, 0);
 
     const matchFilter = {
-      organizationId: new mongoose.Types.ObjectId(organizationId),
+      organizationId: orgId,
       createdAt: { $gte: startDate }
     };
+
+    console.log('--- Sales Trend Debug ---');
+    console.log('Org:', organizationId);
+    console.log('Start Date:', startDate);
+    console.log('Match Filter:', JSON.stringify(matchFilter));
+
+    // Diagnostic counts
+    const ecomCount = await Order.countDocuments({ organizationId: orgId, status: { $ne: 'cancelled' } });
+    const internalCount = await SalesOrder.countDocuments({ organizationId: orgId });
+    console.log(`Total Ecom Orders (all time): ${ecomCount}`);
+    console.log(`Total Internal Orders (all time): ${internalCount}`);
 
     const [ecomTrend, internalTrend] = await Promise.all([
       Order.aggregate([
@@ -274,6 +293,8 @@ exports.getSalesTrend = async (days = 30, user, organizationId) => {
       ])
     ]);
 
+    console.log(`Ecom trend points: ${ecomTrend.length}, Internal trend points: ${internalTrend.length}`);
+
     // Combine trends
     const combinedMap = new Map();
 
@@ -282,19 +303,21 @@ exports.getSalesTrend = async (days = 30, user, organizationId) => {
         const existing = combinedMap.get(item._id);
         combinedMap.set(item._id, {
           date: item._id,
-          totalRevenue: existing.totalRevenue + item.totalRevenue,
-          totalOrders: existing.totalOrders + item.totalOrders
+          totalRevenue: (existing.totalRevenue || 0) + (item.totalRevenue || 0),
+          totalOrders: (existing.totalOrders || 0) + (item.totalOrders || 0)
         });
       } else {
         combinedMap.set(item._id, {
           date: item._id,
-          totalRevenue: item.totalRevenue,
-          totalOrders: item.totalOrders
+          totalRevenue: item.totalRevenue || 0,
+          totalOrders: item.totalOrders || 0
         });
       }
     });
 
-    return Array.from(combinedMap.values()).sort((a, b) => a.date.localeCompare(b.date));
+    const result = Array.from(combinedMap.values()).sort((a, b) => a.date.localeCompare(b.date));
+    console.log(`Combined sales trend result points: ${result.length}`);
+    return result;
   } catch (error) {
     console.error('Sales trend error:', error);
     throw error;

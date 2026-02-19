@@ -123,11 +123,12 @@ export class OverviewComponent implements OnInit, OnDestroy {
     // Load sales trend with quality fallback
     this.dashboardService.getSalesTrend(30).subscribe({
       next: data => {
-        this.salesTrendData = (data && data.length > 0) ? data : [];
+        console.log('Dashboard Sales Trend Data:', data);
+        this.salesTrendData = data || [];
         console.log(' Sales trend loaded:', this.salesTrendData.length, 'days');
       },
       error: err => {
-        console.error(' Sales trend API error:', err);
+        console.error('Error loading sales trend:', err);
         this.salesTrendData = [];
       }
     });

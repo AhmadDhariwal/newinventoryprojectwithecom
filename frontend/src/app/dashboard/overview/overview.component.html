@@ -208,7 +208,7 @@
     </section>
 
     <!-- Data Visuals -->
-    <div class="charts-container" *ngIf="stats.totalproducts > 0 || stats.stockInToday > 0 || stats.stockOutToday > 0 || stats.totalpurchases > 0; else noDataMessage">
+    <div class="charts-container" *ngIf="stats.totalproducts > 0 || stats.stockInToday > 0 || stats.stockOutToday > 0 || stats.totalpurchases > 0 || stats.totalSales > 0; else noDataMessage">
       
       <!-- New Order Status Analytics -->
       <section class="charts-section full-width">
