@@ -132,7 +132,7 @@ exports.getDashboardSummary = async (user, organizationId) => {
 
       // New: E-commerce Sales (Order model)
       Order.aggregate([
-        { $match: { organizationId: new mongoose.Types.ObjectId(organizationId), status: { $ne: 'cancelled' } } },
+        { $match: { organizationId: new mongoose.Types.ObjectId(organizationId), status: 'delivered', paymentStatus: 'completed' } },
         { $group: { _id: null, total: { $sum: "$totalAmount" } } }
       ]),
 
